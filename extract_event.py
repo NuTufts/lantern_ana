@@ -6,6 +6,8 @@ from larlite import larlite
 from larcv import larcv
 from ublarcvapp import ublarcvapp
 
+from lantern_photon.helpers.image2d_cropping import crop_around_postion
+
 
 if __name__ == "__main__":
     import argparse
@@ -37,6 +39,7 @@ if __name__ == "__main__":
     nentries = iolcv.get_n_entries()
 
     """
+    Example of typical larlite offerings
   KEY: TTree	mceventweight_eventweight4to4aFix_tree;1	mceventweight Tree by eventweight4to4aFix
   KEY: TTree	mceventweight_eventweightLEE_tree;1	mceventweight Tree by eventweightLEE
   KEY: TTree	mcflux_generator_tree;1	mcflux Tree by generator
@@ -88,7 +91,9 @@ if __name__ == "__main__":
         ioll.go_to(i, False)
         nuvertex_store.clear()
 
-        iolcv.get_data( "image2d", "wire" )
+        ev_wire = iolcv.get_data( "image2d", "wire" )
+        wire_v = ev_wire.as_vector()
+
         run = iolcv.event_id().run()
         subrun = iolcv.event_id().subrun()
         event = iolcv.event_id().event()
@@ -124,8 +129,12 @@ if __name__ == "__main__":
                 if dd<0.3 and nshowers==args.nshowers and ntracks==args.ntracks:                    
                     print("Matched Reco Vertex!")
                     nuvertex_store.push_back( nuvtx )
-            
-            
+
+                    histname = "run%d_subrun%d_event%d_vertex%d"%(args.run, args.subrun, args.event, ivtx)
+                    hist_crop, crop_dict = crop_around_postion( wire_v, given_vtx, 512, 512, histname )
+                    for h in hist_crop:
+                        h.Write()
+
             # copy over data into output larcv file
             iolcv.save_entry()
             ioll.go_to(i,True) # reload and save
