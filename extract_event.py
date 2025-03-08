@@ -1,10 +1,14 @@
 import os,sys
 import numpy as np
+
 import ROOT as rt
 from ROOT import std
 from larlite import larlite
 from larcv import larcv
 from ublarcvapp import ublarcvapp
+
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 from lantern_photon.helpers.image2d_cropping import crop_around_postion
 
@@ -130,11 +134,66 @@ if __name__ == "__main__":
                     print("Matched Reco Vertex!")
                     nuvertex_store.push_back( nuvtx )
 
-                    histname = "run%d_subrun%d_event%d_vertex%d"%(args.run, args.subrun, args.event, ivtx)
-                    hist_crop, crop_dict = crop_around_postion( wire_v, given_vtx, 512, 512, histname )
-                    for h in hist_crop:
-                        h.Write()
+                    # copy images so we can reverse it
+                    rwire_v = std.vector("larcv::Image2D")()
+                    for p in range(wire_v.size()):
+                        rimg = larcv.Image2D(wire_v.at(p))
+                        rimg.reverseTimeOrder()
+                        rwire_v.push_back(rimg)
 
+                    histname = "run%d_subrun%d_event%d_vertex%d"%(args.run, args.subrun, args.event, ivtx)
+                    recoOutFile.cd()
+                    hist_crop, crop_dict = crop_around_postion( rwire_v, given_vtx, 256, 256, histname )
+                    #for h in hist_crop:
+                    #    h.Write()
+
+            # test
+            import lardly
+            from lardly.ubdl.det3d_truth_plot import make_traces as truth_make_traces
+            from lardly.ubdl.det3d_recoshower_plot import make_traces as reco_make_traces
+            from lardly.ubdl.det3d_viewer import make_default_plot
+
+
+            
+            fig3d = make_default_plot()
+            mctraces = truth_make_traces( ioll, iolcv, recoOutTree )
+            recotraces = reco_make_traces( ioll, iolcv, recoOutTree )
+            for trace in mctraces:
+                fig3d.add_trace( trace )
+            for trace in recotraces:
+                fig3d.add_trace( trace )
+            #fig3d.write_html( histname+"_det3d.html" )
+
+            fig2d = make_subplots( rows=1, cols=3 )
+            for n in range(3):
+                meta = crop_dict['meta'][n]
+                img_np = crop_dict['npimg'][n]
+                plot = go.Heatmap(name="Plane %d"%(n),
+                                  z=np.transpose(img_np,(1,0)),
+                                  y=np.linspace(meta.min_x(),meta.max_x(),img_np.shape[0]),
+                                  x=np.linspace(meta.min_y(),meta.max_y(),img_np.shape[1]))
+                fig2d.add_trace( plot, row=1, col=n+1 )
+            #fig2d.write_html( histname+"_wireimages.html" )
+
+            # div1 = offline_plot(fig3d, include_plotlyjs=False, output_type='div')
+            # div2 = offline_plot(fig2d, include_plotlyjs=False, output_type='div')
+            # # Create HTML structure to hold the figures
+            # html_content = htmltools.HTML(
+            #     htmltools.tags.html(
+            #         htmltools.tags.head(
+            #             htmltools.tags.script(src="https://cdn.plot.ly/plotly-2.27.0.min.js")
+            #         ),
+            #         htmltools.tags.body(
+            #             htmltools.HTML(div1),
+            #             htmltools.HTML(div2)
+            #         )
+            #     )
+            # )
+            # Save combined HTML to a file
+            with open(histname+"_multiple.html", "w") as f:
+                f.write( fig3d.to_html(full_html=False,include_plotlyjs='cdn'))
+                f.write( fig2d.to_html(full_html=False,include_plotlyjs=False))
+            
             # copy over data into output larcv file
             iolcv.save_entry()
             ioll.go_to(i,True) # reload and save
