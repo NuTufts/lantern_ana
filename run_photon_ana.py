@@ -91,7 +91,7 @@ for i in range(eventTree.GetEntries()):
     #  print("  [",cutname,"] ",cuts_passed[cutname])
     if passesTruthSelection:
       # lost a signal event. record information so we can study it visually
-      recovtx = (0.0,0.0,0.0)
+      recovtx = (0.0,0.0,-100.0)
       if eventTree.foundVertex:
         recovtx = (eventTree.vtxX,eventTree.vtxY,eventTree.vtxZ)
       info_signal_lost = {
@@ -126,13 +126,23 @@ for i in range(eventTree.GetEntries()):
           print(f"true photon: edep=( {pixelList[0]:.2f}, {pixelList[1]:.2f}, {pixelList[2]:.2f})")
 
       
-      if len(failures)>=1:
+      if len(failures)>=50:
         break
     continue
 
   if True:
     continue
 
+with open('bnbnu_missed_truedef_singlephoton.txt','w') as fout:
+  for info in failures:
+    vtx_x = info['recovtx'][0]
+    vtx_y = info['recovtx'][1]
+    vtx_z = info['recovtx'][2]
+    ntracks = info['ntracks']
+    nshowers = info['nshowers']
+    print(f'{info["run"]} {info["subrun"]} {info["event"]} {info["fileid"]} {vtx_x:.2f} {vtx_y:.2f} {vtx_z:.2f} {ntracks} {nshowers}',file=fout)
+sys.exit(0)
+  
 sys.exit(0)
 #   #PURITY - GRAPHING BASED ON TRUTH
   

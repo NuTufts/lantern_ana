@@ -129,7 +129,7 @@ def run_1g1p_reco_selection_cuts( eventTree, classificationThreshold,
             return passes, cuts_passed, recoList, recoTrackList, recoProtonCount
 
     # Cut based on completeness
-    if recoCutCompleteness(eventTree, recoList, recoTrackList)==False:
+    if recoCutCompleteness(eventTree, recoList, recoTrackList, completeness_threshold=0.30)==False:
         cuts_passed["cutShowerCompleteness"] = False
         #passes = False
         if return_on_fail:        

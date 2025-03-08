@@ -1,6 +1,6 @@
 import os,sys
 
-def getRecoPhotonList(ntuple, fiducial, showerE_threshold = 0, tracksize_threshold=0):
+def getRecoPhotonList(ntuple, fiducial, showerE_threshold = 0, tracksize_threshold=0, completeness_threshold=0.3):
   #Creates a list of photons based on the showers in the event
   recoPhotonInfo = []
 
@@ -10,6 +10,8 @@ def getRecoPhotonList(ntuple, fiducial, showerE_threshold = 0, tracksize_thresho
     if showerE_threshold == 0:
       if ntuple.showerClassified[x] == 1:
         if ntuple.showerPID[x] == 22:
+          if ntuple.showerComp[x]<completeness_threshold:
+            continue
           if ( ntuple.showerStartPosX[x] > (fiducial["xMin"] + fiducial["photonWidth"])
                and ntuple.showerStartPosX[x] < (fiducial["xMax"] - fiducial["photonWidth"])
                and ntuple.showerStartPosY[x] > (fiducial["yMin"] + fiducial["photonWidth"])
@@ -19,6 +21,8 @@ def getRecoPhotonList(ntuple, fiducial, showerE_threshold = 0, tracksize_thresho
             accept = True
     elif ntuple.showerRecoE[x] > showerE_threshold:
       if ntuple.showerPID[x] == 22:
+        if ntuple.showerComp[x]<completeness_threshold:
+          continue        
         #Extra check to ensure photons deposit in fiducial volume
         if ( ntuple.showerStartPosX[x] > (fiducial["xMin"] + fiducial["photonWidth"])
              and ntuple.showerStartPosX[x] < (fiducial["xMax"] - fiducial["photonWidth"])
@@ -48,6 +52,9 @@ def getRecoPhotonList(ntuple, fiducial, showerE_threshold = 0, tracksize_thresho
     if tracksize_threshold == 0 or ntuple.trackSize[x]>tracksize_threshold:
       if ntuple.trackClassified[x] == 1:
         if ntuple.trackPID[x] == 22:
+          if ntuple.trackComp[x]<completeness_threshold:
+            continue        
+          
             #Extra check to ensure photons deposit in fiducial volume (with a 5 cm margin of error)
           if (ntuple.trackStartPosX[x] > (fiducial["xMin"] + fiducial["photonWidth"])
               and ntuple.trackStartPosX[x] < (fiducial["xMax"] - fiducial["photonWidth"])
