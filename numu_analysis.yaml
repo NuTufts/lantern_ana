@@ -1,0 +1,50 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  run4b_bnbnu:
+    filename: "/home/twongjirad/working/data/ntuples/v2me06_03_test/lantern_ntuple_mcc9.10_run4b_bnb_nu_overlay_v2me06_03_test.root"
+    ismc: true
+
+# Cut configuration
+cuts:
+  fiducial_cut:
+    width: 10.0
+    applyscc: true
+  has_muon_track:
+    ke_threshold: 50.0
+
+# Producer configuration
+producers:
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: false
+        condense_nuemodes: true
+        condense_numumodes: false
