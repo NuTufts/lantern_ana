@@ -5,7 +5,7 @@ import numpy as np
 import ROOT as rt
 import math
 
-from lantern_photon.helpers.larflowreco_ana_funcs import getCosThetaGravVector
+from lantern_ana.helpers.larflowreco_ana_funcs import getCosThetaGravVector
 
 
 def trueParticleTallies(ntuple):
