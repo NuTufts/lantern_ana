@@ -1,6 +1,6 @@
 import os,sys
-from lantern_photon.cuts import *
-from lantern_photon.cuts.truth_photon_def import truePhotonList
+from lantern_ana.cuts import *
+from lantern_ana.cuts.truth_photon_def import truePhotonList
 
 truthdef_1gamma_category_names = ["vertexFV",
                                   "atLeastOneDetPhoton",

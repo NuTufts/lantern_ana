@@ -1,6 +1,6 @@
 import os,sys
 import numpy as np
-from ROOT as rt
+import ROOT as rt
 
 def fromwall( start, pdir, fiducial_data, eps=1.0e-6 ):
 

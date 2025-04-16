@@ -1,8 +1,6 @@
 from lantern_ana.cuts.cut_factory import register_cut
 from lantern_ana.utils import KE_from_fourmom
 
-from math import abs
-
 def get_true_primary_particle_counts(ntuple,params):
     """
     Count number of each type of true primary particles.

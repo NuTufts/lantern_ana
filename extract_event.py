@@ -10,7 +10,7 @@ from ublarcvapp import ublarcvapp
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-from lantern_photon.helpers.image2d_cropping import crop_around_postion
+from lantern_ana.helpers.image2d_cropping import crop_around_postion
 
 
 if __name__ == "__main__":

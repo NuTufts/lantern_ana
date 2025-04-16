@@ -1,6 +1,6 @@
 import os,sys
-from lantern_photon.cuts import * # the abyss of cuts to clean up and organize
-import lantern_photon.cuts.reco_photon_def as reco_photon_def
+from lantern_ana.cuts import * # the abyss of cuts to clean up and organize
+import lantern_ana.cuts.reco_photon_def as reco_photon_def
 
 def run_1g1p_reco_selection_cuts( eventTree, classificationThreshold,
                                   showerE_threshold, showerFromTrack_sizethreshold,
