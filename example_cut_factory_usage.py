@@ -2,7 +2,7 @@ import os
 import sys
 import argparse
 
-from lantern_ana.SampleDataset import SampleDataset
+from lantern_ana.io.SampleDataset import SampleDataset
 from lantern_ana.cuts import CutFactory
 
 def main( ntuple_name, ntuple_path, event_limit=None ):
