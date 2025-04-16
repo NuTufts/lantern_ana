@@ -5,7 +5,8 @@ class SampleDataset:
     """
     class to represent sample data stored in an ntuple file.
     """
-    def __init__(self, ntuple_path, ismc=False):
+    def __init__(self, name, ntuple_path, ismc=False):
+        self.name = name
         self.ntuple_path = ntuple_path
         print("Loading ntuple data: ",self.ntuple_path)
         self.rfile = rt.TFile(self.ntuple_path,'open')
@@ -27,6 +28,9 @@ class SampleDataset:
 
     def pot(self):
         return self.pot
+
+    def getname(self):
+        return self.name
 
     def load_from_config( config_dict, input_dir_list=None ):
         filepath = config_dict['filename']

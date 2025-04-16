@@ -1,6 +1,10 @@
 import yaml
 import networkx as nx
 from typing import Dict, List, Any, Optional, Set
+from lantern_ana.io.SampleDataset import SampleDataset
+from lantern_ana.producers.producerBaseClass import ProducerBaseClass
+from lantern_ana.producers.producer_factory import ProducerFactory
+import ROOT
 
 class ProducerManager:
     """
@@ -108,22 +112,24 @@ class ProducerManager:
         
         return results
     
-    def process_events(self, sample_name: str, max_events: Optional[int] = None) -> Dict[str, Any]:
+    def process_events(self, dataset: SampleDataset, output_tree: ROOT.TTree, max_events: Optional[int] = None) -> Dict[str, Any]:
         """
         Process all events in a sample.
         
         Args:
-            sample_name: Name of the sample to process
+            sample: Instance of SampleDataset to process producers on
             max_events: Maximum number of events to process (None for all)
             
         Returns:
             Dictionary with summary information about the processing
         """
+
+        sample_name = dataset.getname()
+
         # Get dataset
         if sample_name not in self.data_sources:
             raise ValueError(f"Unknown sample '{sample_name}'")
         
-        dataset = self.data_sources[sample_name]
         ntuple = dataset.ntuple  # Assume ntuple is accessible as in SampleDataset
         
         n_events = ntuple.GetEntries()
@@ -139,6 +145,9 @@ class ProducerManager:
             
             # Process event through all producers
             self.process_event(event_data, {"event_index": i})
+
+            # hack: need to think about this
+            output_tree.Fill()
         
         # Return summary information
         return {

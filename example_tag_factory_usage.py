@@ -3,9 +3,9 @@ import argparse
 from lantern_ana.SampleDataset import SampleDataset
 from lantern_ana.tags import TagFactory
 
-def main( ntuple_path=None, event_limit=None ):
+def main( ntuple_name, ntuple_path, event_limit=None ):
     # Create a sample dataset
-    dataset = SampleDataset(ntuple_path, ismc=True)
+    dataset = SampleDataset(ntuple_name, ntuple_path, ismc=True)
     eventTree = dataset.ntuple
     
     # Create a tag factory
@@ -60,4 +60,4 @@ if __name__ == "__main__":
     parser.add_argument('ntuple_path',help='ntuple file')
     parser.add_argument('--nentries',default=None,type=int,help='Number of entries to run.')
     args = parser.parse_args()
-    main(args.ntuple_path, event_limit=args.nentries)
+    main("ntuple",args.ntuple_path, event_limit=args.nentries)

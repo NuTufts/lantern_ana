@@ -2,6 +2,7 @@ import importlib
 import inspect
 import sys
 import os
+from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from typing import Dict, Type, List, Any
 
 class ProducerFactory:
