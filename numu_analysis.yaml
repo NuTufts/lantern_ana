@@ -14,29 +14,42 @@ datasets:
   run4b_bnbnu:
     filename: "/home/twongjirad/working/data/ntuples/v2me06_03_test/lantern_ntuple_mcc9.10_run4b_bnb_nu_overlay_v2me06_03_test.root"
     ismc: true
+#  run3b_bnbnu:
+#    filename: "/home/twongjirad/working/data/ntuples/dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root"
+#    ismc: true
 
 # Cut configuration
 cuts:
-  fiducial_cut:
-    width: 10.0
-    applyscc: true
-  has_muon_track:
-    ke_threshold: 50.0
+  reco_numu_CCinc:
+    fiducial_cut:
+      width: 10.0
+      applyscc: true
+      usetruevtx: false
+    has_muon_track:
+      ke_threshold: 30.0
+  true_numu_CCinc:
+    part_count_params:
+      muKE: 30.0
+      pKE:  60.0
+      piKE: 30.0
+      gKE: 0.0
+    fv_params:
+      width: 10.0
+      applyscc: false
+      usetruevtx: true
+cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
 
 # Producer configuration
 producers:
   visible_energy:
     type: VisibleEnergyProducer
     config: {}
-  
   muon_properties:
     type: MuonPropertiesProducer
     config: {}
-  
   vertex_properties:
     type: VertexPropertiesProducer
     config: {}
-  
   truth_mode:
     type: TruthModeProducer
     config:
@@ -45,6 +58,14 @@ producers:
         pKE: 0.0
         piKE: 0.0
         gKE: 0.0
-        ignore_gammas: false
+        ignore_gammas: true
         condense_nuemodes: true
         condense_numumodes: false
+  reco_numu_CCinc:
+    # This passes result of reco numu cut to the output tree
+    type: cutResultProducer
+    config: {}
+  true_numu_CCinc:
+    # This passes result of true numu signal cut to the output tree
+    type: cutResultProducer
+    config: {}

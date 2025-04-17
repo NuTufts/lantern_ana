@@ -3,6 +3,7 @@ import os
 import sys
 import argparse
 import yaml
+from array import array
 import ROOT
 from lantern_ana.io.SampleDataset import SampleDataset
 from lantern_ana.cuts.cut_factory import CutFactory
@@ -25,6 +26,9 @@ def main(config_file):
     # Apply cuts from configuration
     for cut_name, cut_params in config.get('cuts', {}).items():
         cut_factory.add_cut(cut_name, cut_params)
+
+    if 'cut_logic' in config:
+        cut_factory.set_cut_logic( config['cut_logic'] )
     
     # Create producer manager
     producer_manager = ProducerManager()
@@ -52,6 +56,19 @@ def main(config_file):
         output_file_path = os.path.join(output_dir, f"{dataset_name}_processed.root")
         output_file = ROOT.TFile(output_file_path, "RECREATE")
         output_tree = ROOT.TTree("numu_cc_tree", "Inclusive NuMu CC Events")
+
+        # need to pass the total pot information for this sample
+        pot_tree = ROOT.TTree("pot_tree","POT for this sample")
+        pot = array('f',[0.0])
+        ismc = array('i',[0])
+        samplename_v = ROOT.vector('string')()
+        pot_tree.Branch("pot",pot,"pot/F")
+        pot_tree.Branch("ismc",ismc,"ismc/I")
+        pot_tree.Branch("samplename_v",samplename_v)
+        pot[0] = dataset.pot
+        ismc[0] = int(dataset.ismc)
+        samplename_v.push_back( dataset_name )
+        pot_tree.Fill()
         
         # Prepare storage in output tree
         producer_manager.prepare_storage(output_tree)
@@ -73,22 +90,27 @@ def main(config_file):
             ntuple.GetEntry(i)
             
             # Apply cuts
-            passes, cut_results = cut_factory.apply_cuts(ntuple)
+            passes, cut_results = cut_factory.apply_cuts(ntuple,return_on_fail=False)
             
             if passes:
                 n_passed += 1
                 
                 # Process with producers
                 event_data = {"gen2ntuple": ntuple}
+                event_data.update(cut_results)
                 producer_manager.process_event(event_data, {"event_index": i})
                 
                 # Fill tree
                 output_tree.Fill()
         
+
+   
+
         print(f"Processed {nentries} events, {n_passed} passed cuts ({n_passed/nentries*100:.2f}%)")
         
         # Write and close output
         output_file.cd()
+        pot_tree.Write()
         output_tree.Write()
         output_file.Close()
         print(f"Results written to {output_file_path}")

@@ -73,6 +73,10 @@ class ProducerManager:
         
         # Check for cycles
         if not nx.is_directed_acyclic_graph(graph):
+            print("================================================")
+            print("Circular dependency detected in producer configuration")
+            self.print_dependency_graph()
+            print("-------------------------------------------------")
             raise ValueError("Circular dependency detected in producer configuration")
         
         # Get topological sort (execution order)

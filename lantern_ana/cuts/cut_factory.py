@@ -115,12 +115,11 @@ class CutFactory:
             
             # Check if we should continue
             if self.cut_logic is None:
-                # no logic expression provided, so we assume cuts are combined by AND
-                if not cut_result and return_on_fail:
+                # no logic expression provided, so we assume ALL cuts are combined by AND
+                if not cut_result:
                     passes = False
+                if not passes and return_on_fail:
                     break
-                elif not cut_result:
-                    passes = False
             else:
                 cut_expression = cut_expression.replace("{%s}"%(name),str(cut_result))
         
