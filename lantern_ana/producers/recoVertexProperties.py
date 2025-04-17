@@ -11,6 +11,9 @@ from lantern_ana.tags.tag_factory import TagFactory
 class VertexPropertiesProducer(ProducerBaseClass):
     """
     Producer that extracts vertex properties.
+
+    params:
+    - apply_scc: apply space charge 
     """
     
     def __init__(self, name, config):

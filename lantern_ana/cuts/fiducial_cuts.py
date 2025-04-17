@@ -11,6 +11,7 @@ def fiducial_cut(ntuple, params):
     - params: Dictionary with optional parameters:
         - 'width': Margin from detector edges (default: 10 cm)
         - 'applyscc': Apply Space Charge Correction (default: True)
+        - 'usetruevtx': Use true vertex variable
         
     Returns:
     - True if the vertex is inside the fiducial volume, False otherwise
@@ -18,12 +19,19 @@ def fiducial_cut(ntuple, params):
     # Default width
     width = params.get('width', 10.0)
     applyscc = params.get('applyscc',True)
-    
-    # Check if we have a reconstructed vertex
-    if not hasattr(ntuple, 'foundVertex') or ntuple.foundVertex != 1:
-        return False
-        
-    pos = (ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
+    usetruevtx = params.get('usetruevtx',False)
+
+    if not usetruevtx:
+        # Check if we have a reconstructed vertex
+        if not hasattr(ntuple, 'foundVertex') or ntuple.foundVertex != 1:
+            return False
+            
+        pos = (ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
+    else:
+        # Check FV requirement using true vtx
+        pos = (ntuple.trueVtxX, ntuple.trueVtxY, ntuple.trueVtxZ)
+        #print("use true vtx: ",pos)
+
     # Detector boundaries
     if not is_inside_tpc(pos):
         return False

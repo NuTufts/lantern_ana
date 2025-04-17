@@ -26,6 +26,7 @@ def get_true_primary_particle_counts(ntuple,params):
     for i in range( ntuple.nTrueSimParts ):
         pdg = ntuple.trueSimPartPDG[i]
         KEmin = thresholds.get(abs(pdg),xKE)
+        #print('  ',pdg,': ',ntuple.trueSimPartE[i])
         ke = KE_from_fourmom( ntuple.trueSimPartPx[i], ntuple.trueSimPartPy[i], 
                               ntuple.trueSimPartPz[i], ntuple.trueSimPartE[i] )
         if ke<KEmin:

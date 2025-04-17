@@ -26,6 +26,7 @@ class CutFactory:
     def __init__(self):
         self.cuts = []
         self.auto_discover_cuts()
+        self.cut_logic = None
         
     def auto_discover_cuts(self):
         """
@@ -77,6 +78,10 @@ class CutFactory:
             'function': _REGISTERED_CUTS[name],
             'params': params
         })
+
+    def set_cut_logic(self,logic_expression : str) -> None:
+        assert(type(logic_expression) is str)
+        self.cut_logic = logic_expression
         
     def apply_cuts(self, ntuple, return_on_fail=True):
         """
@@ -92,7 +97,13 @@ class CutFactory:
         """
         results = {}
         passes = True
-        
+
+        self.check_logic_expression()
+
+        cut_expression = ""
+        if self.cut_logic is not None:
+            cut_expression += self.cut_logic
+
         for cut in self.cuts:
             name = cut['name']
             func = cut['function']
@@ -103,11 +114,39 @@ class CutFactory:
             results[name] = cut_result
             
             # Check if we should continue
-            if not cut_result and return_on_fail:
-                passes = False
-                break
-                
-            if not cut_result:
-                passes = False
+            if self.cut_logic is None:
+                # no logic expression provided, so we assume cuts are combined by AND
+                if not cut_result and return_on_fail:
+                    passes = False
+                    break
+                elif not cut_result:
+                    passes = False
+            else:
+                cut_expression = cut_expression.replace("{%s}"%(name),str(cut_result))
         
+        if self.cut_logic is None:
+            return passes, results
+
+        # eval expression
+        passes = eval(cut_expression)
+        #print(cut_expression," --> ",passes)
+
         return passes, results
+
+
+    def check_logic_expression(self):
+        """
+        If a cut logic expression has been provided, we check that we can find the names of 
+        all the cuts in it.
+        """
+        if self.cut_logic is None:
+            return True
+        missing = []
+        for cut in self.cuts:
+            if cut['name'] not in self.cut_logic:
+                missing.append(cut['name'])
+        if len(missing)>0:
+            print("Cut logic expression does not use certain cuts: ")
+            for cutname in missing:
+                print("  ",cutname)
+            raise ValueError("Missing Error")

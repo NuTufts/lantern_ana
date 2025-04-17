@@ -24,7 +24,7 @@ def tag_truth_finalstate_mode(ntuple,params):
     np  = min(counts.get(2212,0),2)
     npi = min(counts.get(211,0)+counts.get(-211,0),2)
     ng  = counts.get(22,0)
-    nx  = counts.get(0,0)
+    nx  = min(counts.get(0,0),1)
     condense_ncmodes = params.get('condense_ncmodes',True)
     condense_nuemodes = params.get('condense_nuemodes',True)
     condense_numumodes = params.get('condense_numumodes',False)
