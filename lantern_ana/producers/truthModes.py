@@ -45,4 +45,4 @@ class TruthModeProducer(ProducerBaseClass):
         else:
             self.truth_mode.assign("unknown")
         
-        return self.truth_mode
+        return {"mode":self.truth_mode}

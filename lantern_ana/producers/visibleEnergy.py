@@ -41,4 +41,4 @@ class VisibleEnergyProducer(ProducerBaseClass):
             if ntuple.showerIsSecondary[i] == 0:  # Only primary showers
                 self.total_visible_energy[0] += ntuple.showerRecoE[i]
         
-        return self.total_visible_energy[0]
+        return {"evis":self.total_visible_energy[0]}

@@ -104,8 +104,6 @@ def main(config_file):
                 output_tree.Fill()
         
 
-   
-
         print(f"Processed {nentries} events, {n_passed} passed cuts ({n_passed/nentries*100:.2f}%)")
         
         # Write and close output
@@ -113,6 +111,11 @@ def main(config_file):
         pot_tree.Write()
         output_tree.Write()
         output_file.Close()
+
+        # Write histogram producer
+        for prodname in ['evisStacked_reco','evisStacked_truesig','evisStacked_both']:
+            producer_manager.producers[prodname].finalize()
+
         print(f"Results written to {output_file_path}")
 
 if __name__ == "__main__":

@@ -69,3 +69,57 @@ producers:
     # This passes result of true numu signal cut to the output tree
     type: cutResultProducer
     config: {}
+  evisStacked_reco:
+    type: StackedHistProducer
+    config:
+      plotvar_name: "visible_energy"
+      plotvar_key: "evis"
+      tagvar_name: "truth_mode"
+      tagvar_key: "mode"
+      pass_cutresults: ['reco_numu_CCinc']
+      nbins: 50
+      xmin: 0.0
+      xmax: 3000.0
+      title: "Reco Visible Energy; visible energy (MeV)"
+      split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+      numuCC0p0pi0x: ['numuCC0p0pi0x']
+      numuCC1p0pi0x: ['numuCC1p0pi0x']
+      numuCCMp0pi0x: ['numuCCMp0pi0x']
+      NC: ['numuNC','nueNC']
+      nueCC: ['nueCC']
+  evisStacked_truesig:
+    type: StackedHistProducer
+    config:
+      plotvar_name: "visible_energy"
+      plotvar_key: "evis"
+      tagvar_name: "truth_mode"
+      tagvar_key: "mode"
+      pass_cutresults: ['true_numu_CCinc']
+      nbins: 50
+      xmin: 0.0
+      xmax: 3000.0
+      title: "Reco Visible Energy; visible energy (MeV)"
+      split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+      numuCC0p0pi0x: ['numuCC0p0pi0x']
+      numuCC1p0pi0x: ['numuCC1p0pi0x']
+      numuCCMp0pi0x: ['numuCCMp0pi0x']
+      NC: ['numuNC','nueNC']
+      nueCC: ['nueCC']
+  evisStacked_both:
+    type: StackedHistProducer
+    config:
+      plotvar_name: "visible_energy"
+      plotvar_key: "evis"
+      tagvar_name: "truth_mode"
+      tagvar_key: "mode"
+      pass_cutresults: ['true_numu_CCinc','reco_numu_CCinc']
+      nbins: 50
+      xmin: 0.0
+      xmax: 3000.0
+      title: "Reco Visible Energy; visible energy (MeV)"
+      split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+      numuCC0p0pi0x: ['numuCC0p0pi0x']
+      numuCC1p0pi0x: ['numuCC1p0pi0x']
+      numuCCMp0pi0x: ['numuCCMp0pi0x']
+      NC: ['numuNC','nueNC']
+      nueCC: ['nueCC']
