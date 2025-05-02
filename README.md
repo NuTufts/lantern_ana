@@ -11,6 +11,10 @@ For information on the ROOT tree within the ntuple file see the [gen2ntuple](htt
 
 We also aim to provide tools to look at quantities from the upstream reconstruction chain or low-level truth information.
 
+# Documentation
+
+For a description of the framework see this [documentation file](lantern_ana_docs.md)
+
 # Getting Setup
 
 The dependencies of this package are:
