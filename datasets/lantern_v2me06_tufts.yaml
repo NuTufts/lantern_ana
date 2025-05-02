@@ -1,0 +1,38 @@
+# This dataset is the one used for the Neutrino 2024 public note and the PRD LANTERN paper
+
+# Dataset configuration
+datasets:
+  run1_bnb_nu_overlay:
+    type: lantern_ntuple
+    tree: EventTree
+    filepaths:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me05_ntuple_v0_mcc9_v29e_dl_run3b_bnb_nu_overlay_nocrtremerge.root
+    ismc: true
+  run1_dirt_overlay:
+    type: lantern_ntuple
+    tree: EventTree
+    ismc: true    
+    filepaths:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me06_ntuple_v1_mcc9_v13_overlay_dirt_run1.root
+  run1_nue:
+    type: lantern_ntuple
+    tree: EventTree
+    ismc: true    
+    filepaths:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
+  run1_extbnb:
+    type: lantern_ntuple
+    tree: EventTree
+    nspills: 73174004
+    filepaths:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C2_extbnb.root     
+  run1_opendata:
+    type: lantern_ntuple
+    tree: EventTree
+    ismc: true
+    nspills: 9764047
+    pot: 4.397e+19
+    filepaths:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
+
