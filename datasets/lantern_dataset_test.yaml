@@ -1,0 +1,11 @@
+datasets:  
+  run1_extbnb:
+    type: RootDataset
+    tree: EventTree
+    nspills: 73174004
+    folders:
+     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+     - /home/twongjirad/working/data/ntuples/
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C2_extbnb.root     
