@@ -89,3 +89,13 @@ One way to test everything went well is to quickly load the `lantern_ana` module
 python3 -c "import lantern_ana"
 ```
 
+To exit the container, type `exit`.
+
+Note: after you first enter the container, it is sometimes to useful to start a new shell inside the container by typing
+
+```
+bash
+```
+
+This will allow you to exit this shell (in case you want to start a new one) by type `exit` without also exiting the container.
+
