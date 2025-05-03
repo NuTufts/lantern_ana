@@ -18,10 +18,17 @@ class VertexPropertiesProducer(ProducerBaseClass):
     
     def __init__(self, name, config):
         super().__init__(name, config)
-        self.vertex_x = array('f', [0.0])
-        self.vertex_y = array('f', [0.0])
-        self.vertex_z = array('f', [0.0])
+        self.vertex_x = array('f', [-999.0])
+        self.vertex_y = array('f', [-999.0])
+        self.vertex_z = array('f', [-999.0])
         self.vertex_score = array('f', [0.0])
+
+    def setDefaultValues(self):
+        super().setDefaultValues()
+        self.vertex_x[0] = -999.0
+        self.vertex_y[0] = -999.0
+        self.vertex_z[0] = -999.0
+        self.vertex_score[0] = 0.0
         
     def prepareStorage(self, output):
         """Set up branches in the output ROOT TTree."""

@@ -115,6 +115,16 @@ class ProducerManager:
             results[name] = result
         
         return results
+
+    def set_default_values(self):
+        """
+        cycle through producer variables and set to default values.
+        """
+        # Process each producer in order
+        for name in self.execution_order:
+            producer = self.producers[name]
+            producer.setDefaultValues()
+        return
     
     def process_events(self, dataset: SampleDataset, output_tree: ROOT.TTree, max_events: Optional[int] = None) -> Dict[str, Any]:
         """

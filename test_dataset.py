@@ -16,7 +16,7 @@ import ROOT
 from array import array
 
 # Import from lantern_ana package
-from lantern_ana.io.DatasetFactory import DatasetFactory
+from lantern_ana.io.dataset_factory import DatasetFactory
 
 test_config = 'datasets/lantern_dataset_test.yaml'
 

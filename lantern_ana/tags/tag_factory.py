@@ -25,9 +25,10 @@ class TagFactory:
     """
     def __init__(self):
         self.tags = []
-        self.auto_discover_tags()
+        TagFactory.auto_discover_tags()
         
-    def auto_discover_tags(self):
+    @classmethod
+    def auto_discover_tags(cls):
         """
         Automatically discover and import all tag modules in the tags directory.
         This allows for automatic registration of decorated tag functions.
@@ -50,7 +51,8 @@ class TagFactory:
             except ImportError as e:
                 print(f"Warning: Could not import tag module {module_name}: {e}")
     
-    def list_available_tags(self):
+    @classmethod
+    def list_available_tags(cls):
         """
         Return a list of all registered tag names.
         """
@@ -66,7 +68,7 @@ class TagFactory:
         - params: Dictionary with parameters to control the tag behavior
         """
         if name not in _REGISTERED_TAGS:
-            available_tags = ", ".join(self.list_available_tags())
+            available_tags = ", ".join(TagFactory.list_available_tags())
             raise ValueError(f"Tag '{name}' is not registered. Available tags: {available_tags}")
             
         if params is None:

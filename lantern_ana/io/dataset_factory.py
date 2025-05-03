@@ -1,4 +1,5 @@
 import os
+import sys
 import importlib
 import yaml
 from .dataset import Dataset
@@ -44,7 +45,6 @@ class DatasetFactory:
         # Add package parent directory to path if not already there
         parent_dir = os.path.dirname(abs_path)
         if parent_dir not in sys.path:
-            import sys
             sys.path.insert(0, parent_dir)
         
         # Import all Python modules in the package
@@ -105,9 +105,11 @@ class DatasetFactory:
             config = yaml.safe_load(f)
             
         datasets = {}
-        dataset_config = config.get('datasets', {})
-        folders = dataset_config.get('folders',[])
-        for dataset_name, dataset_config in dataset_config.items():
+        datasets_config = config.get('datasets', {})
+        folders = datasets_config.get('folders',[])
+        for dataset_name, dataset_config in datasets_config.items():
+            if dataset_name in ['folders']:
+                continue
             if 'folders' not in dataset_config:
                 dataset_config['folders'] = folders
             datasets[dataset_name] = cls.create_from_config(dataset_name, dataset_config)

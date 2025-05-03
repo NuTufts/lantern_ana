@@ -11,12 +11,15 @@ print_dependency_graph: true
 
 # Dataset configuration
 datasets:
-  run4b_bnbnu:
-    filename: "/home/twongjirad/working/data/ntuples/v2me06_03_test/lantern_ntuple_mcc9.10_run4b_bnb_nu_overlay_v2me06_03_test.root"
+  folders:
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /home/twongjirad/working/data/ntuples/
+  run3_bnb_nu_overlay_CV:
+    type: RootDataset
+    tree: EventTree
     ismc: true
-#  run3b_bnbnu:
-#    filename: "/home/twongjirad/working/data/ntuples/dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root"
-#    ismc: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root
 
 # Cut configuration
 cuts:

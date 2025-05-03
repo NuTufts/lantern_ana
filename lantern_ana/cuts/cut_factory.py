@@ -28,7 +28,8 @@ class CutFactory:
         self.auto_discover_cuts()
         self.cut_logic = None
         
-    def auto_discover_cuts(self):
+    @classmethod
+    def auto_discover_cuts(cls):
         """
         Automatically discover and import all cut modules in the cuts directory.
         This allows for automatic registration of decorated cut functions.
@@ -51,7 +52,8 @@ class CutFactory:
             except ImportError as e:
                 print(f"Warning: Could not import cut module {module_name}: {e}")
     
-    def list_available_cuts(self):
+    @classmethod
+    def list_available_cuts(cls):
         """
         Return a list of all registered cut names.
         """

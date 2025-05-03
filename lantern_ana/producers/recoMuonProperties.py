@@ -23,6 +23,12 @@ class MuonPropertiesProducer(ProducerBaseClass):
         output.Branch(f"{self.name}_angle", self.muon_angle, f"{self.name}_angle/F")
         output.Branch(f"{self.name}_energy", self.muon_energy, f"{self.name}_energy/F")
         output.Branch(f"{self.name}_pid_score", self.muon_pid_score, f"{self.name}_pid_score/F")
+
+    def setDefaultValues(self):
+        self.muon_angle[0] = -1.0
+        self.muon_energy[0] = -1.0
+        self.muon_pid_score[0] = -1.0
+        return 
     
     def requiredInputs(self):
         """Specify required inputs."""

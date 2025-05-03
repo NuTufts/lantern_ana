@@ -1,2 +1,2 @@
-from .DatasetFactory import *
+from .dataset_factory import *
 from .RootDataset import *

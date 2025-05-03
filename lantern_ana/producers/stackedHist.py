@@ -69,6 +69,9 @@ class StackedHistProducer(ProducerBaseClass):
         """No tree branches needed for visualization producer."""
         pass
     
+    def setDefaultValues(self):
+        return super().setDefaultValues()
+
     def productType(self):
         """Return the type of product."""
         return dict

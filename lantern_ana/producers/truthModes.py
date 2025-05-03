@@ -24,6 +24,11 @@ class TruthModeProducer(ProducerBaseClass):
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
         output.Branch(f"{self.name}", self.truth_mode)
+
+    def setDefaultValues(self):
+        super().setDefaultValues()
+        self.truth_mode.assign("unknown")
+        return
     
     def requiredInputs(self):
         """Specify required inputs."""

@@ -32,6 +32,13 @@ class TrackEnergyProducer(ProducerBaseClass):
         output.Branch(f"{self.name}_total_energy", self.total_energy, f"{self.name}_total_energy/F")
         output.Branch(f"{self.name}_n_tracks", self.n_tracks, f"{self.name}_n_tracks/I")
         output.Branch(f"{self.name}_energy_array", self._energy_array, f"{self.name}_energy_array[{self.max_tracks}]/F")
+
+    def setDefaultValues(self):
+        super().setDefaultValues()
+        self.total_energy[0] = 0.0
+        self.n_tracks[0] = 0
+        for i in range(self.max_tracks):
+            self._energy_array[i] = 0.0
     
     def productType(self) -> type:
         """Return the type of product (a dictionary in this case)."""

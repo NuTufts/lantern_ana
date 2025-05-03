@@ -14,6 +14,10 @@ class cutResultProducer(ProducerBaseClass):
     def __init__(self, name, config):
         super().__init__(name, config)
         self.cut_result = array('i', [0])
+
+    def setDefaultValues(self):
+        super().setDefaultValues()
+        self.cut_result[0] = 0
         
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""

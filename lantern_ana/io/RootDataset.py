@@ -1,6 +1,6 @@
 import os
 from .dataset import Dataset
-from .DatasetFactory import register_dataset
+from .dataset_factory import register_dataset
 from typing import Dict, Any, List, Optional, Type
 
 
@@ -31,8 +31,8 @@ class RootDataset(Dataset):
         self._ismc = config.get('ismc', False)
         self._tree = None
         self._num_entries = 0
-        self._pot = None
-        self._nspills = None
+        self._pot = 0.0
+        self._nspills = 0.0
         self._added_filepaths = []
         
     def initialize(self) -> None:
@@ -59,17 +59,17 @@ class RootDataset(Dataset):
             print(f'Adding to dataset[{self._tree_name}] to Tree[{self._tree_name}]: {xfpath}')
             self._tree.Add(xfpath)
             self._added_filepaths.append(xfpath)
+
+            # Get POT information for MC datasets
+            if self._ismc:
+                self._rfile = ROOT.TFile(xfpath)
+                pot_tree = self._rfile.Get("potTree")
+                if pot_tree:
+                    for i in range(pot_tree.GetEntries()):
+                        pot_tree.GetEntry(i)
+                        self._pot += pot_tree.totGoodPOT
            
-        self._num_entries = self._tree.GetEntries()
-        
-        # Get POT information for MC datasets
-        if self._ismc:
-            pot_tree = self._rfile.Get("potTree")
-            if pot_tree:
-                for i in range(pot_tree.GetEntries()):
-                    pot_tree.GetEntry(i)
-                    self._pot += pot_tree.totGoodPOT
-                    
+        self._num_entries = self._tree.GetEntries()                    
         self._initialized = True
 
     def find_file_in_folders(self, filename, folder_list):
@@ -159,3 +159,24 @@ class RootDataset(Dataset):
             self.initialize()
             
         return self._pot
+
+    @property
+    def nspills(self) -> float:
+        """
+        Get the number of spills for this dataset.
+        Only relevant for non-MC datasets.
+        
+        Returns:
+            nspills value
+        """
+        if not self._initialized:
+            self.initialize()
+            
+        return self._nspills
+
+    @property
+    def ismc(self) -> bool:
+        """
+        Get flag indicating if dataset is from MonteCarlo, i.e. simulated data
+        """
+        return self._ismc

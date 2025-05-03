@@ -15,6 +15,10 @@ class VisibleEnergyProducer(ProducerBaseClass):
     def __init__(self, name, config):
         super().__init__(name, config)
         self.total_visible_energy = array('f', [0.0])
+
+    def setDefaultValues(self):
+        super().setDefaultValues()
+        self.total_visible_energy[0] = 0.0
         
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""

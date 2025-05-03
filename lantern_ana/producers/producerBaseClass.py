@@ -33,6 +33,13 @@ class ProducerBaseClass(ABC):
             output: The output storage interface (e.g., a ROOT TTree)
         """
         pass
+
+    @abstractmethod
+    def setDefaultValues(self):
+        """
+        Set the default values for the variables we are making
+        """
+        pass
     
     def productType(self) -> Type:
         """
@@ -45,7 +52,7 @@ class ProducerBaseClass(ABC):
     
     def requiredInputs(self) -> List[str]:
         """
-        Get a list of required input producer names.
+        Get a list of required input producer names and/or source dataset.
         
         Returns:
             List of names of producers whose outputs are required by this producer

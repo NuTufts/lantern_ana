@@ -38,20 +38,29 @@ class LanternAna:
         Args:
             config_file: Path to YAML configuration file
             log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+        Configuration Params:
+            output_dir: Path where output ROOT files are saved. {default: '.'}
+            filter_events: If True, do not save events that fail cuts. {default: False}
         """
-        # Set up logging
-        self._setup_logging(log_level)
-        self.logger = logging.getLogger("LanternAna")
-        
+
         # Load configuration
         self.config_file = config_file
-        self.logger.info(f"Loading configuration from {config_file}")
         with open(config_file, 'r') as f:
             self.config = yaml.safe_load(f)
-        
+
         # Create output directory
         self.output_dir = self.config.get('output_dir', '.')
         os.makedirs(self.output_dir, exist_ok=True)
+        
+        # Set up logging
+        self._setup_logging(log_level)
+        self.logger = logging.getLogger("LanternAna")
+
+        self.logger.info(f"Loading configuration from {config_file}")
+
+        # Do we filter events?
+        self._filter_events = self.config.get('filter_events',False)
         
         # Initialize components
         self._discover_components()
@@ -106,11 +115,11 @@ class LanternAna:
         # Auto-discover cuts, producers, and dataset types
         CutFactory.auto_discover_cuts()
         ProducerFactory.discover_producers("lantern_ana/producers")
-        DatasetFactory.discover_datasets("lantern_ana/datasets")
+        DatasetFactory.discover_datasets("lantern_ana/io")
         TagFactory.auto_discover_tags()
         
-        self.logger.info(f"Found {len(CutFactory._REGISTERED_CUTS)} cuts")
-        self.logger.info(f"Found {len(ProducerFactory._producers)} producers")
+        self.logger.info(f"Found {len(CutFactory.list_available_cuts())} cuts")
+        self.logger.info(f"Found {len(ProducerFactory.list_producers())} producers")
         self.logger.info(f"Found {len(DatasetFactory.list_registered_datasets())} dataset types")
         self.logger.info(f"Found {len(TagFactory.list_available_tags())} tags")
     
@@ -145,7 +154,7 @@ class LanternAna:
         self.logger.info("Loading datasets...")
         
         # Create datasets from configuration
-        self.datasets = DatasetFactory.create_datasets_from_yaml(self.config_file)
+        self.datasets = DatasetFactory.create_from_yaml(self.config_file)
         
         for name, dataset in self.datasets.items():
             dataset.initialize()
@@ -201,15 +210,18 @@ class LanternAna:
         output_tree = ROOT.TTree("analysis_tree", "Processed Events")
         
         # Create POT tree for MC datasets
-        pot_tree = ROOT.TTree("pot_tree", "POT Information")
+        pot_tree = ROOT.TTree("livetime_tree", "POT and nspills Information")
         pot = array('f', [0.0])
+        nspills = array('f',[0.0])
         ismc = array('i', [0])
         pot_tree.Branch("pot", pot, "pot/F")
+        pot_tree.Branch("nspills", nspills, "nspills/F")
         pot_tree.Branch("ismc", ismc, "ismc/I")
         
         # Set POT information
-        pot[0] = dataset.pot
         ismc[0] = 1 if dataset.ismc else 0
+        pot[0] = dataset.pot
+        nspills[0] = dataset.nspills
         pot_tree.Fill()
         
         # Prepare storage for producers
@@ -286,6 +298,9 @@ class LanternAna:
                 output_tree.Fill()
             else:
                 self.stats[dataset_name]['failed'] += 1
+                if not self._filter_events:
+                    self.producer_manager.set_default_values()
+                    output_tree.Fill()
         
         # End timer
         end_time = time.time()
@@ -346,7 +361,7 @@ class LanternAna:
         
         self.logger.info(f"Statistics saved to {output_file}")
 
-if __name__ == "__main__":
+def run_lantern_ana():
     import argparse
     
     parser = argparse.ArgumentParser(description="Run Lantern Analysis")
@@ -366,3 +381,6 @@ if __name__ == "__main__":
     # Save statistics
     stats_file = os.path.join(analysis.output_dir, 'statistics.yaml')
     analysis.save_statistics(stats_file)
+
+if __name__=="__main__":
+    run_lantern_ana()
