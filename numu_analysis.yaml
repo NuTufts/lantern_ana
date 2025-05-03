@@ -4,7 +4,10 @@
 output_dir: "./output"
 
 # Maximum events to process (set to -1 for all events)
-max_events: -1
+max_events: 100
+
+# Filter out failed events from output tree
+filter_events: True
 
 # Print producer dependency graph
 print_dependency_graph: true

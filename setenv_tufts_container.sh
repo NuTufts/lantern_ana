@@ -3,5 +3,6 @@
 source /cluster/home/lantern_scripts/setup_lantern_container.sh
 
 LANTERN_ANA_REPO_DIR=$PWD
-#echo ${LANTERN_ANA_REPO_DIR}
-export PYTHONPATH=${LANTERN_ANA_REPO_DIR}:${PYTHONPATH}
+LANTERN_ANA_BIN_DIR=${LANTERN_ANA_REPO_DIR}/bin
+[[ ":$PYTHONPATH:" != *":${LANTERN_ANA_REPO_DIR}:"* ]] && export PYTHONPATH="${LANTERN_ANA_REPO_DIR}:${PYTHONPATH}"
+[[ ":$PATH:" != *":${LANTERN_ANA_BIN_DIR}:"* ]] && export PATH="${LANTERN_ANA_BIN_DIR}:${PATH}"
