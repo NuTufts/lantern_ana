@@ -38,6 +38,10 @@ class StackedHistProducer(ProducerBaseClass):
         self.xmax  = config["xmax"]
         self.tagvar_name = config["tagvar_name"]
         self.tagvar_key  = config["tagvar_key"]
+        self.weight_name = config.get("weight_name",None)
+        self.weight_key  = config.get("weight_key",None)
+        if self.weight_name is not None and self.weight_key is None:
+            raise ValueError("Must specify 'weight_key' in config if a weighting variable given (by parameter 'weight_name')")
         self.hist_title = config.get("title","")
         self.splitvars = config.get("split_vars",[])
         if type(self.splitvars) is not list or len(self.splitvars)==0:
@@ -78,7 +82,10 @@ class StackedHistProducer(ProducerBaseClass):
     
     def requiredInputs(self):
         """Specify required inputs."""
-        return ["gen2ntuple", self.plotvar_name, self.tagvar_name]+self.pass_cutresults
+        inputs = ["gen2ntuple", self.plotvar_name, self.tagvar_name]+self.pass_cutresults
+        if self.weight_name is not None:
+            inputs.append( self.weight_name )
+        return inputs
     
     def processEvent(self, data, params):
         """Fill histograms with event data."""
@@ -99,6 +106,11 @@ class StackedHistProducer(ProducerBaseClass):
         if not pass_to_fill:
             return {'filledhist':False,'foundcat':False}
 
+        # get weight
+        weight = 1.0
+        if self.weight_name is not None and self.weight_key:
+            weight = data.get(self.weight_name,1.0).get(self.weight_key)
+        
         # search for category are we tagged into, and if found, fill histogram
         foundcat = False
         for catname in self.splitvars:

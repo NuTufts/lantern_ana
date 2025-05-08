@@ -37,7 +37,7 @@ class ProducerBaseClass(ABC):
     @abstractmethod
     def setDefaultValues(self):
         """
-        Set the default values for the variables we are making
+        Set the default values for the variables we are making.
         """
         pass
     
