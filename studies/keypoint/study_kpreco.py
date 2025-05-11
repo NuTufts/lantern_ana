@@ -21,21 +21,29 @@ def prepare_hits( iolcv, ioll, input_spacepoint_tree="larmatch" ):
 
     return 0
 
-def get_data_dict_from_keypointreco( kpreco ):
+def get_data_dict_from_keypointreco( kpreco, iolcv ):
 
     # get the keypoint data
     npts = kpreco.output_pt_v.size()
     kppos = np.zeros( (npts,3) )
     kpavepos = np.zeros( (npts,3) )
+    kpmaxpos = np.zeros( (npts,3) )
     kpmaxscore = np.zeros( npts )
     kpavescore = np.zeros( npts )
     kpnpts = np.zeros( npts, dtype=np.int64 )
     kptype = np.zeros( npts, dtype=np.int64 )
+
+    # for cosmic
+    evimg = iolcv.get_data( larcv.kProductImage2D, "thrumu" )
+    kp_thrumu_pixsum  = np.zeros( (npts,3) )
+    kp_thrumu_nplanes = np.zeros( npts, dtype=np.int64 )
+    
     for ikp in range( npts ):
         kpcluster = kpreco.output_pt_v.at(ikp)
         for v in range(3):
             kppos[ikp,v] = kpcluster.center_pt_v.at(v)
             kpavepos[ikp,v] = kpcluster.center_avg_pt_v.at(v)
+            kpmaxpos[ikp,v] = kpcluster.max_pt_v.at(v)
         kpmaxscore[ikp] = kpcluster.max_score
         kptype[ikp] = kpcluster._cluster_type
 
@@ -64,16 +72,29 @@ def get_data_dict_from_keypointreco( kpreco ):
         else:
             pass
 
+        xyz = std.vector("float")(3)
+        for v in range(3):
+            xyz[v] = kpmaxpos[ikp,v]
+        nplanes_thrumu = 0
+        for p in range(3):
+            thrumu_pixsum = ptprojection.getPixelSumAroundProjPoint( xyz, evimg.as_vector().at(p), 2, 10.0 )
+            if thrumu_pixsum>20.0:
+                nplanes_thrumu += 1
+            kp_thrumu_pixsum[ikp,p] = thrumu_pixsum
+        kp_thrumu_nplanes[ikp] = nplanes_thrumu
         
     return {"num_keypoints":npts,
             "pos_fitted":kppos,
             "pos_ave":kpavepos,
+            "pos_max":kpmaxpos,
             "maxscore":kpmaxscore,
             "avescore":kpavescore,
             "nclusterpts":kpnpts,
+            "thrumu_nplanes":kp_thrumu_nplanes,
+            "thrumu_pixsum":kp_thrumu_pixsum,
             "type":kptype}
     
-def reco_nu_keypoints( ioll, _kpreco_nu, input_spacepoint_tree="taggerfilterhit" ):
+def reco_nu_keypoints( ioll, iolcv, _kpreco_nu, input_spacepoint_tree="taggerfilterhit" ):
     _kpreco_nu.clear_output()
     _kpreco_nu.set_verbosity( larcv.msg.kNORMAL )
     _kpreco_nu.set_input_larmatch_tree_name( input_spacepoint_tree )
@@ -81,22 +102,22 @@ def reco_nu_keypoints( ioll, _kpreco_nu, input_spacepoint_tree="taggerfilterhit"
     _kpreco_nu.set_max_dbscan_dist( 0.7 )
     _kpreco_nu.set_larmatch_threshold( 0.5 )
 
-    _kpreco_nu.set_min_cluster_size(   20, 0 )
+    _kpreco_nu.set_min_cluster_size(   10, 0 )
     _kpreco_nu.set_keypoint_threshold( 0.2, 0 )
     
-    _kpreco_nu.set_min_cluster_size(   10, 1 )
-    _kpreco_nu.set_keypoint_threshold( 0.2, 1 )
+    #_kpreco_nu.set_min_cluster_size(   10, 1 )
+    #_kpreco_nu.set_keypoint_threshold( 0.2, 1 )
 
     _kpreco_nu.set_output_tree_name( "keypoint" )
     _kpreco_nu.set_keypoint_type( 0 ) #larflow.kNuVertex
     _kpreco_nu.set_lfhit_score_index( 17 )
     _kpreco_nu.process( ioll )
 
-    dataout = get_data_dict_from_keypointreco( _kpreco_nu )
+    dataout = get_data_dict_from_keypointreco( _kpreco_nu, iolcv )
     return dataout
         
 
-def reco_shower_keypoints( ioll, _kpreco_shower, input_spacepoint_tree="taggerfilterhit" ):
+def reco_shower_keypoints( ioll, iolcv, _kpreco_shower, input_spacepoint_tree="taggerfilterhit" ):
 
     # neutrino interaction shower
     _kpreco_shower.clear_output()
@@ -108,8 +129,8 @@ def reco_shower_keypoints( ioll, _kpreco_shower, input_spacepoint_tree="taggerfi
     
     _kpreco_shower.set_min_cluster_size(   10, 0 )
     _kpreco_shower.set_keypoint_threshold( 0.2, 0 )
-    _kpreco_shower.set_min_cluster_size(   10, 1 )    
-    _kpreco_shower.set_keypoint_threshold( 0.2, 1 )
+    #_kpreco_shower.set_min_cluster_size(   10, 1 )    
+    #_kpreco_shower.set_keypoint_threshold( 0.2, 1 )
     
     _kpreco_shower.set_keypoint_type( 3 )
     _kpreco_shower.set_lfhit_score_index( 20 ) # // (v2 larmatch-minkowski network nu-shower-score index in hit)
@@ -127,10 +148,10 @@ def reco_shower_keypoints( ioll, _kpreco_shower, input_spacepoint_tree="taggerfi
     _kpreco_shower.set_lfhit_score_index( 22 ) # // (v2 larmatch-minkowski network delta-shower-score index in hit)
     _kpreco_shower.process( ioll )
 
-    dataout = get_data_dict_from_keypointreco( _kpreco_shower )
+    dataout = get_data_dict_from_keypointreco( _kpreco_shower, iolcv )
     return dataout
 
-def reco_track_keypoints( ioll, _kpreco_track, input_spacepoint_tree="taggerfilterhit" ):
+def reco_track_keypoints( ioll, iolcv, _kpreco_track, input_spacepoint_tree="taggerfilterhit" ):
 
     # neutrino interaction track: we have track starts and ends
     _kpreco_track.clear_output();      
@@ -138,10 +159,10 @@ def reco_track_keypoints( ioll, _kpreco_track, input_spacepoint_tree="taggerfilt
     _kpreco_track.set_sigma( 10.0 );
     _kpreco_track.set_max_dbscan_dist( 0.7 )
     _kpreco_track.set_larmatch_threshold( 0.5 )    
-    _kpreco_track.set_min_cluster_size(   20, 0 )
+    _kpreco_track.set_min_cluster_size(   10, 0 )
     _kpreco_track.set_keypoint_threshold( 0.2, 0 )
-    _kpreco_track.set_min_cluster_size(   10, 1 )    
-    _kpreco_track.set_keypoint_threshold( 0.2, 1 )
+    #_kpreco_track.set_min_cluster_size(   10, 1 )    
+    #_kpreco_track.set_keypoint_threshold( 0.2, 1 )
     # neutrino interaction track start
     _kpreco_track.set_output_tree_name( "keypoint" )
     _kpreco_track.set_keypoint_type( 1 ) # (int)larflow::kTrackStart );
@@ -154,7 +175,7 @@ def reco_track_keypoints( ioll, _kpreco_track, input_spacepoint_tree="taggerfilt
     _kpreco_track.set_lfhit_score_index( 19 )  # // (v2 larmatch-minkowski network track-end-score index in hit)
     _kpreco_track.process( ioll )
 
-    dataout = get_data_dict_from_keypointreco( _kpreco_track )
+    dataout = get_data_dict_from_keypointreco( _kpreco_track, iolcv )
     return dataout
 
 def reduce_trackstarts_with_nu_keypoints( true_kp_pos, true_kp_types ):
@@ -212,9 +233,11 @@ def analyze_keypoints( true_pos, true_kptype, kpdata_dict ):
         truepos = true_pos[ikp,:]
         truetype = true_kptype[ikp,0]
         truepid  = true_kptype[ikp,1]
+        truetid  = true_kptype[ikp,2]
         if kpdata_dict['num_keypoints']>0:
             dpos_center = np.sqrt(np.sum(np.power(kpdata_dict["pos_fitted"]-truepos,2), axis=1 ))
             dpos_ave = np.sqrt(np.sum(np.power(kpdata_dict["pos_ave"]-truepos,2), axis=1 ))
+            dpos_max = np.sqrt(np.sum(np.power(kpdata_dict["pos_max"]-truepos,2), axis=1 ))
             reco_dist_ave.append( np.expand_dims(dpos_ave,0) )
             reco_dist_center.append( np.expand_dims(dpos_center,0) )
             print("truepos: ",truepos)
@@ -230,21 +253,29 @@ def analyze_keypoints( true_pos, true_kptype, kpdata_dict ):
                             "pos":truepos,
                             "type":truetype,
                             "pid":truepid,
+                            "tid":truetid,
                             "dist2fitpos":dpos_center[closest],
                             "dist2avepos":dpos_ave[closest],
+                            "dist2maxpos":dpos_max[closest],
                             "nclusterpts":kpdata_dict['nclusterpts'][closest],
                             "avescore":kpdata_dict['avescore'][closest],
-                            "maxscore":kpdata_dict['maxscore'][closest]}
+                            "maxscore":kpdata_dict['maxscore'][closest],
+                            "thrumu_pixsum":kpdata_dict['thrumu_pixsum'][closest],
+                            "thrumu_nplanes":kpdata_dict['thrumu_nplanes'][closest]}
         else:
             true_metrics = {'idx_closest':-1,
                             "pos":truepos,
                             "type":truetype,
                             "pid":truepid,
+                            "tid":truetid,
                             "dist2fitpos":9999.0,
                             "dist2avepos":9999.0,
+                            "dist2maxpos":9999.0,
                             "nclusterpts":0,
                             "avescore":0.0,
-                            "maxscore":0.0}
+                            "maxscore":0.0,
+                            "thrumu_pixsum":[0.0,0.0,0.0],
+                            "thrumu_nplanes":0}
         true_metrics_v.append( true_metrics )
 
     print("do reco analysis")
@@ -280,11 +311,13 @@ if __name__=="__main__":
 
     corsika_validation_list="/cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/ubdl/larflow/larmatchnet/dataprep/inputlists/mcc9_v13_bnbnue_corsika_validation.paired.list"
     
-    input_larlite = "larmatchme_mcc9_v40a_dl_run1_bnb_intrinsic_nue_overlay_CV_fd8d0c21-1220-4c97-ae1c-b30711f9eeb6_larlite.root"
-    input_larcv = "merged_dlreco_fd8d0c21-1220-4c97-ae1c-b30711f9eeb6.root"
+    #input_larlite = "larmatchme_mcc9_v40a_dl_run1_bnb_intrinsic_nue_overlay_CV_fd8d0c21-1220-4c97-ae1c-b30711f9eeb6_larlite.root"
+    #input_larcv = "merged_dlreco_fd8d0c21-1220-4c97-ae1c-b30711f9eeb6.root"
+    input_larlite=sys.argv[1]
+    input_larcv=sys.argv[2]
 
     print("run study_kpreco",flush=True)
-    preplm = LArMatchHDF5Writer(treename_for_adc_image="wire", use_triplet_skip_limit=False )
+    preplm = LArMatchHDF5Writer(treename_for_adc_image="wire", use_triplet_skip_limit=True )
     preplm.kpana.set_verbosity( larcv.msg.kINFO )
 
     ioll = larlite.storage_manager( larlite.storage_manager.kBOTH )
@@ -321,7 +354,7 @@ if __name__=="__main__":
     nentries_larcv = iolcv.get_n_entries()
     start_entry = 0
     end_entry = nentries_larcv
-    #start_entry = 2
+    #start_entry = 1
     #end_entry = 3
     run_process_truthlabels=True
 
@@ -337,21 +370,31 @@ if __name__=="__main__":
     outroot = rt.TFile("out_kpreco_study.root", "recreate" )
     
     truekp_tree = rt.TTree("truekp","Metrics related to true keypoints")
+    truekp_enu  = array('f',[0.0])    
     truekp_pos  = array('f',[0.0]*3)
     truekp_type = array('i',[0])
     truekp_pid  = array('i',[0])
+    truekp_partKE   = array('f',[0.0])
     truekp_dist2ave = array('f',[0.0])
+    truekp_dist2max = array('f',[0.0])    
     truekp_dist2fit = array('f',[0.0])
     truekp_avescore = array('f',[0.0])
     truekp_maxscore = array('f',[0.0])
     truekp_numpts   = array('i',[0])
+    truekp_thrumu_pixsum = array('f',[0.0]*3)
+    truekp_thrumu_nplanes = array('i',[0])
+    truekp_tree.Branch("enu",truekp_enu,"enu/F")
     truekp_tree.Branch("pos",truekp_pos,"pos[3]/F")
     truekp_tree.Branch("kptype",truekp_type,"kptype/I")
-    truekp_tree.Branch("pid",truekp_pid,"pid/I")    
+    truekp_tree.Branch("pid",truekp_pid,"pid/I")
+    truekp_tree.Branch("partKE",truekp_partKE,"partKE/F")        
     truekp_tree.Branch("dist2ave",truekp_dist2ave,"dist2ave/F")
+    truekp_tree.Branch("dist2max",truekp_dist2max,"dist2max/F")    
     truekp_tree.Branch("dist2fit",truekp_dist2fit,"dist2fit/F")
     truekp_tree.Branch("avescore",truekp_avescore,"avescore/F")
     truekp_tree.Branch("maxscore",truekp_maxscore,"maxscore/F")
+    truekp_tree.Branch("thrumu_pixsum",truekp_thrumu_pixsum,"thrumu_pixsum[3]/F")
+    truekp_tree.Branch("thrumu_nplanes",truekp_thrumu_nplanes,"thrumu_nplanes/I")
 
     recokp_tree = rt.TTree("recokp","Metrics related to reco keypoints")
     recokp_pos  = array('f',[0.0]*3)
@@ -361,11 +404,13 @@ if __name__=="__main__":
     recokp_avescore  = array('f',[0.0])
     recokp_thrumusum = array('f',[0.0]*3)
     recokp_thrumuplanes = array('i',[0]*3)
+    recokp_nclusterpts = array('i',[0])
     recokp_tree.Branch("pos",recokp_pos,"pos[3]/F")
     recokp_tree.Branch("kptype",recokp_type,"kptype/I")
     recokp_tree.Branch("dist2true",recokp_dist2true,"dist2true/F")
     recokp_tree.Branch("maxscore",recokp_maxscore,"maxscore/F")
     recokp_tree.Branch("avescore",recokp_avescore,"avescore/F")
+    recokp_tree.Branch("nclusterpts",recokp_nclusterpts,"nclusterpts/I")
     recokp_tree.Branch("thrumu_pixsum",recokp_thrumusum,"thrumu_pixsum[3]/F")
     recokp_tree.Branch("thrumu_nplanes",recokp_thrumuplanes,"thrumu_nplanes/I")
     
@@ -399,9 +444,9 @@ if __name__=="__main__":
         print("===================================")
         
         # now we reco keypoints
-        nu_kpdict = reco_nu_keypoints( ioll, kpreco_nu, input_spacepoint_tree="larmatch" )
-        shower_kpdict = reco_shower_keypoints( ioll, kpreco_shower, input_spacepoint_tree="larmatch" )
-        track_kpdict = reco_track_keypoints( ioll, kpreco_track, input_spacepoint_tree="larmatch" )
+        nu_kpdict = reco_nu_keypoints( ioll, iolcv, kpreco_nu, input_spacepoint_tree="larmatch" )
+        shower_kpdict = reco_shower_keypoints( ioll, iolcv, kpreco_shower, input_spacepoint_tree="larmatch" )
+        track_kpdict = reco_track_keypoints( ioll, iolcv, kpreco_track, input_spacepoint_tree="larmatch" )
 
         # now we can analyze
         kptype_filter = data['keypoint_truth_kptype_pdg_trackid'][:,0]==0
@@ -477,43 +522,36 @@ if __name__=="__main__":
             print(" [",ikp,"] maxscore=%0.3f"%(track_kpdict['maxscore'][ikp])," avescore=%.3f"%(track_kpdict['avescore'][ikp])," mindist=%.3f"%(track_kpdict['rdist_ave'][ikp]))
         #print(track_ana_out)
 
-        # collect pixsum and nplanes above threshold
-        evimg = iolcv.get_data( larcv.kProductImage2D, "thrumu" )
-        for anaout in [ana_out_dict,shower_ana_out_dict,track_ana_out]:
-            kpdict = anaout['reco_metrics']
-            kppos_np = kpdict['pos_ave']
-            kp_thrumu_pixsum  = np.zeros( (kpdict['num_keypoints'],3) )
-            kp_thrumu_nplanes = np.zeros( kpdict['num_keypoints'], dtype=np.int64 )
-            for ikp in range(kppos_np.shape[0]):
-                xyz = std.vector("float")(3)
-                for v in range(3):
-                    xyz[v] = kppos_np[ikp,v]
-                nplanes_thrumu = 0
-                for p in range(3):
-                    thrumu_pixsum = ptprojection.getPixelSumAroundProjPoint( xyz, evimg.as_vector().at(p), 2, 10.0 )
-                    if thrumu_pixsum>20.0:
-                        nplanes_thrumu += 1
-                    kp_thrumu_pixsum[ikp,p] = thrumu_pixsum
-                kp_thrumu_nplanes[ikp] = nplanes_thrumu
-            kpdict['thrumu_nplanes'] = kp_thrumu_nplanes            
-            kpdict['thrumu_pixsum']  = kp_thrumu_pixsum
-
         # Fill output truekp tree
         for anaout in [ana_out_dict,shower_ana_out_dict,track_ana_out]:
             for truekp_metrics in anaout['true_metrics']:
+                tid = int(truekp_metrics["tid"])
+                node_t = mcpg.findTrackID( tid )
+                nu_node_t = mcpg.findTrackID( 0 )
+                truekp_enu[0] = nu_node_t.E_MeV
+                print("true tid: ",tid," Enu:",nu_node_t.E_MeV)
                 for v in range(3):
                     truekp_pos[v]  = truekp_metrics["pos"][v]
                 truekp_type[0]     = truekp_metrics["type"]
                 truekp_pid[0]      = truekp_metrics["pid"]
+                truekp_dist2max[0] = truekp_metrics['dist2maxpos']
                 truekp_dist2ave[0] = truekp_metrics['dist2avepos']
                 truekp_dist2fit[0] = truekp_metrics['dist2fitpos']
                 truekp_avescore[0] = truekp_metrics['avescore']
                 truekp_maxscore[0] = truekp_metrics['maxscore']
                 truekp_numpts[0]   = truekp_metrics['nclusterpts']
+                truekp_partKE[0]   = 0.0
+                try:
+                    truekp_partKE[0] = node_t.E_MeV
+                except:
+                    pass
+                for v in range(3):
+                    truekp_thrumu_pixsum[v] = truekp_metrics['thrumu_pixsum'][v]
+                truekp_thrumu_nplanes[0] = truekp_metrics['thrumu_nplanes']
                 truekp_tree.Fill()
             reco_metrics = anaout['reco_metrics']
             for ikp in range(reco_metrics['num_keypoints']):
-                for v in range(3):
+                for v in range(3):                    
                     recokp_pos[v] = reco_metrics['pos_ave'][ikp,v]
                     recokp_thrumusum[v] = reco_metrics['thrumu_pixsum'][ikp,v]
                 recokp_type[0] = reco_metrics['type'][ikp]

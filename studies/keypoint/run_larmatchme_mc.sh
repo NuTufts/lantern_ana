@@ -3,6 +3,7 @@
 JOBSTARTDATE=$(date)
 
 INPUT_DLMERGED=$1
+OUTPUT_LM=$2
 INPUTSTEM=merged_dlreco
 SAMPLE_NAME=mcc9_v40a_dl_run1_bnb_intrinsic_nue_overlay_CV
 
@@ -42,8 +43,9 @@ echo "baseinput: $baseinput"
 fileidstr=`printf %s ${SAMPLE_NAME}`
 lm_outfile=$(echo $baseinput  | sed 's|'"${INPUTSTEM}"'|larmatchme_'"${fileidstr}"'|g')
 lm_basename=$(echo $baseinput | sed 's|'"${INPUTSTEM}"'|larmatchme_'"${fileidstr}"'|g' | sed 's|.root||g')
-baselm=$(echo $baseinput | sed 's|'"${INPUTSTEM}"'|larmatchme_'"${fileidstr}"'|g' | sed 's|.root|_larlite.root|g')
-echo "larmatch outfile : "$lm_outfile
+#baselm=$(echo $baseinput | sed 's|'"${INPUTSTEM}"'|larmatchme_'"${fileidstr}"'|g' | sed 's|.root|_larlite.root|g')
+baselm=${OUTPUT_LM}
+echo "larmatch outfile : ${baselm}"
 #cp $INPUT_DLMERGED $baseinput
 
 # larmatch v1
@@ -51,6 +53,6 @@ echo "larmatch outfile : "$lm_outfile
 #CMD="python3 ${LARMATCHME_SCRIPT} --config-file ${CONFIG_FILE} --supera $baseinput --weights ${WEIGHTS_DIR}/${WEIGHT_FILE} --output ${lm_outfile} --min-score 0.5 --adc-name wire --device-name cpu -tb"
 
 # larmatch v2 (shower keypoint version)
-CMD="python3 ${LARMATCHME_SCRIPT} --config-file ${CONFIG_FILE} --input-larcv ${baseinput} --input-larlite ${baseinput} --weights ${WEIGHTS_DIR}/${WEIGHT_FILE} --output ${baselm} --min-score 0.3 --adc-name wire --device-name cpu --use-skip-limit"
+CMD="python3 ${LARMATCHME_SCRIPT} --config-file ${CONFIG_FILE} --input-larcv ${baseinput} --input-larlite ${baseinput} --weights ${WEIGHTS_DIR}/${WEIGHT_FILE} --output ${baselm} --min-score 0.3 --adc-name wire --device-name cpu --use-skip-limit --allow-output-overwrite"
 echo $CMD
 $CMD
