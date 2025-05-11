@@ -4,11 +4,11 @@
 #SBATCH --job-name=studykpreco
 #SBATCH --mem-per-cpu=8000
 #SBATCH --time=8:00:00
-#SBATCH --array=0
+#SBATCH --array=0-499
 #SBATCH --cpus-per-task=3
 #SBATCH --mem-per-cpu=4000
-##SBATCH --partition=batch
-#SBATCH --partition=wongjiradlab
+#SBATCH --partition=batch
+##SBATCH --partition=wongjiradlab
 ##SBATCH --exclude=i2cmp006,s1cmp001,s1cmp002,s1cmp003,p1cmp041,c1cmp003,c1cmp004
 ##SBATCH --gres=gpu:p100:3
 #SBATCH --error=griderr_study_kpreco.%j.%a.%N.log

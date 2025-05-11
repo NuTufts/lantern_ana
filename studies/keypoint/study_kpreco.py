@@ -559,6 +559,7 @@ if __name__=="__main__":
                 recokp_maxscore[0]  = reco_metrics['maxscore'][ikp]
                 recokp_avescore[0]  = reco_metrics['avescore'][ikp]                
                 recokp_thrumuplanes[0] = reco_metrics['thrumu_nplanes'][ikp]
+                recokp_nclusterpts[0]  = reco_metrics['nclusterpts'][ikp]
                 recokp_tree.Fill()
         
                 
