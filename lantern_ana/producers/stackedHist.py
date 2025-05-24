@@ -70,7 +70,7 @@ class StackedHistProducer(ProducerBaseClass):
         self.hname_uncat = hname_uncat
     
     def prepareStorage(self, output):
-        """No tree branches needed for visualization producer."""
+        """No tree branches needed for histogram producer."""
         pass
     
     def setDefaultValues(self):

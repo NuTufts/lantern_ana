@@ -159,11 +159,14 @@ def reco_nue_CCinc(ntuple, params):
         ]
         elnormscore = exp(spid[0])/(exp(spid[0])+exp(spid[1])+exp(spid[2])+exp(spid[3])+exp(spid[4]))
         
-        cutdata['emax_primary_score/F']     = emaxdata['primary']
+        ptype = [exp(emaxdata['primary']),exp(emaxdata['fromNeutralPrimary']),exp(emaxdata['fromChargedPrimary'])]
+        pnorm = ptype[0]+ptype[1]+ptype[2]
+
+        cutdata['emax_primary_score/F']     = ptype[0]/pnorm
         cutdata['emax_purity/F']            = emaxdata['purity']
         cutdata['emax_completeness/F']      = emaxdata['completeness']
-        cutdata['emax_fromneutral_score/F'] = emaxdata['fromNeutralPrimary']
-        cutdata['emax_fromcharged_score/F'] = emaxdata['fromChargedPrimary']
+        cutdata['emax_fromneutral_score/F'] = ptype[1]/pnorm
+        cutdata['emax_fromcharged_score/F'] = ptype[2]/pnorm
         cutdata['emax_charge/F']            = emaxdata['showerQ']
         cutdata['emax_econfidence/F']       = emaxdata['elconfidence']       
         cutdata['emax_fromdwall/F']         = 0.0

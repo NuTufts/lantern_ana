@@ -17,14 +17,14 @@ datasets:
   folders:
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
     - /home/twongjirad/working/data/ntuples/
-  run1_bnb_nue:
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
     ismc: true
     process: true
     filepaths:
-#     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
      - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
+#     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
@@ -33,7 +33,7 @@ datasets:
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
 #     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
-  run1_extbnb:
+  run1_extbnb_mcc9_v29e_C1:
     type: RootDataset
     tree: EventTree
     ismc: false
@@ -41,6 +41,7 @@ datasets:
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
 #    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+
 # Cut configuration
 cuts: 
   true_nue_CCinc:
@@ -94,13 +95,19 @@ producers:
         condense_ncmodes: true
   true_nue_CCinc_prod:
     type: CutResultProducer
-    cutname: true_nue_CCinc
+    config:
+      cutname: true_nue_CCinc
   reco_nue_CCinc_prod:
     type: CutResultProducer
-    cutname: reco_nue_CCinc
+    config:
+      cutname: reco_nue_CCinc
   nue_cc_inc_truthsel:
     type: NueInclusiveTruthSelectionProducer
     config: {}
+  nuselvar:
+    type: RecoNuSelectionVariablesProducer
+    config:
+      track_min_len: 5.0
   # Reco Evis Stacked Hist
   evisStacked_reco:
     type: StackedHistProducer

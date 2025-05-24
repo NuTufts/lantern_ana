@@ -20,7 +20,7 @@ class eventWeightProducer(ProducerBaseClass):
 
     def setDefaultValues(self):
         super().setDefaultValues()
-        self.eventweight[0] = 0.0
+        self.eventweight[0] = 1.0
         
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
