@@ -14,7 +14,9 @@ class CutResultProducer(ProducerBaseClass):
     def __init__(self, name, config):
         super().__init__(name, config)
         self.cut_result = array('i', [0])
-        self.cut_name = config.get('cutname')
+        self.cut_name = config.get('cutname',None)
+        if self.cut_name is None:
+            raise ValueError(f'must specify cutname in CutResultProducer[{self.name}]')
         if self.cut_name==name:
             raise ValueError('Name of CutResultProducer instance cannot match the name of the cut (e.g. add _prod to name).')
 
@@ -34,7 +36,7 @@ class CutResultProducer(ProducerBaseClass):
         """Calculate total visible energy from all primary tracks and showers."""
 
         self.cut_result[0] = 0
-        result = data.get(self.cut_name,False)
+        result = data.get(self.cut_name,None)
         if type(result) is not bool:
             raise TypeError(f"Cut result for name={self.cut_name} is not boolean as required.")
         

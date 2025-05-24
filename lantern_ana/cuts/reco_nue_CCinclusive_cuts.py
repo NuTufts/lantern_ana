@@ -2,6 +2,7 @@ from lantern_ana.cuts.cut_factory import register_cut
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.cuts.reco_muon_cuts import has_muon_track
 from lantern_ana.utils.get_primary_electron_candidates import get_primary_electron_candidates
+from math import exp, sqrt
 
 @register_cut
 def reco_nue_CCinc(ntuple, params):
@@ -83,6 +84,7 @@ def reco_nue_CCinc(ntuple, params):
     # getting max muon score
     # getting number of tracks above certain KE energy
     maxMuScore = -200.0
+    maxMuQ     = 0.0
     maxmu_idx = -1
     foundMuon = False
     num_tracks_above_threshold = 0
@@ -100,7 +102,8 @@ def reco_nue_CCinc(ntuple, params):
         if ntuple.trackMuScore[iT] > maxMuScore:
           maxMuScore = ntuple.trackMuScore[iT]
           maxmu_idx = iT
-        if ntuple.trackPID[iT] == 13:
+          maxMuQ = ntuple.trackCharge[iT]
+        if abs(ntuple.trackPID[iT]) == 13:
           foundMuon = True
     
     # apply requirements on electron
@@ -146,6 +149,61 @@ def reco_nue_CCinc(ntuple, params):
         pass_event = False
 
     # Fill Cut data
+    if elMaxIdx>=0:
+        emaxdata = prim_electron_data[elMaxIdx]
+        spid = [ emaxdata['larpid[electron]'],
+            emaxdata['larpid[photon]'],
+            emaxdata['larpid[pion]'],
+            emaxdata['larpid[muon]'],
+            emaxdata['larpid[proton]']
+        ]
+        elnormscore = exp(spid[0])/(exp(spid[0])+exp(spid[1])+exp(spid[2])+exp(spid[3])+exp(spid[4]))
+        
+        cutdata['emax_primary_score/F']     = emaxdata['primary']
+        cutdata['emax_purity/F']            = emaxdata['purity']
+        cutdata['emax_completeness/F']      = emaxdata['completeness']
+        cutdata['emax_fromneutral_score/F'] = emaxdata['fromNeutralPrimary']
+        cutdata['emax_fromcharged_score/F'] = emaxdata['fromChargedPrimary']
+        cutdata['emax_charge/F']            = emaxdata['showerQ']
+        cutdata['emax_econfidence/F']       = emaxdata['elconfidence']       
+        cutdata['emax_fromdwall/F']         = 0.0
+        cutdata['emax_nplaneabove/I']       = 0
+        cutdata['emax_el_normedscore/F']    = elnormscore
+        if elMaxIdx>=100:
+            cutdata['emax_fromshower/I'] = 0
+        else:
+            cutdata['emax_fromshower/I'] = 1
+
+        cutdata['vtx_kpscore/F']    = ntuple.vtxScore
+        cutdata['vtx_dwall/F']      = 0.0
+        cutdata['vtx_cosmicfrac/F'] = ntuple.vtxFracHitsOnCosmic
+        cutdata['max_muscore/F']    = exp(maxMuScore)
+        cutdata['max_mucharge/F']   = maxMuQ
+        cutdata['ntracks_above/I']  = num_tracks_above_threshold
+        if ismc:
+            cutdata['mc_dist2true/F'] = ntuple.vtxDistToTrue
+        else:
+            cutdata['mc_dist2true/F'] = 10000.0
+    else:
+        cutdata['emax_primary_score/F'] = 0.0
+        cutdata['emax_purity/F'] = 0.0
+        cutdata['emax_completeness/F'] = 0.0
+        cutdata['emax_fromneutral_score/F'] = 0.0
+        cutdata['emax_fromcharged_score/F'] = 0.0
+        cutdata['emax_charge/F'] = 0.0
+        cutdata['emax_econfidence/F'] = 0.0
+        cutdata['emax_fromdwall/F'] = 0.0
+        cutdata['emax_el_normedscore/F'] = 0.0
+        cutdata['emax_nplaneabove/I'] = 0
+        cutdata['emax_el_normedscore/F'] = 0.0
+        cutdata['emax_fromshower/I'] = 0
+        cutdata['vtx_kpscore/F'] = 0.0
+        cutdata['vtx_dwall/F'] = 0.0
+        cutdata['vtx_cosmicfrac/F'] = 0.0
+        cutdata['max_muscore/F'] = 0.0
+        cutdata['max_mucharge/F'] = 0.0
+        cutdata['ntracks_above/I'] = 0
+        cutdata['mc_dist2true/F'] = 10000.0
 
     # full cuts
     pass_event = pass_fv and pass_has_electron and pass_electron_confidence and pass_hasmuon and pass_maxmuscore and pass_vtxcosmicfrac

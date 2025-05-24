@@ -103,8 +103,8 @@ class NueInclusiveTruthSelectionProducer(ProducerBaseClass):
             The output of the producer for this event
         """
         ismc = params.get('ismc',False)
+        self.setDefaultValues()
         if not ismc:
-            self.setDefaultValues()
             # return empty outputs
             ret_vars = {'is_CCnue_inclusive':0}
             for part in self.particles:

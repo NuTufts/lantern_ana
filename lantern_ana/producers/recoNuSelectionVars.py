@@ -17,24 +17,47 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
         self._track_min_len = config.get("track_min_len", 5.0)  # Minimum energy to consider
         
         # Output variables
-        self.n_tracks = array('i',[0]) # number of above threshold tracks
-        self.e_primary_score = array('f',[0.0])
+        # we use a list of sample vars to avoid boilerplate
+        self.simple_varlist = [
+            'emax_primary_score/F',
+            'emax_purity/F',
+            'emax_completeness/F',
+            'emax_fromneutral_score/F',
+            'emax_fromcharged_score/F',
+            'emax_charge/F',
+            'emax_econfidence/F',
+            'emax_fromdwall/F',
+            'emax_nplaneabove/I',
+            'emax_el_normedscore/F',
+            'emax_fromshower/I',
+            'vtx_kpscore/F',
+            'vtx_dwall/F',
+            'vtx_cosmicfrac/F',
+            'max_muscore/F',
+            'max_mucharge/F',
+            'ntracks_above/I',
+            'mc_dist2true/F'
+        ]
+        for varname in self.simple_varlist:
+            if varname[-1]=='F':
+                self.__dict__[varname] = array('f',[0.0])
+            elif varname[-1]=='I':
+                self.__dict__[varname] = array('i',[0])
 
-        # For the array, we need a numpy array with a fixed memory location
-        # that won't be garbage collected
-        self.energy_array_np = np.zeros(self.max_tracks, dtype=np.float32)
-        # Convert to a ROOT-compatible array
-        self._energy_array = array('f', [0.0]*self.max_tracks)
     
     def prepareStorage(self, output: Any) -> None:
         """Set up branches in the output ROOT TTree."""
         # Assuming output is a ROOT TTree or similar interface
-        # output.Branch(f"{self.name}_total_energy", self.total_energy, f"{self.name}_total_energy/F")
-        # output.Branch(f"{self.name}_n_tracks", self.n_tracks, f"{self.name}_n_tracks/I")
-        # output.Branch(f"{self.name}_energy_array", self._energy_array, f"{self.name}_energy_array[{self.max_tracks}]/F")
+        for varname in self.simple_varlist:
+            output.Branch(f'{self.name}_{varname[:-2]}',self.__dict__[varname], f'{self.name}_{varname}')
 
     def setDefaultValues(self):
         super().setDefaultValues()
+        for varname in self.simple_varlist:
+            if varname[-1]=='F':
+                self.__dict__[varname][0] = 0.0
+            elif varname[-1]=='I':
+                self.__dict__[varname][0] = 0.0
     
     def productType(self) -> type:
         """Return the type of product (a dictionary in this case)."""
@@ -49,6 +72,12 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
         # Get gen2ntuple from input data
         ntuple = data["gen2ntuple"]
         cutdata = data['cutdata_reco_nue_CCinc']
-        
+
+        results = {}
+        for varname in self.simple_varlist:
+            if varname in cutdata:
+                self.__dict__[varname][0] = cutdata[varname]
+                results[varname] = cutdata[varname]
+
         # Return results
-        return {}
+        return results

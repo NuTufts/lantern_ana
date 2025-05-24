@@ -286,6 +286,7 @@ class LanternAna:
                 # Process with producers
                 event_data = {"gen2ntuple": ntuple}
                 event_data.update(cut_results)
+                event_data.update(cut_data)
                 
                 # Apply tags if configured
                 if hasattr(self, 'tag_factory') and self.tag_factory.tags:
