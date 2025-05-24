@@ -98,6 +98,7 @@ class CutFactory:
         - results: Dictionary with cut names as keys and results as values
         """
         results = {}
+        cutdata = {}
         passes = True
 
         self.check_logic_expression()
@@ -114,7 +115,21 @@ class CutFactory:
             
             # Apply the cut
             cut_result = func(ntuple, params)
-            results[name] = cut_result
+            if type(cut_result) is bool:
+                results[name] = cut_result
+                cutdata[f'cutdata_{name}'] = {}
+            elif type(cut_result) is tuple:
+                if len(cut_result)==2:
+                    if type(cut_result[0]) is bool:
+                        results[name] = cut_result[0]
+                    else:
+                        raise ValueError('if cut function returns tuple, first entry must be bool.')
+                    if type(cut_result[1]) is not dict:
+                        raise ValueError('if cut function returns data (as second return item), must be in form of dictionary.')
+                    else:
+                        cutdata[f'cutdata_{name}'] = cut_result[1]
+                else:
+                    raise ValueError('cut function must return at most 2 outputs.')
             
             # Check if we should continue
             if self.cut_logic is None:
@@ -124,16 +139,19 @@ class CutFactory:
                 if not passes and return_on_fail:
                     break
             else:
-                cut_expression = cut_expression.replace("{%s}"%(name),str(cut_result))
+                try:
+                    cut_expression = cut_expression.replace("{%s}"%(name),str(cut_result))
+                except e:
+                    raise RuntimeError(f'Could not replace result of cutname={name} in the cut expression:\n{e.what()}')
         
         if self.cut_logic is None:
-            return passes, results
+            return passes, results, cutdata
 
         # eval expression
         passes = eval(cut_expression)
         #print(cut_expression," --> ",passes)
 
-        return passes, results
+        return passes, results, cutdata
 
 
     def check_logic_expression(self):
@@ -151,4 +169,4 @@ class CutFactory:
             print("Cut logic expression does not use certain cuts: ")
             for cutname in missing:
                 print("  ",cutname)
-            raise ValueError("Missing Error")
+            raise ValueError("Missing Cut Error")

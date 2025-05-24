@@ -1,6 +1,7 @@
 from lantern_ana.cuts.cut_factory import register_cut
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.cuts.reco_muon_cuts import has_muon_track
+from lantern_ana.utils.get_primary_electron_candidates import get_primary_electron_candidates
 
 @register_cut
 def reco_nue_CCinc(ntuple, params):
@@ -46,14 +47,19 @@ def reco_nue_CCinc(ntuple, params):
     apply_goodvertex_truthcut = params.get('apply_goodvertex_truthcut', False)
     vtxDistToTrueCut = params.get('vtxDistToTrueCut',3.0)
     ismc = params.get('ismc',False)
+    el_candidate_cuts = params.get('electron_candidate_quality_cuts',{})
+
+    # dict of info to return downstream
+    cutdata = {}
 
     if debug:
         print(f'[fileid, run, subrun, event]: {ntuple.fileid} {ntuple.run} {ntuple.subrun} {ntuple.event}')
 
     # has to have a vertex. 
+    cutdata['foundvertex'] = ntuple.foundVertex
     if ntuple.foundVertex!=1:
         if debug: print('nue: no vertex')
-        return False # Cannot calculate quantities below without it. So return False.
+        return False, cutdata # Cannot calculate quantities below without it. So return False.
     else:
         if debug and ismc: print(f"nue: has vertex. dist2true={ntuple.vtxDistToTrue}")    
 
@@ -61,58 +67,21 @@ def reco_nue_CCinc(ntuple, params):
     pass_fv = fiducial_cut(ntuple,fv_params)
     if debug: print('nue: pass_fv',pass_fv)
 
+    # get primary electron candidates
+    el_candidate_info = get_primary_electron_candidates( ntuple, el_candidate_cuts)
+
     # has primary electron shower
     has_prim_electron = False
-    prim_idx_list = []
-    prim_electron_data = {}
-    elMaxQ = -1.0
-    elMaxIdx = -1
-
-    # check the showers
-    for idx in range(ntuple.nShowers):
-        # needs to be a primary shower
-        if ntuple.showerIsSecondary[idx]!=0:
-            continue
-        # needs to have been run through LArPID classifier
-        if ntuple.showerClassified[idx]!=1:
-            continue
-        # highest LArPID score is electron type
-        larpid = abs(ntuple.showerPID[idx])
-        if larpid not in [11]:
-            # accept as shower
-            continue
-        shower_is_electron = False
-        if ntuple.showerElScore[idx]>ntuple.showerPhScore[idx]:
-            has_prim_electron = True
-            shower_is_electron = True
-
-        # electron confidence
-        elConf = ntuple.showerElScore[idx] - (ntuple.showerPhScore[idx] + ntuple.showerPiScore[idx])/2.0
-        # shower charge
-        elQ = ntuple.showerCharge[idx]
-        elprocess = ntuple.showerProcess[idx]
-        elcostheta = ntuple.showerCosTheta[idx]
-        elvtxdist  = ntuple.showerDistToVtx[idx]
-        prim_electron_data[idx] = {
-            'showerQ':elQ,
-            'process':elprocess,
-            'costheta':elcostheta,
-            'vtxdist':elvtxdist,
-            'elconfidence':elConf,
-            'larpid':larpid,
-            'larpid[electron]':ntuple.showerElScore[idx],
-            'larpid[photon]':ntuple.showerPhScore[idx],
-            'parpid[pion]':ntuple.showerPiScore[idx]
-        }
-        prim_idx_list.append(idx)
-
-        # record the max shower
-        if shower_is_electron and elQ>elMaxQ:
-            elMaxIdx = idx
-            elMaxQ = elQ
+    prim_idx_list = el_candidate_info['idxlist']
+    prim_electron_data = el_candidate_info['prongDict']
+    elMaxQ = el_candidate_info['elMaxQ']
+    elMaxIdx = el_candidate_info['elMaxIdx']
+    if elMaxIdx>=0:
+        has_prim_electron = True
 
     # loop over the tracks
-    # remove events with a primary muon
+    # getting max muon score
+    # getting number of tracks above certain KE energy
     maxMuScore = -200.0
     maxmu_idx = -1
     foundMuon = False
@@ -133,41 +102,11 @@ def reco_nue_CCinc(ntuple, params):
           maxmu_idx = iT
         if ntuple.trackPID[iT] == 13:
           foundMuon = True
-
-        # look for electron-like stubs
-        if ntuple.trackIsSecondary[iT]==0 and ntuple.trackClassified[iT]==1 and abs(ntuple.trackPID[iT])==11:
-            # highest LArPID track is electron type
-            # electron-like
-            elConf = ntuple.trackElScore[iT] - (ntuple.trackPhScore[iT] + ntuple.trackPiScore[iT])/2.0
-            # track charge
-            elQ = ntuple.trackCharge[iT]
-            elprocess = ntuple.trackProcess[iT]
-            elcostheta = ntuple.trackCosTheta[iT]
-            elvtxdist  = ntuple.trackDistToVtx[iT]
-            larpid = abs(ntuple.trackPID[iT])
-            prim_electron_data[iT+100] = {
-                'showerQ':elQ,
-                'process':elprocess,
-                'costheta':elcostheta,
-                'vtxdist':elvtxdist,
-                'elconfidence':elConf,
-                'larpid':larpid,
-                'larpid[electron]':ntuple.trackElScore[iT],
-                'larpid[photon]':ntuple.trackPhScore[iT],
-                'parpid[pion]':ntuple.trackPiScore[iT]
-            }
-            # record the largest primary electron
-            if elQ>elMaxQ:
-                elMaxIdx = iT+100
-                elMaxQ = elQ
-
-
-
     
     # apply requirements on electron
     pass_has_electron = has_prim_electron
     if debug: 
-        print(f'nue: pass_has_electron={pass_has_electron}')
+        print(f'nue: pass_has_electron={pass_has_electron}',flush=True)
         for showeridx in prim_electron_data:
             print(f'  shower[{showeridx}]',flush=True)
             if elMaxIdx==showeridx:
@@ -206,11 +145,12 @@ def reco_nue_CCinc(ntuple, params):
     if ismc and apply_goodvertex_truthcut and not pass_goodvertex:
         pass_event = False
 
-    
+    # Fill Cut data
+
     # full cuts
-    #pass_event = pass_fv and pass_has_electron and pass_electron_confidence and pass_hasmuon and pass_maxmuscore and pass_vtxcosmicfrac
+    pass_event = pass_fv and pass_has_electron and pass_electron_confidence and pass_hasmuon and pass_maxmuscore and pass_vtxcosmicfrac
     if debug: print(f'nue: passes all={pass_event}')
     if pass_event:
-        return True
+        return True, cutdata
     
-    return False
+    return False, cutdata

@@ -267,7 +267,7 @@ class LanternAna:
             ntuple = data['tree']
             
             # Apply cuts
-            passes, cut_results = self.cut_factory.apply_cuts(ntuple, return_on_fail=False, ismc=dataset.ismc)
+            passes, cut_results, cut_data = self.cut_factory.apply_cuts(ntuple, return_on_fail=False, ismc=dataset.ismc)
             
             # Update cut statistics
             for cut_name, result in cut_results.items():

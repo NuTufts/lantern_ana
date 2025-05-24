@@ -21,17 +21,26 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
 #     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
      - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+#     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
   run1_extbnb:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
+#    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
 # Cut configuration
 cuts: 
   true_nue_CCinc:
@@ -46,6 +55,10 @@ cuts:
       usetruevtx: false
     has_primary_electron:
       ke_threshold: 30.0
+    electron_candidate_quality_cuts:
+      min_charge: 0.0
+      min_purity: 0.0
+      min_completeness: 0.0
     debug: False
     apply_goodvertex_truthcut: False
     vtxDistToTrueCut: 3.0
@@ -79,6 +92,12 @@ producers:
         condense_nuemodes: true
         condense_numumodes: true
         condense_ncmodes: true
+  true_nue_CCinc_prod:
+    type: CutResultProducer
+    cutname: true_nue_CCinc
+  reco_nue_CCinc_prod:
+    type: CutResultProducer
+    cutname: reco_nue_CCinc
   nue_cc_inc_truthsel:
     type: NueInclusiveTruthSelectionProducer
     config: {}

@@ -23,9 +23,12 @@ hists = {}
 
 
 #folder="./results/mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune_nogoodvtxcut/"
-folder="./results/mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune_3cmgoodvtxcut/"
+#folder="./results/mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune_3cmgoodvtxcut/"
 #folder="./results/mcc9_v28_wctagger_nueintrinsics_v2me06_nogoodvtxcut/"
 #folder="./results/mcc9_v28_wctagger_nueintrinsics_v2me06_3cmgoodvtxcut/"
+#folder="./results/mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune/"
+#folder="./results/mcc9_v29e_dl_run1_C1_extbnb_v2me06/"
+folder="./"
 tagname="v2me06"
 
 # get all the hists
