@@ -18,13 +18,22 @@ def reco_numu_CCinc(ntuple, params):
     - True if all conditions satisfied
     """
     # Get parameters for subcuts
-    fv_params  = params.get('fiducial_cut',{'width':10.0,'apply_scc':True,'usetruevtx':False})
+    fv_params  = params.get('fiducial_cut',{'width':10.0,'apply_scc':True,'usetruevtx':False,'useWCvolume':False})
     fv_params['usetruevtx'] = False
     reco_mu_params = params.get('has_muon_track',{})
+    apply_goodvertex_truthcut = params.get('apply_goodvertex_truthcut', False)
+    vtxDistToTrueCut = params.get('vtxDistToTrueCut',3.0)
     
-    pass_fv = fiducial_cut(ntuple,fv_params)
+    if fv_params['useWCvolume']:
+        pass_fv = ntuple.vtxIsFiducial==1
+    else:
+        pass_fv = fiducial_cut(ntuple,fv_params)
     pass_recomu = has_muon_track(ntuple,reco_mu_params)
-    if pass_fv and pass_recomu:
-        return True
-    else:   
-        return False
+
+    pass_goodvertex = ntuple.foundVertex==1 and ntuple.vtxDistToTrue < vtxDistToTrueCut
+
+    pass_event = pass_fv and pass_recomu
+    if apply_goodvertex_truthcut and not pass_goodvertex:
+        pass_event = False
+
+    return pass_event

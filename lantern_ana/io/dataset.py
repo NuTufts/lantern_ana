@@ -19,12 +19,16 @@ class Dataset(ABC):
         Args:
             name: A unique identifier for this dataset
             config: Dictionary containing configuration parameters
+        
+        Pars for config:
+            process: if true, process this sample [default: True]
         """
         self.name = name
         self.config = config
         self._current_entry = -1
         self._initialized = False
-        
+        self._process_dataset = self.config.get('process',True)
+
     @abstractmethod
     def initialize(self) -> None:
         """
@@ -84,3 +88,9 @@ class Dataset(ABC):
             Number of entries in the dataset
         """
         return self.get_num_entries()
+
+    def do_we_process(self) -> bool:
+        """
+        Is the dataset marked to be processed?
+        """
+        return self._process_dataset

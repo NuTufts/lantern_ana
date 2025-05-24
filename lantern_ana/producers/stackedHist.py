@@ -100,6 +100,8 @@ class StackedHistProducer(ProducerBaseClass):
 
         pass_to_fill = True
         for cutname in self.pass_cutresults:
+            xcutresult = data.get(cutname,0)
+            #print(f'cut[{cutname}]: {xcutresult}')
             if data.get(cutname,0)==0:
                 pass_to_fill = False
 

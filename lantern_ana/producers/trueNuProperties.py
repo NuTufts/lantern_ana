@@ -32,6 +32,11 @@ class trueNuPropertiesProducer(ProducerBaseClass):
     
     def processEvent(self, data, params):
         """Calculate total visible energy from all primary tracks and showers."""
+        self.setDefaultValues()
+        ismc = params.get('ismc',False)
+        if not ismc:
+            return {'Enu':self.Enu[0]}
+
         ntuple = data["gen2ntuple"]
         
         # Reset output variable

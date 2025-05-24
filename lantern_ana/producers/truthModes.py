@@ -36,6 +36,11 @@ class TruthModeProducer(ProducerBaseClass):
     
     def processEvent(self, data, params):
         """Apply truth mode tagging."""
+        self.setDefaultValues()
+        ismc = params.get('ismc',False)
+        if not ismc:
+            return {"mode":'notmc'}
+
         ntuple = data["gen2ntuple"]
         
         # Reset output variable

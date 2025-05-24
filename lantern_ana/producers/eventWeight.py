@@ -16,7 +16,7 @@ class eventWeightProducer(ProducerBaseClass):
     
     def __init__(self, name, config):
         super().__init__(name, config)
-        self.eventweight = array('f', [0.0])
+        self.eventweight = array('f', [1.0])
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -32,6 +32,11 @@ class eventWeightProducer(ProducerBaseClass):
     
     def processEvent(self, data, params):
         """Calculate total visible energy from all primary tracks and showers."""
+        self.setDefaultValues()
+        ismc = params.get('ismc',False)
+        if not ismc:
+            return {"weight":self.eventweight[0]}
+
         ntuple = data["gen2ntuple"]
         
         # Reset output variable

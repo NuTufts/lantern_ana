@@ -85,7 +85,7 @@ class CutFactory:
         assert(type(logic_expression) is str)
         self.cut_logic = logic_expression
         
-    def apply_cuts(self, ntuple, return_on_fail=True):
+    def apply_cuts(self, ntuple, return_on_fail=True, ismc=False):
         """
         Apply all registered cuts in order.
         
@@ -110,6 +110,7 @@ class CutFactory:
             name = cut['name']
             func = cut['function']
             params = cut['params']
+            params['ismc'] = ismc
             
             # Apply the cut
             cut_result = func(ntuple, params)

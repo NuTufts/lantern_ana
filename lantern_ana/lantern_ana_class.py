@@ -186,7 +186,8 @@ class LanternAna:
         
         # Process each dataset
         for dataset_name, dataset in datasets_to_process.items():
-            self._process_dataset(dataset_name, dataset)
+            if dataset.do_we_process():
+                self._process_dataset(dataset_name, dataset)
         
         # Print statistics
         self._print_statistics()
@@ -266,7 +267,7 @@ class LanternAna:
             ntuple = data['tree']
             
             # Apply cuts
-            passes, cut_results = self.cut_factory.apply_cuts(ntuple, return_on_fail=False)
+            passes, cut_results = self.cut_factory.apply_cuts(ntuple, return_on_fail=False, ismc=dataset.ismc)
             
             # Update cut statistics
             for cut_name, result in cut_results.items():
@@ -292,7 +293,7 @@ class LanternAna:
                     event_data['event_tags'] = tags
                 
                 # Process with producers
-                self.producer_manager.process_event(event_data, {"event_index": i})
+                self.producer_manager.process_event(event_data, {"event_index": i, 'ismc':dataset.ismc})
                 
                 # Fill output tree
                 output_tree.Fill()
