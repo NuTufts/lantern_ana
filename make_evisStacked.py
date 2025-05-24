@@ -1,4 +1,7 @@
 import ROOT as rt
+from math import sqrt
+
+rt.gStyle.SetOptStat(0)
 
 """
 TFile**		analysis_evisStacked_stacked_histograms.root	
@@ -19,7 +22,12 @@ files = {}
 hists = {}
 
 #folder="./v3dev/"
-folder="./v2me06/"
+#folder="./v2me06/"
+folder="./results/mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune/"
+#folder="./results/mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_wcvol"
+#folder="./results/mcc9_v28_wctagger_bnboverlay_v2me06/"
+#folder="./results/mcc9_v28_wctagger_bnboverlay_v2me06_wcvol/"
+tagname="v2me06"
 
 # get all the hists
 for var in var_v:
@@ -70,23 +78,36 @@ hpur = hists[("evisStacked","both","total")].Clone("hpurity")
 # divide by denominator histogram
 heff.Divide( hists[("trueEnuStacked","truesig","total")])
 hpur.Divide( hists[("evisStacked","reco","total")])
+heff_M = hists[("trueEnuStacked","both","total")]
+heff_N = hists[("trueEnuStacked","truesig","total")]
+hpur_M = hists[("evisStacked","both","total")]
+hpur_N = hists[("evisStacked","reco","total")]
 
-for hh in [heff,hpur]:
+for hh,hM,hN in [(heff,heff_M,heff_N),(hpur,hpur_M,hpur_N)]:
     for ibin in range(hh.GetXaxis().GetNbins()):
         x = hh.GetBinContent(ibin+1)
-        err = x*(1-x) # simple binomial error
+        xm = hM.GetBinContent(ibin+1)
+        xn = hN.GetBinContent(ibin+1)
+        if xn>0:
+            err = sqrt( xm*(1-x) )/xn
+        else:
+            err = 0
         hh.SetBinError(ibin+1,err)
 
 ceff = rt.TCanvas("ceff","",800,600)
-ceff.Draw()
-heff.SetTitle("#nu_#muCC-inclusive efficiency;true E_{#nu} (GeV);efficiency")
+ceff.SetGridx()
+ceff.SetGridy()
+heff.SetTitle("#nu_#muCC-inclusive efficiency (%s);true E_{#nu} (GeV);efficiency"%(tagname))
+heff.GetYaxis().SetRangeUser(0.0,1.0)
 heff.Draw("histE1")
 ceff.Update()
 
 cpur = rt.TCanvas("pur","",800,600)
-hpur.SetTitle("#nu_#muCC-inclusive purity;reco E_{vis} (MeV);purity")
-cpur.Draw()
+cpur.SetGridx()
+cpur.SetGridy()
+hpur.SetTitle("#nu_#muCC-inclusive purity (%s);reco E_{vis} (MeV);purity"%(tagname))
 hpur.Draw("histE1")
+hpur.GetYaxis().SetRangeUser(0.0,1.0)
 cpur.Update()
 
 out.cd()
