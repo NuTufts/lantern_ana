@@ -33,6 +33,7 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
             'vtx_kpscore/F',
             'vtx_dwall/F',
             'vtx_cosmicfrac/F',
+            'nMuTracks/I',
             'max_muscore/F',
             'max_mucharge/F',
             'ntracks_above/I',
@@ -57,7 +58,7 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
             if varname[-1]=='F':
                 self.__dict__[varname][0] = 0.0
             elif varname[-1]=='I':
-                self.__dict__[varname][0] = 0.0
+                self.__dict__[varname][0] = 0
     
     def productType(self) -> type:
         """Return the type of product (a dictionary in this case)."""

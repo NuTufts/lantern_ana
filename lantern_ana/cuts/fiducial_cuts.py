@@ -20,6 +20,7 @@ def fiducial_cut(ntuple, params):
     width = params.get('width', 10.0)
     applyscc = params.get('applyscc',True)
     usetruevtx = params.get('usetruevtx',False)
+    usewcvol = params.get('useWCvolume',False)
 
     if not usetruevtx:
         # Check if we have a reconstructed vertex
@@ -31,6 +32,12 @@ def fiducial_cut(ntuple, params):
         # Check FV requirement using true vtx
         pos = (ntuple.trueVtxX, ntuple.trueVtxY, ntuple.trueVtxZ)
         #print("use true vtx: ",pos)
+
+    if usewcvol:
+        if ntuple.vtxIsFiducial==1:
+            return True
+        else:
+            return False
 
     # Detector boundaries
     if not is_inside_tpc(pos):

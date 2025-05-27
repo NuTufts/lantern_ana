@@ -32,6 +32,10 @@ def get_true_primary_particle_counts(ntuple,params):
     counts = {}
 
     for i in range( ntuple.nTrueSimParts ):
+        if ntuple.trueSimPartProcess[i]!=0:
+            # skip none-primary particles
+            continue
+        
         pdg = ntuple.trueSimPartPDG[i]
         KEmin = thresholds.get(abs(pdg),xKE)
         #print('  ',pdg,': ',ntuple.trueSimPartE[i])

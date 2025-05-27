@@ -43,7 +43,8 @@ class RootDataset(Dataset):
         
         if not self._filepaths:
             raise ValueError(f"No file paths provided for dataset '{self.name}'")
-            
+
+        self._pot = 0.0
         self._tree = ROOT.TChain( self._tree_name )
 
         for fpath in self._filepaths:

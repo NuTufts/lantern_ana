@@ -85,12 +85,13 @@ class CutFactory:
         assert(type(logic_expression) is str)
         self.cut_logic = logic_expression
         
-    def apply_cuts(self, ntuple, return_on_fail=True, ismc=False):
+    def apply_cuts(self, ntuple, data_name, return_on_fail=True, ismc=False):
         """
         Apply all registered cuts in order.
         
         Parameters:
         - ntuple: The ntuple tree to run the cuts on
+        - data_name: name for the ntuple data given, can be used to modify cut behavior
         - return_on_fail: If True, return immediately when a cut fails
         
         Returns:
@@ -112,6 +113,7 @@ class CutFactory:
             func = cut['function']
             params = cut['params']
             params['ismc'] = ismc
+            params['data_name'] = data_name
             
             # Apply the cut
             cut_result = func(ntuple, params)

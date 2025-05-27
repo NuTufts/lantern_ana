@@ -41,7 +41,7 @@ def reco_nue_CCinc(ntuple, params):
         'min_nhits':20,
     }
     reco_e_params = params.get('has_primary_electron',has_primary_electron_cfg)
-    elconfidence_cut = params.get('min_electron_confidence',3.0) # lower until we tune
+    elconfidence_cut = params.get('min_electron_confidence',0.0) # lower until we tune
     maxmuscore_cut = params.get('max_muscore',-3.7) # this is kind of a numuCCpi+ check, maybe we can more judicious about this one
     vtxcosmicfrac_cut = params.get('min_vtx_cosmic_fraction',1.0)
     debug = params.get('debug',False)
@@ -86,8 +86,8 @@ def reco_nue_CCinc(ntuple, params):
     maxMuScore = -200.0
     maxMuQ     = 0.0
     maxmu_idx = -1
-    foundMuon = False
     num_tracks_above_threshold = 0
+    nMuTracks = 0
     for iT in range(ntuple.nTracks):
 
         # count number of primaries above some length
@@ -97,14 +97,16 @@ def reco_nue_CCinc(ntuple, params):
                 num_tracks_above_threshold += 1
 
         # look for muons
-        if ntuple.trackIsSecondary[iT] == 1 or ntuple.trackClassified[iT] != 1:
-          continue
-        if ntuple.trackMuScore[iT] > maxMuScore:
-          maxMuScore = ntuple.trackMuScore[iT]
-          maxmu_idx = iT
-          maxMuQ = ntuple.trackCharge[iT]
+        if ntuple.trackIsSecondary[iT] !=0 or ntuple.trackClassified[iT] != 1:
+            continue
+
         if abs(ntuple.trackPID[iT]) == 13:
-          foundMuon = True
+            nMuTracks += 1
+        if ntuple.trackMuScore[iT] > maxMuScore:
+            maxMuScore = ntuple.trackMuScore[iT]
+            maxmu_idx = iT
+            maxMuQ = ntuple.trackCharge[iT]
+
     
     # apply requirements on electron
     pass_has_electron = has_prim_electron
@@ -128,10 +130,10 @@ def reco_nue_CCinc(ntuple, params):
         maxQ_elconf = prim_electron_data[elMaxIdx]['elconfidence']
         if debug: print(f'nue: pass_electron_confidence={pass_electron_confidence} confidence={maxQ_elconf}')
 
-    pass_hasmuon = foundMuon==False
-    pass_maxmuscore = (num_tracks_above_threshold>1) or (maxMuScore<maxmuscore_cut)
+    pass_hasmuon = nMuTracks>0
+    pass_maxmuscore = nMuTracks>1 and maxMuScore<maxmuscore_cut
     if debug: 
-        print(f'nue: pass_hasmuon={pass_hasmuon}')
+        print(f'nue: pass_hasmuon={pass_hasmuon} nMuTracks={nMuTracks}')
         print(f'nue: pass_maxmuscore={pass_maxmuscore} score={maxMuScore} num_tracks={num_tracks_above_threshold}')
 
     # vertex cosmic fraction
@@ -143,12 +145,27 @@ def reco_nue_CCinc(ntuple, params):
     pass_goodvertex = ismc and ntuple.foundVertex==1 and ntuple.vtxDistToTrue < vtxDistToTrueCut
 
     # must pass everything
-    pass_event = pass_fv and pass_has_electron and pass_electron_confidence and pass_hasmuon and pass_maxmuscore
+    pass_event = pass_fv and pass_has_electron
 
     if ismc and apply_goodvertex_truthcut and not pass_goodvertex:
         pass_event = False
 
     # Fill Cut data
+    if ntuple.foundVertex==1:
+        cutdata['vtx_kpscore/F']    = ntuple.vtxScore
+        cutdata['vtx_dwall/F']      = 0.0
+        cutdata['vtx_cosmicfrac/F'] = ntuple.vtxFracHitsOnCosmic
+        if ismc:
+            cutdata['mc_dist2true/F'] = ntuple.vtxDistToTrue
+        else:
+            cutdata['mc_dist2true/F'] = 10000.0
+    else:
+        cutdata['vtx_kpscore/F'] = 0.0
+        cutdata['vtx_dwall/F'] = 0.0
+        cutdata['vtx_cosmicfrac/F'] = 0.0
+        cutdata['mc_dist2true/F'] = 10000.0
+
+
     if elMaxIdx>=0:
         emaxdata = prim_electron_data[elMaxIdx]
         spid = [ emaxdata['larpid[electron]'],
@@ -176,17 +193,6 @@ def reco_nue_CCinc(ntuple, params):
             cutdata['emax_fromshower/I'] = 0
         else:
             cutdata['emax_fromshower/I'] = 1
-
-        cutdata['vtx_kpscore/F']    = ntuple.vtxScore
-        cutdata['vtx_dwall/F']      = 0.0
-        cutdata['vtx_cosmicfrac/F'] = ntuple.vtxFracHitsOnCosmic
-        cutdata['max_muscore/F']    = exp(maxMuScore)
-        cutdata['max_mucharge/F']   = maxMuQ
-        cutdata['ntracks_above/I']  = num_tracks_above_threshold
-        if ismc:
-            cutdata['mc_dist2true/F'] = ntuple.vtxDistToTrue
-        else:
-            cutdata['mc_dist2true/F'] = 10000.0
     else:
         cutdata['emax_primary_score/F'] = 0.0
         cutdata['emax_purity/F'] = 0.0
@@ -200,18 +206,116 @@ def reco_nue_CCinc(ntuple, params):
         cutdata['emax_nplaneabove/I'] = 0
         cutdata['emax_el_normedscore/F'] = 0.0
         cutdata['emax_fromshower/I'] = 0
-        cutdata['vtx_kpscore/F'] = 0.0
-        cutdata['vtx_dwall/F'] = 0.0
-        cutdata['vtx_cosmicfrac/F'] = 0.0
-        cutdata['max_muscore/F'] = 0.0
-        cutdata['max_mucharge/F'] = 0.0
-        cutdata['ntracks_above/I'] = 0
-        cutdata['mc_dist2true/F'] = 10000.0
+
+
+    cutdata['max_muscore/F']    = maxMuScore
+    cutdata['max_mucharge/F']   = maxMuQ
+    cutdata['ntracks_above/I']  = num_tracks_above_threshold
+    cutdata['nMuTracks/I']      = nMuTracks
 
     # full cuts
-    pass_event = pass_fv and pass_has_electron and pass_electron_confidence and pass_hasmuon and pass_maxmuscore and pass_vtxcosmicfrac
+    pass_event = pass_fv and pass_has_electron
     if debug: print(f'nue: passes all={pass_event}')
     if pass_event:
         return True, cutdata
     
     return False, cutdata
+
+
+@register_cut
+def reco_nue_ccinclusive_gen2val_cuts( ntuple, params ):
+    """
+    Direct reproduction of Matthew Rosenberg's nue inclusive cc nue selection.
+    https://github.com/NuTufts/gen2val/blob/main/plot_CCinclusive_selections_efficiency_and_purity_makeHists.cpp#L26C1-L64C4
+    """
+
+    pass_vertex = False
+    pass_frac_on_cosmics = False
+    pass_no_muon = False
+    pass_has_primary_electron = False
+    pass_not_mulike = False
+    pass_confPrimEl = False
+    pass_CCnue = False
+
+    cut_data = {
+        'foundVertex':ntuple.foundVertex,
+        'vtxIsFiducial':ntuple.vtxIsFiducial,
+        'vtxFracHitsOnCosmics':ntuple.vtxFracHitsOnCosmic,
+        'pass_vertex':pass_vertex,
+        'pass_frac_on_cosmics':pass_frac_on_cosmics,
+        'pass_no_muon':pass_no_muon,
+        'pass_has_primary_electron':pass_has_primary_electron,
+        'pass_not_mulike':pass_not_mulike,
+        'pass_confPrimEl':pass_confPrimEl,
+        'pass_CCnue':pass_CCnue
+    }
+
+    if ntuple.foundVertex==1 and ntuple.vtxIsFiducial==1:
+        pass_vertex = True
+
+    # if not vertex, cannot evaluate downstream cuts
+    if pass_vertex==False:
+        return False, cut_data
+
+    if ntuple.vtxFracHitsOnCosmic < (1. - 1e-6):
+        pass_frac_on_cosmics = True
+
+    nMuons = 0
+    maxMuScore = -99.
+    for iT in range(ntuple.nTracks):
+        if ntuple.trackIsSecondary[iT]== 1 or ntuple.trackClassified[iT] != 1:
+            continue
+        if ntuple.trackPID[iT]== 13:
+            nMuons += 1
+        if ntuple.trackMuScore[iT] > maxMuScore:
+            maxMuScore = ntuple.trackMuScore[iT]
+
+    if nMuons==0:
+        pass_no_muon = True
+
+    #if nMuons == 0 and maxMuScore < -3.7:
+    #    pass_no_muon = True
+
+    nElectrons = 0
+    elMaxQ = -99.
+    elMaxQConf = -9.
+    elMaxQProc = -1
+    for iS in range( ntuple.nShowers ):
+        if ntuple.showerIsSecondary[iS] == 1 or ntuple.showerClassified[iS] != 1:
+            continue
+
+        if ntuple.showerPID[iS] == 11:
+            nElectrons += 1
+            if ntuple.showerCharge[iS] > elMaxQ:
+                elMaxQ = ntuple.showerCharge[iS]
+                elMaxQProc = ntuple.showerProcess[iS]
+                elMaxQConf = ntuple.showerElScore[iS] - (ntuple.showerPhScore[iS] + ntuple.showerPiScore[iS])/2.0
+
+    if nMuons==0 and nElectrons>=1 and elMaxQProc == 0:
+        pass_has_primary_electron = True
+
+    if pass_has_primary_electron and maxMuScore < -3.7:
+        pass_not_mulike = True
+
+    if pass_not_mulike and elMaxQConf > 7.1:
+        pass_confPrimEl = True 
+        pass_CCnue = True
+
+    #if not pass_not_mulike:
+    #    pass_CCnumu = True
+
+    cut_data['pass_vertex'] = pass_vertex
+    cut_data['pass_frac_on_cosmics'] = pass_frac_on_cosmics
+    cut_data['pass_no_muon'] = pass_no_muon
+    cut_data['pass_has_primary_electron'] = pass_has_primary_electron
+    cut_data['pass_not_mulike'] = pass_not_mulike
+    cut_data['pass_confPrimEl'] = pass_confPrimEl
+    cut_data['pass_CCnue'] = pass_CCnue
+    cut_data['nMuons'] = nMuons
+    cut_data['nElectrons'] = nElectrons
+    cut_data['elMaxQ'] = elMaxQ
+    cut_data['maxMuScore'] = maxMuScore
+    cut_data['elMaxQConf'] = elMaxQConf
+    cut_data['elMaxQProc'] = elMaxQProc
+
+    return pass_CCnue, cut_data

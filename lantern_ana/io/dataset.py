@@ -79,6 +79,14 @@ class Dataset(ABC):
             Current entry index
         """
         return self._current_entry
+
+    def get_name(self) -> str:
+        """
+        Get the name given to the dataset.
+
+        Returns: name
+        """
+        return self.name
         
     def __len__(self) -> int:
         """

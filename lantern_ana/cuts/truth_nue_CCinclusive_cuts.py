@@ -22,6 +22,11 @@ def true_nue_CCinc(ntuple, params):
         # if not MC data, we automaticall pass it
         return True
 
+    # make sure its from a nue neutrino and a CC event
+    if ntuple.trueNuCCNC!=0 or abs(ntuple.trueNuPDG)!=12:
+        # if not CC or if not from a nue, return false
+        return False
+
     # Get threshold
     # make default
     true_part_cfg = {}
