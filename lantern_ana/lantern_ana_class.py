@@ -110,12 +110,16 @@ class LanternAna:
         """
         Discover and load all available components.
         """
+        import lantern_ana
+        import os
+
         self.logger.info("Discovering components...")
         
         # Auto-discover cuts, producers, and dataset types
         CutFactory.auto_discover_cuts()
-        ProducerFactory.discover_producers("lantern_ana/producers")
-        DatasetFactory.discover_datasets("lantern_ana/io")
+        homedir=os.path.dirname(lantern_ana.__file__)
+        ProducerFactory.discover_producers(f"{homedir}/producers")
+        DatasetFactory.discover_datasets(f"{homedir}/io")
         TagFactory.auto_discover_tags()
         
         self.logger.info(f"Found {len(CutFactory.list_available_cuts())} cuts")

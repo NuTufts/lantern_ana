@@ -17,6 +17,10 @@ def true_numu_CCinc(ntuple, params):
     Returns:
     - True if all conditions satisfied
     """
+    if params['ismc']==False:
+        # if not MC, just pass the event
+        return True
+
     # Get threshold
     part_count_params = params.get('part_count_params',{})
     fv_params  = params.get('fv_params',{'width':10.0,'apply_scc':False})

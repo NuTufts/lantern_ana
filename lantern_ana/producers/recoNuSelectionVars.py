@@ -15,10 +15,12 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
     def __init__(self, name: str, config: Dict[str, Any]):
         super().__init__(name, config)
         self._track_min_len = config.get("track_min_len", 5.0)  # Minimum energy to consider
+        self._cutname = config.get('cutname')
         
         # Output variables
         # we use a list of sample vars to avoid boilerplate
         self.simple_varlist = [
+            'has_primary_electron/I',
             'emax_primary_score/F',
             'emax_purity/F',
             'emax_completeness/F',
@@ -30,15 +32,28 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
             'emax_nplaneabove/I',
             'emax_el_normedscore/F',
             'emax_fromshower/I',
+            'vtx_found/I',
+            'vtx_infiducial/I',
             'vtx_kpscore/F',
             'vtx_dwall/F',
             'vtx_cosmicfrac/F',
+            'frac_outoftime_pixels/F',
+            'frac_intime_unreco_pixels/F',
             'nMuTracks/I',
             'max_muscore/F',
             'max_mucharge/F',
             'ntracks_above/I',
             'mc_dist2true/F'
         ]
+
+        # add these
+        # eventTree.Branch("vtxMaxIntimePixelSum", vtxMaxIntimePixelSum, "vtxMaxIntimePixelSum/F")
+        # eventTree.Branch("vtxKPtype", vtxKPtype, 'vtxKPtype/I')
+        # eventTree.Branch("vtxKPscore", vtxKPscore, 'vtxKPtype/F')
+        # eventTree.Branch("vtxFracHitsOnCosmic", vtxFracHitsOnCosmic, 'vtxFracHitsOnCosmic/F')
+        # eventTree.Branch("fracUnrecoIntimePixels", fracUnrecoIntimePixels, 'fracUnrecoIntimePixels[3]/F')
+        # eventTree.Branch("fracRecoOuttimePixels", fracRecoOuttimePixels, 'fracRecoOuttimePixels[3]/F')
+
         for varname in self.simple_varlist:
             if varname[-1]=='F':
                 self.__dict__[varname] = array('f',[0.0])
@@ -66,19 +81,35 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
     
     def requiredInputs(self) -> List[str]:
         """Specify required inputs."""
-        return ["gen2ntuple",'reco_nue_CCinc']  # We need the ntuple and the cutdata
+        return ["gen2ntuple",self._cutname]  # We need the ntuple and the cutdata
     
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """Process an event by calculating track energy statistics."""
         # Get gen2ntuple from input data
         ntuple = data["gen2ntuple"]
-        cutdata = data['cutdata_reco_nue_CCinc']
+        cutdata = data[f'cutdata_{self._cutname}']
 
         results = {}
         for varname in self.simple_varlist:
             if varname in cutdata:
                 self.__dict__[varname][0] = cutdata[varname]
                 results[varname] = cutdata[varname]
+
+        # add vertex variables
+        if ntuple.foundVertex==1:
+            # for each we need to get max values
+            max_outoftime = 0.0
+            max_intime_unreco = 0.0
+            for p in range(3):
+                if ntuple.fracRecoOuttimePixels[p]>max_outoftime:
+                    max_outoftime = ntuple.fracRecoOuttimePixels[p]
+                if ntuple.fracUnrecoIntimePixels[p]>max_intime_unreco:
+                    max_intime_unreco = ntuple.fracUnrecoIntimePixels[p]
+
+            self.__dict__['frac_outoftime_pixels/F'][0] = max_outoftime
+            self.__dict__['frac_intime_unreco_pixels/F'][0] = max_intime_unreco
+            results['frac_outoftime_pixels/F'] = max_outoftime
+            results['frac_intime_unreco_pixels/F'] = max_intime_unreco
 
         # Return results
         return results

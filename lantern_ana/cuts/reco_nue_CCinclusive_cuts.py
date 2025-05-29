@@ -50,14 +50,32 @@ def reco_nue_CCinc(ntuple, params):
     ismc = params.get('ismc',False)
     el_candidate_cuts = params.get('electron_candidate_quality_cuts',{})
 
-    # dict of info to return downstream
-    cutdata = {}
+    # dict of info to return downstream and for analysis
+    cutdata = {
+        'vtx_found/I'              : ntuple.foundVertex,
+        'vtx_infiducial/I'         : ntuple.vtxIsFiducial,
+        'vtx_cosmicfrac/F'         : ntuple.vtxFracHitsOnCosmic,
+        'has_primary_electron/I'   : 0,
+        'emax_primary_score/F'     : 0.0, 
+        'emax_purity/F'            : 0.0,
+        'emax_completeness/F'      : 0.0,
+        'emax_fromneutral_score/F' : 0.0,
+        'emax_fromcharged_score/F' : 0.0,
+        'emax_charge/F'            : 0.0,
+        'emax_econfidence/F'       : 0.0,     
+        'emax_fromdwall/F'         : 0.0,
+        'emax_nplaneabove/I'       : 0,
+        'emax_el_normedscore/F'    : 0.0,
+        'emax_fromshower/I'        : -1,
+        'max_muscore/F'            : -20.0,
+        'max_mucharge/F'           : 0.0,
+        'nMuTracks/I'              : 0
+    }
 
     if debug:
         print(f'[fileid, run, subrun, event]: {ntuple.fileid} {ntuple.run} {ntuple.subrun} {ntuple.event}')
 
     # has to have a vertex. 
-    cutdata['foundvertex'] = ntuple.foundVertex
     if ntuple.foundVertex!=1:
         if debug: print('nue: no vertex')
         return False, cutdata # Cannot calculate quantities below without it. So return False.
@@ -144,9 +162,6 @@ def reco_nue_CCinc(ntuple, params):
     # For debug
     pass_goodvertex = ismc and ntuple.foundVertex==1 and ntuple.vtxDistToTrue < vtxDistToTrueCut
 
-    # must pass everything
-    pass_event = pass_fv and pass_has_electron
-
     if ismc and apply_goodvertex_truthcut and not pass_goodvertex:
         pass_event = False
 
@@ -167,6 +182,7 @@ def reco_nue_CCinc(ntuple, params):
 
 
     if elMaxIdx>=0:
+        cutdata['has_primary_electron/I'] = 1
         emaxdata = prim_electron_data[elMaxIdx]
         spid = [ emaxdata['larpid[electron]'],
             emaxdata['larpid[photon]'],
@@ -194,6 +210,7 @@ def reco_nue_CCinc(ntuple, params):
         else:
             cutdata['emax_fromshower/I'] = 1
     else:
+        cutdata['has_primary_electron/I'] = 0
         cutdata['emax_primary_score/F'] = 0.0
         cutdata['emax_purity/F'] = 0.0
         cutdata['emax_completeness/F'] = 0.0

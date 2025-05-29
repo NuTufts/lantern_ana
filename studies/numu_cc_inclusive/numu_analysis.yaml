@@ -1,0 +1,239 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_numu_v3dev"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /home/twongjirad/working/data/ntuples/
+    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+  run1_extbnb_mcc9_v29e_C1:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
+  run1_bnb5e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
+
+# Cut configuration
+cuts:
+  reco_numu_CCinc:
+    fiducial_cut:
+      width: 10.0
+      applyscc: true
+      usetruevtx: false
+      useWCvolume: true
+    has_muon_track:
+      ke_threshold: 30.0
+    apply_goodvertex_truthcut: False
+    vtxDistToTrueCut: 10.0
+  true_numu_CCinc:
+    part_count_params:
+      muKE: 30.0
+      pKE:  60.0
+      piKE: 30.0
+      gKE: 0.0
+    fv_params:
+      width: 10.0
+      applyscc: false
+      usetruevtx: true
+
+cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
+
+# Producer configuration
+producers:
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
+  reco_numu_CCinc_prod:
+    # This passes result of reco numu cut to the output tree
+    type: CutResultProducer
+    config:
+      cutname: reco_numu_CCinc
+  true_numu_CCinc_prod:
+    # This passes result of true numu signal cut to the output tree
+    type: CutResultProducer
+    config:
+      cutname: true_numu_CCinc
+  nuselvar:
+    type: RecoNuSelectionVariablesProducer
+    config:
+      cutname: reco_numu_CCinc
+      track_min_len: 5.0
+  # # Reco Evis Stacked Hist
+  # evisStacked_reco:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "visible_energy"
+  #     plotvar_key: "evis"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"
+  #     pass_cutresults: ['reco_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3000.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
+  # evisStacked_truesig:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "visible_energy"
+  #     plotvar_key: "evis"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"      
+  #     pass_cutresults: ['true_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3000.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
+  # evisStacked_both:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "visible_energy"
+  #     plotvar_key: "evis"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"      
+  #     pass_cutresults: ['true_numu_CCinc','reco_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3000.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
+  # # True Nu Energy stack hist
+  # trueEnuStacked_reco:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "trueNu"
+  #     plotvar_key: "Enu"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"      
+  #     pass_cutresults: ['reco_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
+  # trueEnuStacked_truesig:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "trueNu"
+  #     plotvar_key: "Enu"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"      
+  #     pass_cutresults: ['true_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
+  # trueEnuStacked_both:
+  #   type: StackedHistProducer
+  #   config:
+  #     plotvar_name: "trueNu"
+  #     plotvar_key: "Enu"
+  #     tagvar_name: "truth_mode"
+  #     tagvar_key: "mode"
+  #     weight_name: "eventweight"
+  #     weight_key: "weight"      
+  #     pass_cutresults: ['true_numu_CCinc','reco_numu_CCinc']
+  #     nbins: 50
+  #     xmin: 0.0
+  #     xmax: 3.0
+  #     title: "Reco Visible Energy; visible energy (MeV)"
+  #     split_vars: ['numuCC0p0pi0x','numuCC1p0pi0x','numuCCMp0pi0x','NC','nueCC']
+  #     numuCC0p0pi0x: ['numuCC0p0pi0x']
+  #     numuCC1p0pi0x: ['numuCC1p0pi0x']
+  #     numuCCMp0pi0x: ['numuCCMp0pi0x']
+  #     NC: ['numuNC','nueNC']
+  #     nueCC: ['nueCC']
