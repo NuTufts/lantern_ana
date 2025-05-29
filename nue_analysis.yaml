@@ -21,21 +21,21 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: true
+    process: false
     filepaths:
      - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
   run1_bnb5e19:
@@ -119,6 +119,7 @@ producers:
   nuselvar:
     type: RecoNuSelectionVariablesProducer
     config:
+      cutname: reco_nue_CCinc
       track_min_len: 5.0
   # # Reco Evis Stacked Hist
   # evisStacked_reco:
