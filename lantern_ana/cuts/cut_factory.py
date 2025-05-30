@@ -127,6 +127,9 @@ class CutFactory:
         logger = logging.getLogger(f"CutFactory_{id(self)}")
         logger.setLevel(level)
         
+        # Prevent inheritance from root logger to avoid duplicate messages
+        logger.propagate = False
+        
         # Don't add handlers if they already exist (prevents duplicates)
         if logger.handlers:
             return logger
@@ -528,3 +531,50 @@ class CutFactory:
                 report[cut_name] = 0.0
         
         return report
+    
+    @staticmethod
+    def auto_discover_cuts():
+        """
+        Static method to discover cuts (for compatibility with main analysis class).
+        
+        This method imports all cut modules which triggers the @register_cut decorators
+        to populate the global _REGISTERED_CUTS registry.
+        """
+        import lantern_ana
+        import os
+        import glob
+        import importlib
+        
+        # Get the cuts directory
+        cuts_dir = os.path.join(os.path.dirname(lantern_ana.__file__), 'cuts')
+        
+        # Find all Python files in the cuts directory
+        module_files = glob.glob(os.path.join(cuts_dir, "*.py"))
+        
+        cuts_found = 0
+        for module_path in module_files:
+            module_name = os.path.basename(module_path).replace('.py', '')
+            
+            # Skip special files
+            if module_name.startswith('__') or 'factory' in module_name:
+                continue
+                
+            try:
+                # Import the module - this triggers @register_cut decorators
+                module_path = f"lantern_ana.cuts.{module_name}"
+                importlib.import_module(module_path)
+                cuts_found += 1
+                
+            except ImportError as e:
+                # Silently continue if module can't be imported
+                pass
+    
+    @staticmethod
+    def list_available_cuts():
+        """
+        Static method to list available cuts.
+        
+        Returns:
+            List of available cut names
+        """
+        return list(_REGISTERED_CUTS.keys())

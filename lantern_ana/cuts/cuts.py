@@ -1,5 +1,7 @@
 #NOTES:
 #All of these functions are meant to operate within a larger function that loops through every event (or the chosen events) within the eventTree
+# This is just here for documentation purposes - but they are all deprecated
+
 import sys, argparse
 import numpy as np
 import ROOT as rt
