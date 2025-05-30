@@ -19,11 +19,11 @@ Adding to dataset[EventTree] to Tree[EventTree]: /home/twongjirad/working/larbys
 """
 targetpot = 4.4e19
 samples = ['nue','numu','extbnb','data']
-scaling = {"numu":targetpot/9.625658105435206e+19,
+scaling = {"numu":targetpot/4.5221966264744385e+20,
            "nue":targetpot/1.0696499342682672e+22,
            "extbnb":0.47809891*0.80,
            "data":1.0}
-files = {"numu":"./output/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250526_232333.root",
+files = {"numu":"./output/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250527_161522.root",
          "nue":"./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250526_203902.root",
          "extbnb":"./output/run1_extbnb_mcc9_v29e_C1_20250526_203934.root",
          "data":"./output/run1_bnb5e19_20250526_204132.root"}
@@ -40,40 +40,48 @@ for sample in samples:
 
 out = rt.TFile("temp.root","recreate")
 
-vars = [('nuselvar_emax_econfidence', 40, 0, 20, 'electron confidence'),
-        ('nuselvar_emax_primary_score',40,0,1.0,'primary score'),
-        ('nuselvar_emax_fromneutral_score',40,0,1.0,'from neutral parent score'),
-        ('nuselvar_emax_fromcharged_score',40,0,1.0,'from charged parent score'),
-        ('nuselvar_emax_el_normedscore',40,0,1.0,'electron score (normalized)'),
-        ('visible_energy',15,0,3000,'visible energy; MeV'),
-        ('nuselvar_nMuTracks',20,0,20,'number of mu-like track-prongs'),
-        ('nuselvar_max_muscore',42,-20,1,'max mu-like score'),
-        ('nuselvar_vtx_kpscore',60,0.4,1.0,'keypoint score'),
-        ('nuselvar_vtx_cosmicfrac',50,0,1.01,'fraction of pixels near vertex'),
+vars = [('nuselvar_emax_econfidence', 40, 0, 20, 'electron confidence', 1),
+        ('nuselvar_emax_primary_score',40,0,1.0,'primary score', 1),
+        ('nuselvar_emax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
+        ('nuselvar_emax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
+        ('nuselvar_emax_el_normedscore',40,0,1.0,'electron score (normalized)', 1),
+        ('visible_energy',15,0,3000,'visible energy; MeV', 0),
+        ('nuselvar_nMuTracks',20,0,20,'number of mu-like track-prongs',1),
+        ('nuselvar_max_muscore',42,-20,1,'max mu-like score',1),
+        ('nuselvar_vtx_kpscore',60,0.4,1.0,'keypoint score',1),
+        ('nuselvar_vtx_cosmicfrac',50,0,1.01,'fraction of pixels near vertex',1),
 ]
 hists = {}
 canvs = {}
 
 
 cut = "(reco_nue_CCinc_cutresult==1)"
+cut += " && (nuselvar_max_muscore<-2.0)"
+cut += " && (nuselvar_vtx_cosmicfrac<0.20)"
+cut += " && (nuselvar_emax_el_normedscore>0.95)"
+cut += " && (nuselvar_emax_fromcharged_score<0.05)"
+cut += " && (nuselvar_emax_primary_score>0.8)"
+cut += " && (nuselvar_vtx_kpscore>0.80)"
+cut += " && (nuselvar_emax_econfidence>5.0)"
+cut += " && (visible_energy>0.05)"
+# cut += " && (nuselvar_emax_fromneutral_score<0.10)"
 
 #cut = "(nuselvar_vtx_kpscore>0.0)"
-cut += " && (nuselvar_emax_primary_score>0.85)"
-cut += " && (nuselvar_emax_el_normedscore>0.90)"
-cut += " && (nuselvar_vtx_cosmicfrac<0.10)"
-cut += " && (nuselvar_emax_fromcharged_score<0.05)"
-cut += " && (nuselvar_nMuTracks<1) "
-cut += " && (nuselvar_vtx_kpscore>0.80)"
-#cut += " && (nuselvar_emax_fromneutral_score<0.20)"
-cut += " && (nuselvar_max_muscore<-3.5)"
+
+
+
+
+#cut += " && (nuselvar_nMuTracks<1) "
+#
+
+#cut += " && (nuselvar_max_muscore<-1.0)"
 
 
 
 
 #cut += " && (nuselvar_max_muscore>-1000.0 && nuselvar_max_muscore<-2.0)"
 
-## cut += " && (nuselvar_emax_econfidence>4.0)"
-for var, nbins, xmin, xmax, htitle in vars:
+for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
     cname = f"c{var}"
     canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1000,800)
@@ -104,14 +112,19 @@ for var, nbins, xmin, xmax, htitle in vars:
     hists[(hstack_name,sample)] = hstack
 
     hstack.Draw("hist")
+    canvs[var].SetLogy(setlogy)
 
     predmax = hstack.GetMaximum()
     datamax = hists[(var,"data")].GetMaximum()
 
     if predmax>datamax:
+        if setlogy==1:
+            hstack.GetYaxis().SetRangeUser(0.1,predmax*5)
         hstack.SetTitle(htitle)
         hstack.Draw("hist")
     else:
+        if setlogy==1:
+            hists[(var,"data")].GetYaxis().SetRangeUser(0.1,predmax*5)
         hists[(var,"data")].SetTitle(htitle)
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")

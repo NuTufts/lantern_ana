@@ -60,15 +60,18 @@ canvs = {}
 #cut = "(reco_nue_ccinclusive_gen2val_cuts_cutresult==1)"
 
 cut = "(nuselvar_vtx_kpscore>0.0)"
-#cut += " && (nuselvar_emax_fromneutral_score<0.20)"
-#cut += " && (nuselvar_emax_el_normedscore>0.95)"
-#cut += " && (nuselvar_emax_fromcharged_score<0.30)"
-#cut += " && (nuselvar_vtx_cosmicfrac<0.10)"
-#cut += " && (nuselvar_vtx_kpscore>0.8)"
-#cut += " && (nuselvar_max_muscore>-1000.0 && nuselvar_max_muscore<-2.0)"
-#cut += " && (nuselvar_emax_primary_score>0.80)"
-#cut += " && (nuselvar_emax_econfidence>10.0)"
-#cut += " && (nuselvar_nMuTracks<=1) "
+#cut = "(reco_nue_CCinc_cutresult==1)"
+cut += " && (nuselvar_max_muscore<-2.0)"
+cut += " && (nuselvar_vtx_cosmicfrac<0.20)"
+cut += " && (nuselvar_emax_el_normedscore>0.95)"
+cut += " && (nuselvar_emax_fromcharged_score<0.05)"
+cut += " && (nuselvar_emax_primary_score>0.8)"
+cut += " && (nuselvar_vtx_kpscore>0.80)"
+cut += " && (nuselvar_emax_econfidence>5.0)"
+
+cut += " && (nuselvar_vtx_kpscore>0.90)"
+cut += " && (visible_energy>0.05)"
+#cut += " && (nuselvar_emax_econfidence>7.5)"
 
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 

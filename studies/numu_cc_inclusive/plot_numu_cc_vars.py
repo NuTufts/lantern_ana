@@ -8,15 +8,16 @@ import ROOT as rt
 """
 targetpot = 4.4e19
 samples = ['numu_cc','numu_bg','extbnb','data']
+#samples = ['numu_cc','numu_bg']
 scaling = {"numu_cc":targetpot/4.5221966264744385e+20,
            "numu_bg":targetpot/4.5221966264744385e+20,
            "nue":targetpot/1.0696499342682672e+22,
            "extbnb":0.47809891*0.80,
            "data":1.0}
-files = {"numu_cc":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250529_104712.root",
-         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250529_104712.root",
-         "extbnb":"./output_numu_v3dev/run1_extbnb_mcc9_v29e_C1_20250529_105252.root",
-         "data":"./output_numu_v3dev/run1_bnb5e19_20250527_211352.root"}
+files = {"numu_cc":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250529_141918.root",
+         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250529_141918.root",
+         "extbnb":"./output_numu_v3dev/run1_extbnb_mcc9_v29e_C1_20250529_142519.root",
+         "data":"./output_numu_v3dev/run1_bnb5e19_20250529_142750.root"}
 tfiles = {}
 trees = {}
 
@@ -35,17 +36,17 @@ vars = [('visible_energy', 50, 0, 5000, 'visible energy; MeV', 0),
         ('muon_properties_energy',50,0,2500.0,'muon kinetic energy (MeV)', 0),
         ('muon_properties_pid_score',101,-2,0.01,'muon pid score', 0),
         ('vertex_properties_score',40,0,1.0,'keypoint score', 0),
-        # ('nuselvar_emax_econfidence', 40, 0, 20, 'electron confidence', 1),
-        # ('nuselvar_emax_primary_score',40,0,1.0,'primary score', 1),
-        # ('nuselvar_emax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
-        # ('nuselvar_emax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
-        # ('nuselvar_emax_el_normedscore',40,0,1.0,'electron score (normalized)', 1),
+        ('nuselvar_mumax_primary_score',40,0,1.0,'primary score', 1),
+        ('nuselvar_mumax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
+        ('nuselvar_mumax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
+        ('nuselvar_mumax_mu_normedscore',40,0,1.0,'muon score (normalized)', 1),
         ('visible_energy',15,0,3000,'visible energy; MeV', 0),
         ('nuselvar_nMuTracks',20,0,20,'number of mu-like track-prongs',1),
         ('nuselvar_max_muscore',300,-2,1,'max mu-like score',1),
-        ('nuselvar_vtx_kpscore',60,0.4,1.0,'keypoint score',1),
         ('nuselvar_vtx_cosmicfrac',50,0,1.01,'fraction of pixels near vertex',1),
-        ('trueNu_Enu',50,0,5,'true neutrino energy; GeV',0)
+        ('trueNu_Enu',50,0,5,'true neutrino energy; GeV',0),
+        ('nuselvar_frac_outoftime_pixels',50,0,1.01,'fraction of recod pixels that are out of time',1),
+        ('nuselvar_frac_intime_unreco_pixels',50,0,1.01,'fraction of intime pixels covered by recod interaction',1),
 ]
 hists = {}
 canvs = {}
@@ -53,9 +54,12 @@ canvs = {}
 
 cut = "(nuselvar_vtx_found==1)"
 cut += " && (nuselvar_vtx_infiducial==1)"
-cut += " && (nuselvar_vtx_cosmicfrac<0.5)"
+cut += " && (nuselvar_frac_intime_unreco_pixels<0.95)"
+#cut += " && (nuselvar_frac_outoftime_pixels>0.5)"
+#cut += " && (nuselvar_frac_intime_unreco_pixels<0.8)"
+#cut += " && (nuselvar_vtx_cosmicfrac<0.5)"
 cut += " && (nuselvar_nMuTracks>=1)"
-cut += " && (vertex_properties_score>0.8)"
+cut += " && (vertex_properties_score>0.75)"
 #cut = "(true_numu_CCinc_cutresult==1)"
 #cut += " && (trueNu_Enu>0.0)"
 #cut += " && (reco_numu_CCinc_cutresult==1)"
