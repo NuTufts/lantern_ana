@@ -5,6 +5,10 @@ This module provides the LanternAna class which combines the dataset, cut, and p
 systems into a unified analysis framework that can be configured via YAML files.
 """
 
+"""
+Enhanced LanternAna class with producer-first architecture support
+"""
+
 import os
 import sys
 import yaml
@@ -25,25 +29,17 @@ from lantern_ana.tags.tag_factory import TagFactory
 
 class LanternAna:
     """
-    The main class for running Lantern physics analyses.
+    LanternAna with producer-first architecture.
     
-    This class integrates the dataset, cut, and producer systems to provide
-    a complete analysis framework that can be configured via YAML files.
+    Key changes:
+    - Producers run first and generate all features
+    - Cuts receive producer outputs via params
+    - Clean separation of feature calculation and selection logic
     """
     
     def __init__(self, config_file: str, log_level: str = "INFO"):
-        """
-        Initialize the LanternAna framework.
+        """Initialize the framework."""
         
-        Args:
-            config_file: Path to YAML configuration file
-            log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-
-        Configuration Params:
-            output_dir: Path where output ROOT files are saved. {default: '.'}
-            filter_events: If True, do not save events that fail cuts. {default: False}
-        """
-
         # Load configuration
         self.config_file = config_file
         with open(config_file, 'r') as f:
@@ -59,8 +55,9 @@ class LanternAna:
 
         self.logger.info(f"Loading configuration from {config_file}")
 
-        # Do we filter events?
-        self._filter_events = self.config.get('filter_events',False)
+        # Configuration options
+        self._filter_events = self.config.get('filter_events', False)
+        self._producer_first = self.config.get('producer_first_mode', True)  # New option
         
         # Initialize components
         self._discover_components()
@@ -80,13 +77,7 @@ class LanternAna:
         self.stats = {}
         
     def _setup_logging(self, level_str: str):
-        """
-        Set up logging configuration.
-        
-        Args:
-            level_str: Logging level as string
-        """
-        # Convert string to logging level
+        """Set up logging configuration."""
         level_map = {
             "DEBUG": logging.DEBUG,
             "INFO": logging.INFO,
@@ -96,20 +87,19 @@ class LanternAna:
         }
         level = level_map.get(level_str.upper(), logging.INFO)
         
-        # Configure logging
-        logging.basicConfig(
-            level=level,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.StreamHandler(sys.stdout),
-                logging.FileHandler(os.path.join(self.output_dir, 'lantern_ana.log'))
-            ]
-        )
+        # Only configure root logger if not already configured
+        if not logging.getLogger().handlers:
+            logging.basicConfig(
+                level=level,
+                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                handlers=[
+                    logging.StreamHandler(sys.stdout),
+                    logging.FileHandler(os.path.join(self.output_dir, 'lantern_ana.log'))
+                ]
+            )
     
     def _discover_components(self):
-        """
-        Discover and load all available components.
-        """
+        """Discover and load all available components."""
         import lantern_ana
         import os
 
@@ -117,7 +107,7 @@ class LanternAna:
         
         # Auto-discover cuts, producers, and dataset types
         CutFactory.auto_discover_cuts()
-        homedir=os.path.dirname(lantern_ana.__file__)
+        homedir = os.path.dirname(lantern_ana.__file__)
         ProducerFactory.discover_producers(f"{homedir}/producers")
         DatasetFactory.discover_datasets(f"{homedir}/io")
         TagFactory.auto_discover_tags()
@@ -128,12 +118,13 @@ class LanternAna:
         self.logger.info(f"Found {len(TagFactory.list_available_tags())} tags")
     
     def _configure_components(self):
-        """
-        Configure components from YAML configuration.
-        """
+        """Configure components from YAML configuration."""
         self.logger.info("Configuring components...")
         
-        # Configure cuts
+        # Configure producer manager first (producer-first architecture)
+        self.producer_manager.load_configuration(self.config_file)
+        
+        # Configure cuts - they'll get producer data at runtime
         for cut_name, cut_params in self.config.get('cuts', {}).items():
             self.logger.debug(f"Adding cut: {cut_name}")
             self.cut_factory.add_cut(cut_name, cut_params)
@@ -143,18 +134,13 @@ class LanternAna:
             self.logger.debug(f"Setting cut logic: {self.config['cut_logic']}")
             self.cut_factory.set_cut_logic(self.config['cut_logic'])
         
-        # Configure producer manager
-        self.producer_manager.load_configuration(self.config_file)
-        
         # Configure tags
         for tag_name, tag_params in self.config.get('tags', {}).items():
             self.logger.debug(f"Adding tag: {tag_name}")
             self.tag_factory.add_tag(tag_name, tag_params)
     
     def load_datasets(self):
-        """
-        Load datasets from configuration.
-        """
+        """Load datasets from configuration."""
         self.logger.info("Loading datasets...")
         
         # Create datasets from configuration
@@ -167,13 +153,8 @@ class LanternAna:
                 self.logger.info(f"  MC dataset with {dataset.pot} POT")
     
     def run(self, dataset_names: Optional[List[str]] = None):
-        """
-        Run the analysis on specified datasets.
-        
-        Args:
-            dataset_names: List of dataset names to process. If None, process all.
-        """
-        self.logger.info("Starting analysis run...")
+        """Run the analysis on specified datasets."""
+        self.logger.info("Starting enhanced analysis run...")
         
         # Load datasets if not already loaded
         if not self.datasets:
@@ -191,22 +172,34 @@ class LanternAna:
         # Process each dataset
         for dataset_name, dataset in datasets_to_process.items():
             if dataset.do_we_process():
-                self._process_dataset(dataset_name, dataset)
+                self._process_dataset_enhanced(dataset_name, dataset)
         
         # Print statistics
         self._print_statistics()
         
-        self.logger.info("Analysis complete!")
+        self.logger.info("analysis complete!")
     
-    def _process_dataset(self, dataset_name: str, dataset):
-        """
-        Process a single dataset.
+    def save_statistics(self, filename: str):
+        """Save analysis statistics to file."""
+        import yaml
         
-        Args:
-            dataset_name: Name of the dataset
-            dataset: Dataset object to process
+        # Combine analysis and producer statistics
+        stats_data = {
+            'analysis_statistics': self.stats,
+            'producer_statistics': self.producer_manager.get_performance_summary() if hasattr(self.producer_manager, 'get_performance_summary') else {}
+        }
+        
+        # Save as YAML
+        with open(filename, 'w') as f:
+            yaml.dump(stats_data, f, indent=2)
+        
+        self.logger.info(f"Statistics saved to: {filename}")
+    
+    def _process_dataset_enhanced(self, dataset_name: str, dataset):
         """
-        self.logger.info(f"Processing dataset: {dataset_name}")
+        Process a single dataset with producer-first architecture.
+        """
+        self.logger.info(f"Processing dataset with enhanced architecture: {dataset_name}")
         
         # Create output file and tree
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -217,7 +210,7 @@ class LanternAna:
         # Create POT tree for MC datasets
         pot_tree = ROOT.TTree("livetime_tree", "POT and nspills Information")
         pot = array('f', [0.0])
-        nspills = array('f',[0.0])
+        nspills = array('f', [0.0])
         ismc = array('i', [0])
         pot_tree.Branch("pot", pot, "pot/F")
         pot_tree.Branch("nspills", nspills, "nspills/F")
@@ -255,8 +248,8 @@ class LanternAna:
         # Show progress every N events
         progress_step = max(1, max_events // 20)
         
-        # Event loop
-        self.logger.info(f"Processing {max_events} events...")
+        # Event loop with enhanced processing
+        self.logger.info(f"Processing {max_events} events with producer-first architecture...")
         for i in range(max_events):
             if i > 0 and i % progress_step == 0:
                 progress = (i / max_events) * 100
@@ -270,8 +263,17 @@ class LanternAna:
             data = dataset.get_data()
             ntuple = data['tree']
             
-            # Apply cuts
-            passes, cut_results, cut_data = self.cut_factory.apply_cuts(ntuple, dataset.name, return_on_fail=False, ismc=dataset.ismc)
+            # ENHANCED PROCESSING: Producer-first architecture
+            if self._producer_first:
+                passes, producer_results, cut_results = self._process_event_producer_first(
+                    ntuple, dataset, i
+                )
+            else:
+                # Fallback to original architecture
+                passes, cut_results, cut_data = self.cut_factory.apply_cuts(
+                    ntuple, dataset.name, return_on_fail=False, ismc=dataset.ismc
+                )
+                producer_results = {}
             
             # Update cut statistics
             for cut_name, result in cut_results.items():
@@ -283,30 +285,17 @@ class LanternAna:
                 else:
                     self.stats[dataset_name]['cut_stats'][cut_name]['fail'] += 1
             
-            # Process event if it passes cuts
-            if passes:
-                self.stats[dataset_name]['passed'] += 1
+            # Process event if it passes cuts (or if not filtering)
+            if passes or not self._filter_events:
+                if passes:
+                    self.stats[dataset_name]['passed'] += 1
+                else:
+                    self.stats[dataset_name]['failed'] += 1
                 
-                # Process with producers
-                event_data = {"gen2ntuple": ntuple}
-                event_data.update(cut_results)
-                event_data.update(cut_data)
-                
-                # Apply tags if configured
-                if hasattr(self, 'tag_factory') and self.tag_factory.tags:
-                    tags = self.tag_factory.apply_tags(ntuple)
-                    event_data['event_tags'] = tags
-                
-                # Process with producers
-                self.producer_manager.process_event(event_data, {"event_index": i, 'ismc':dataset.ismc})
-                
-                # Fill output tree
+                # Fill output tree (producer data already filled by producer manager)
                 output_tree.Fill()
             else:
                 self.stats[dataset_name]['failed'] += 1
-                if not self._filter_events:
-                    self.producer_manager.set_default_values()
-                    output_tree.Fill()
         
         # End timer
         end_time = time.time()
@@ -328,12 +317,47 @@ class LanternAna:
         self.logger.info(f"Dataset {dataset_name} processed in {self.stats[dataset_name]['processing_time']:.1f}s")
         self.logger.info(f"Results written to {output_file_path}")
     
+    def _process_event_producer_first(self, ntuple, dataset, event_index):
+        """
+        Process a single event using producer-first architecture.
+        
+        Returns:
+            passes: Boolean indicating if event passes cuts
+            producer_results: Dictionary of producer outputs
+            cut_results: Dictionary of cut results
+        """
+        # Step 1: Run all producers first
+        event_data = {"gen2ntuple": ntuple}
+        
+        # Apply tags if configured
+        if hasattr(self, 'tag_factory') and self.tag_factory.tags:
+            tags = self.tag_factory.apply_tags(ntuple)
+            event_data['event_tags'] = tags
+        
+        # Process with producers
+        producer_results = self.producer_manager.process_event(
+            event_data, 
+            {"event_index": event_index, 'ismc': dataset.ismc, 'dataset_name':dataset.name}
+        )
+        
+        # Step 2: Run cuts with access to producer results
+        cut_params = {
+            'ismc': dataset.ismc,
+            'producer_data': producer_results,  # KEY ENHANCEMENT: Pass producer data to cuts
+            'event_index': event_index
+        }
+        
+        passes, cut_results, cut_data = self.cut_factory.apply_cuts(
+            ntuple, dataset.name, return_on_fail=False, 
+            ismc=dataset.ismc, producer_outputs=producer_results
+        )
+        
+        return passes, producer_results, cut_results
+    
     def _print_statistics(self):
-        """
-        Print analysis statistics.
-        """
+        """Print analysis statistics."""
         self.logger.info("=" * 50)
-        self.logger.info("Analysis Statistics")
+        self.logger.info("Enhanced Analysis Statistics")
         self.logger.info("=" * 50)
         
         for dataset_name, stats in self.stats.items():
@@ -350,22 +374,6 @@ class LanternAna:
                 self.logger.info(f"    {cut_name}: {cut_stats['pass']}/{total} ({pass_pct:.1f}%)")
         
         self.logger.info("=" * 50)
-    
-    def save_statistics(self, output_file: str):
-        """
-        Save analysis statistics to a YAML file.
-        
-        Args:
-            output_file: Path to output YAML file
-        """
-        with open(output_file, 'w') as f:
-            yaml.dump({
-                'config_file': self.config_file,
-                'run_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'statistics': self.stats
-            }, f)
-        
-        self.logger.info(f"Statistics saved to {output_file}")
 
 def run_lantern_ana():
     import argparse

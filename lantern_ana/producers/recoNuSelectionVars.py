@@ -17,7 +17,6 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
     def __init__(self, name: str, config: Dict[str, Any]):
         super().__init__(name, config)
         self._track_min_len = config.get("track_min_len", 5.0)  # Minimum energy to consider
-        self._cutname = config.get('cutname')
         
         # Output variables
         # we use a list of sample vars to avoid boilerplate
@@ -95,63 +94,85 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
     
     def requiredInputs(self) -> List[str]:
         """Specify required inputs."""
-        return ["gen2ntuple",self._cutname]  # We need the ntuple and the cutdata
+        return ["gen2ntuple", "recoElectron", "recoMuonTrack"]  # We need the ntuple and producer data
     
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """Process an event by calculating track energy statistics."""
-        # Get gen2ntuple from input data
+        # Get input data from producers
         ntuple = data["gen2ntuple"]
-        cutdata = data[f'cutdata_{self._cutname}']
+        electron_data = data.get("recoElectron", {})
+        muon_data = data.get("recoMuonTrack", {})
 
         results = {}
-        for varname in self.simple_varlist:
-            if varname in cutdata:
-                self.__dict__[varname][0] = cutdata[varname]
-                results[varname] = cutdata[varname]
-
-        # add vertex variables
-        if ntuple.foundVertex==1:
-            # for each we need to get max values
-            max_outoftime = 0.0
-            max_intime_unreco = 0.0
-            for p in range(3):
-                if ntuple.fracRecoOuttimePixels[p]>max_outoftime:
-                    max_outoftime = ntuple.fracRecoOuttimePixels[p]
-                if ntuple.fracUnrecoIntimePixels[p]>max_intime_unreco:
-                    max_intime_unreco = ntuple.fracUnrecoIntimePixels[p]
-
-            self.__dict__['frac_outoftime_pixels/F'][0] = max_outoftime
-            self.__dict__['frac_intime_unreco_pixels/F'][0] = max_intime_unreco
-            results['frac_outoftime_pixels/F'] = max_outoftime
-            results['frac_intime_unreco_pixels/F'] = max_intime_unreco
-
-            muon_candidates = get_primary_muon_candidates( ntuple, params )
-
-            muMaxIdx = muon_candidates['muMaxIdx']
-            if muMaxIdx>=0:
-                prim_muon_data = muon_candidates['prongDict']
-                mumaxdata = prim_muon_data[muMaxIdx]
-                spid = [ mumaxdata['larpid[electron]'],
-                         mumaxdata['larpid[photon]'],
-                         mumaxdata['larpid[pion]'],
-                         mumaxdata['larpid[muon]'],
-                         mumaxdata['larpid[proton]']
-                ]
-                munormscore = exp(spid[3])/(exp(spid[0])+exp(spid[1])+exp(spid[2])+exp(spid[3])+exp(spid[4]))
         
-                ptype = [exp(mumaxdata['primary']),exp(mumaxdata['fromNeutralPrimary']),exp(mumaxdata['fromChargedPrimary'])]
-                pnorm = ptype[0]+ptype[1]+ptype[2]
+        # Copy electron variables from electron producer
+        electron_vars = [
+            'has_primary_electron/I',
+            'emax_primary_score/F',
+            'emax_purity/F', 
+            'emax_completeness/F',
+            'emax_fromneutral_score/F',
+            'emax_fromcharged_score/F',
+            'emax_charge/F',
+            'emax_econfidence/F',
+            'emax_fromdwall/F',
+            'emax_nplaneabove/I',
+            'emax_el_normedscore/F',
+            'emax_fromshower/I'
+        ]
+        
+        for varname in electron_vars:
+            var_key = varname[:-2]  # Remove /I or /F suffix
+            if var_key in electron_data:
+                self.__dict__[varname][0] = electron_data[var_key]
+                results[varname] = electron_data[var_key]
+        
+        # Copy muon variables from muon producer  
+        muon_vars = [
+            'max_muscore/F',
+            'max_mucharge/F',
+            'nMuTracks/I'
+        ]
+        
+        for varname in muon_vars:
+            var_key = varname[:-2]  # Remove /I or /F suffix
+            if var_key in muon_data:
+                self.__dict__[varname][0] = muon_data[var_key]
+                results[varname] = muon_data[var_key]
 
-                self.__dict__['mumax_primary_score/F'][0]     = ptype[0]/pnorm
-                self.__dict__['mumax_purity/F'][0]            = mumaxdata['purity']
-                self.__dict__['mumax_completeness/F'][0]      = mumaxdata['completeness']
-                self.__dict__['mumax_fromneutral_score/F'][0] = ptype[1]/pnorm
-                self.__dict__['mumax_fromcharged_score/F'][0] = ptype[2]/pnorm
-                self.__dict__['mumax_charge/F'][0]            = mumaxdata['showerQ']      
-                self.__dict__['mumax_fromdwall/F'][0]         = 0.0
-                self.__dict__['mumax_nplaneabove/I'][0]       = 0
-                self.__dict__['mumax_mu_normedscore/F'][0]    = munormscore
-                self.__dict__['has_primary_muon/I'][0]        = 1
+        # Copy vertex variables from vertex producer
+        vertex_data = data.get("vertex_properties", {})
+        vertex_vars = [
+            'vtx_found/I',
+            'vtx_infiducial/I',
+            'vtx_kpscore/F',
+            'vtx_dwall/F',
+            'vtx_cosmicfrac/F',
+            'frac_outoftime_pixels/F',
+            'frac_intime_unreco_pixels/F',
+            'mc_dist2true/F'
+        ]
+        
+        vertex_map = {
+            'vtx_found/I': 'found',
+            'vtx_infiducial/I': 'infiducial', 
+            'vtx_kpscore/F': 'score',
+            'vtx_dwall/F': 'dwall',
+            'vtx_cosmicfrac/F': 'cosmicfrac',
+            'frac_outoftime_pixels/F': 'frac_outoftime_pixels',
+            'frac_intime_unreco_pixels/F': 'frac_intime_unreco_pixels',
+            'mc_dist2true/F': 'mc_dist2true'
+        }
+        
+        for varname in vertex_vars:
+            if varname in vertex_map and vertex_map[varname] in vertex_data:
+                self.__dict__[varname][0] = vertex_data[vertex_map[varname]]
+                results[varname] = vertex_data[vertex_map[varname]]
+        
+        # Copy remaining muon variables that weren't handled above
+        if 'ntracks_above_threshold' in muon_data:
+            self.__dict__['ntracks_above/I'][0] = muon_data['ntracks_above_threshold']
+            results['ntracks_above/I'] = muon_data['ntracks_above_threshold']
 
         # Return results
         return results

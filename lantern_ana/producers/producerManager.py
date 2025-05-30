@@ -1,4 +1,4 @@
-# lantern_ana/producers/logged_producer_manager.py
+# lantern_ana/producers/producer_manager.py
 """
 Producer Manager with Comprehensive Logging
 
@@ -110,6 +110,9 @@ class ProducerManager:
         # Create a logger with a unique name
         logger = logging.getLogger(f"ProducerManager_{id(self)}")
         logger.setLevel(level)
+        
+        # Prevent inheritance from root logger to avoid duplicate messages
+        logger.propagate = False
         
         # Don't add handlers if they already exist (prevents duplicates)
         if logger.handlers:
