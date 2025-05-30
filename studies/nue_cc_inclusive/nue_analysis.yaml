@@ -9,6 +9,9 @@ max_events: -1
 # Filter out failed events from output tree
 filter_events: True
 
+# Enable producer-first mode
+producer_first_mode: True
+
 # Print producer dependency graph
 print_dependency_graph: true
 
@@ -21,7 +24,7 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
@@ -35,47 +38,20 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: false
+    process: true
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
   run1_bnb5e19:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: false
+    process: true
     filepaths:
     - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 
-# Cut configuration
-cuts: 
-  true_nue_CCinc:
-    fv_params:
-      width: 0.0
-      apply_scc: false
-      usetruevtx: true
-  reco_nue_CCinc:
-    fv_params:
-      width: 10.0
-      apply_scc: true
-      usetruevtx: false
-      useWCvolume: true
-    has_primary_electron:
-      ke_threshold: 30.0
-    electron_candidate_quality_cuts:
-      min_charge: 0.0
-      min_purity: 0.0
-      min_completeness: 0.0
-    debug: False
-    apply_goodvertex_truthcut: False
-    vtxDistToTrueCut: 2000.0
-  remove_true_nue_cc:
-    applyto:
-     - run1_bnb_nu_overlay_mcc9_v28_wctagger
-
-cut_logic: "({true_nue_CCinc} or {reco_nue_CCinc}) and (not {remove_true_nue_cc})"
-
-# Producer configuration
+# Producer configuration (producers run first)
 producers:
+  # Basic physics quantities
   trueNu:
     type: trueNuPropertiesProducer
     config: {}
@@ -85,9 +61,37 @@ producers:
   visible_energy:
     type: VisibleEnergyProducer
     config: {}
+  
+  # vertex properties
   vertex_properties:
     type: VertexPropertiesProducer
     config: {}
+  
+  # electron properties  
+  recoElectron:
+    type: RecoElectronPropertiesProducer
+    config:
+      electron_quality_cuts:
+        min_charge: 0.0
+        min_purity: 0.0
+        min_completeness: 0.0
+  
+  # muon track properties
+  recoMuonTrack:
+    type: RecoMuonTrackPropertiesProducer
+    config:
+      track_min_energy: 25.0
+
+  # nue signal definition
+  nueCCinc:
+    type: signalNueCCInclusive
+    config:
+      fv_params:
+        width: 0.0
+        apply_scc: false
+        usetruevtx: true
+
+  # Truth mode classification
   truth_mode:
     type: TruthModeProducer
     config:
@@ -101,133 +105,27 @@ producers:
         condense_nuemodes: true
         condense_numumodes: true
         condense_ncmodes: true
-  true_nue_CCinc_prod:
-    type: CutResultProducer
-    config:
-      cutname: true_nue_CCinc
-  reco_nue_CCinc_prod:
-    type: CutResultProducer
-    config:
-      cutname: reco_nue_CCinc
-  remove_true_nue_cc_prod:
-    type: CutResultProducer
-    config:
-      cutname: remove_true_nue_cc
-  nue_cc_inc_truthsel:
-    type: NueInclusiveTruthSelectionProducer
-    config: {}
-  nuselvar:
-    type: RecoNuSelectionVariablesProducer
-    config:
-      cutname: reco_nue_CCinc
-      track_min_len: 5.0
-  # # Reco Evis Stacked Hist
-  # evisStacked_reco:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "visible_energy"
-  #     plotvar_key: "evis"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"
-  #     pass_cutresults: ['reco_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 3000.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
-  # evisStacked_truesig:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "visible_energy"
-  #     plotvar_key: "evis"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"      
-  #     pass_cutresults: ['true_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 3000.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
-  # evisStacked_both:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "visible_energy"
-  #     plotvar_key: "evis"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"      
-  #     pass_cutresults: ['true_nue_CCinc','reco_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 3000.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
-  # # True Nu Energy stack hist
-  # trueEnuStacked_reco:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "trueNu"
-  #     plotvar_key: "Enu"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"      
-  #     pass_cutresults: ['reco_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 5.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
-  # trueEnuStacked_truesig:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "trueNu"
-  #     plotvar_key: "Enu"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"      
-  #     pass_cutresults: ['true_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 5.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
-  # trueEnuStacked_both:
-  #   type: StackedHistProducer
-  #   config:
-  #     plotvar_name: "trueNu"
-  #     plotvar_key: "Enu"
-  #     tagvar_name: "truth_mode"
-  #     tagvar_key: "mode"
-  #     weight_name: "eventweight"
-  #     weight_key: "weight"      
-  #     pass_cutresults: ['true_nue_CCinc','reco_nue_CCinc']
-  #     nbins: 50
-  #     xmin: 0.0
-  #     xmax: 5.0
-  #     title: "Reco Visible Energy; visible energy (MeV)"
-  #     split_vars: ['numuCC','NC','nueCC']
-  #     numuCC: ['numuCC']
-  #     NC: ['numuNC','nueNC']
-  #     nueCC: ['nueCC']
+
+# Cut configuration
+cuts: 
+  # reco_nue_CCinc:
+  #   fv_params:
+  #     width: 10.0
+  #     apply_scc: true
+  #     usetruevtx: false
+  #     useWCvolume: true
+  #   has_primary_electron:
+  #     ke_threshold: 30.0
+  #   electron_candidate_quality_cuts:
+  #     min_charge: 0.0
+  #     min_purity: 0.0
+  #     min_completeness: 0.0
+  #   debug: False
+  #   apply_goodvertex_truthcut: False
+  #   vtxDistToTrueCut: 2000.0
+  remove_true_nue_cc:
+    applyto:
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+
+cut_logic: "(not {remove_true_nue_cc})"
+
