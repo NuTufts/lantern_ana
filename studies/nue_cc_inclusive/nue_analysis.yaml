@@ -20,6 +20,7 @@ datasets:
   folders:
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
     - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
