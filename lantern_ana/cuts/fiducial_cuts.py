@@ -37,7 +37,7 @@ def fiducial_cut(ntuple, params):
         pos = (ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
     else:
         # Check FV requirement using true vtx
-        ismc = params.get('ismc', False)
+        ismc = params.get('ismc')
         if not ismc:
             # Not a MC file, but we want to evaluate a truth vertex. Just pass the event.
             return True

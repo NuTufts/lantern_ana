@@ -1,0 +1,83 @@
+# numu_cc_tki_analysis.yaml
+
+# Output directory
+output_dir: "./output_tki_dev"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /home/twongjirad/working/data/ntuples/
+    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+  run1_extbnb_mcc9_v29e_C1:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
+  run1_bnb5e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
+
+# Cut configuration
+cuts: {}
+
+#cut_logic: ""
+
+# Producer configuration
+producers:
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
+  numuCC1piNp:
+    type: signalDefinitionCCnumuPiPlusNProton
+    config:
+      fv_params:
+        usetruevtx: true
+        width: 5.0
+        apply_scc: false

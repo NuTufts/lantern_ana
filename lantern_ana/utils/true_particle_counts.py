@@ -30,6 +30,7 @@ def get_true_primary_particle_counts(ntuple,params):
     }
 
     counts = {}
+    indices = {}
 
     for i in range( ntuple.nTrueSimParts ):
         if ntuple.trueSimPartProcess[i]!=0:
@@ -44,6 +45,8 @@ def get_true_primary_particle_counts(ntuple,params):
         if ke<KEmin:
             continue
 
+        # pass energy threshold
+
         if pdg>2212:
             pid = 0 # other
         else:
@@ -53,4 +56,9 @@ def get_true_primary_particle_counts(ntuple,params):
 
         counts[pid]+=1
 
+        if pid not in indices:
+            indices[pid] = []
+        indices[pid].append(i)
+
+    counts['indices'] = indices
     return counts
