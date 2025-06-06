@@ -3,4 +3,4 @@
 *.root
 *.so
 *.o
-./output/*
+./output*

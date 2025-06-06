@@ -12,11 +12,11 @@ scaling = {"numu":targetpot/4.5221966264744385e+20,
            "nue_bg":targetpot/1.0696499342682672e+22,
            "extbnb":(176222.0/368589)*0.8,
            "data":1.0}
-files = {"numu":"./output/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250530_150819.root",
-         "nue_sig":"./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250530_150752.root",
-         "nue_bg":"./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250530_150752.root",
-         "extbnb":"./output/run1_extbnb_mcc9_v29e_C1_20250530_151509.root",
-         "data":"./output/run1_bnb5e19_20250530_151920.root"}
+files = {"numu":   "./output/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_132821.root",
+         "nue_sig":"./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250606_132729.root",
+         "nue_bg": "./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250606_132729.root",
+         "extbnb": "./output/run1_extbnb_mcc9_v29e_C1_20250606_133737.root",
+         "data":"./output/run1_bnb5e19_20250606_134137.root"}
 tfiles = {}
 trees = {}
 
@@ -134,6 +134,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].Draw("E1same")
 
     canvs[var].Update()
+    canvs[var].Write()
 
     print("[enter] to continue")
     #input()
