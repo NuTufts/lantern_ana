@@ -112,7 +112,7 @@ class {producer_name}(ProducerBaseClass):
         STUDENT TASKS:
         ==============
         1. Read configuration parameters from the 'config' dictionary
-        2. Define your output variables using ROOT arrays
+        2. Define your output variables using python arrays (from module 'array')
         3. Set any default values
         
         PARAMETERS:

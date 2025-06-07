@@ -134,7 +134,6 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     hpurity = hists[(var,"numu_sig")].Clone( hpur_name )
     hsum.Add( hists[(var,"numu_bg")] )
     hsum.Add( hists[(var,"extbnb")] )
-    
     hpurity.Divide( hsum )
     for ibin in range(hpurity.GetXaxis().GetNbins()):
         x = hpurity.GetBinContent(ibin+1) # efficiency
@@ -147,6 +146,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hpurity.SetBinError(ibin+1,err)
     
     hpurity.Draw("histE1")
+    hpurity.GetYaxis().SetRangeUser(0.0,1.0)
     hists[(var,'purity')] = hpurity
     
 
