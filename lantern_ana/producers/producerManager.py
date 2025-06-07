@@ -28,6 +28,7 @@ from typing import Dict, List, Any, Optional, Set
 from collections import defaultdict
 from datetime import datetime
 import sys
+import traceback
 
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import ProducerFactory
@@ -388,7 +389,7 @@ class ProducerManager:
                 
             except Exception as e:
                 # Handle producer errors
-                self.logger.error(f"Error in producer '{name}': {e}")
+                self.logger.error(f"Error in producer '{name}': {e}\n"+str(traceback.format_exc()))
                 
                 # Record the error in statistics
                 self.producer_statistics[name]["num_errors"] += 1
