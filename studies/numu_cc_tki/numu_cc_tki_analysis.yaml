@@ -16,6 +16,7 @@ print_dependency_graph: true
 datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
     - /home/twongjirad/working/data/ntuples/
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
   # run1_bnb_nue_overlay_mcc9_v28_wctagger:
