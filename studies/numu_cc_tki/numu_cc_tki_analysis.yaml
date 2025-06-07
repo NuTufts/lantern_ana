@@ -18,18 +18,18 @@ datasets:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
     - /home/twongjirad/working/data/ntuples/
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
-  run1_bnb_nue_overlay_mcc9_v28_wctagger:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: false
-    filepaths:
-     - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
+  # run1_bnb_nue_overlay_mcc9_v28_wctagger:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   ismc: true
+  #   process: false
+  #   filepaths:
+  #    - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:

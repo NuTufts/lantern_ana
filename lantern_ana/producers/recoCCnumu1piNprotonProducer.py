@@ -29,10 +29,11 @@ import ROOT
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
 
+
 # ==========================================
 # OPTIONAL IMPORTS - Add what you need
 # ==========================================
-# from math import sqrt, log, exp, sin, cos, pi
+from math import sqrt #, log, exp, sin, cos, pi
 # from lantern_ana.utils.kinematics import calculate_angle
 # from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 
@@ -85,11 +86,6 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         - name: The name you give this producer in your YAML config
         - config: Dictionary of settings from your YAML config
         
-        EXAMPLE VARIABLES TO CALCULATE:
-        ===============================
-        - Energy ratios, angles, distances
-        - Particle counts, multiplicities
-        - Timing information, quality metrics
         """
         
         # REQUIRED: Call the parent class constructor
@@ -100,18 +96,24 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         # These come from your YAML config file under 'config:'
         # Use .get() with default values for safety
         
-        self.min_muon_energy = config.get('min_muon_energy', 30.0)  # Minimum energy threshold (MeV)
-        self.min_pion_energy = config.get('min_pion_energy', 30.0)  # Minimum energy threshold (MeV)
-        self.min_proton_energy = config.get('min_proton_energy', 60.0)  # Minimum energy threshold (MeV)
+        self.min_muon_energy       = config.get('min_muon_energy', 30.0)  # Minimum energy threshold (MeV)
+        self.min_pion_energy       = config.get('min_pion_energy', 30.0)  # Minimum energy threshold (MeV)
+        self.min_proton_energy     = config.get('min_proton_energy', 60.0)  # Minimum energy threshold (MeV)
+        self.min_shower_energy     = config.get('min_shower_energy', 30.0)  # Minimum energy threshold for shower prong to be counted (MeV)
+        self.max_totphoton_energy  = config.get('max_totphoton_energy', 30.0)  # Minimum energy threshold (MeV)
         self.min_muon_completeness = config.get('min_muon_completeness',0.5)
         self.min_muon_purity = config.get('min_muon_purity',0.5)
         self.use_tracks = config.get('use_tracks', True)   # Whether to include tracks
         self.use_showers = config.get('use_showers', True) # Whether to include showers
+        self.mp  = 938.27209
+        self.mpi = 139.57039
+        self.gii = np.array( (1.0, -1.0, -1.0, -1.0 )) # space-time signature we're using
 
         self.thresholds = {
           13:self.min_muon_energy,
           211:self.min_pion_energy,
-          2212:self.min_proton_energy
+          2212:self.min_proton_energy,
+          22:self.max_totphoton_energy
         }
         
         # STEP 2: DEFINE OUTPUT VARIABLES
@@ -127,15 +129,21 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'nmuons':array('i',[0]),
           'npions':array('i',[0]),
           'nprotons':array('i',[0]),
+          'nshowers':array('i',[0]),
           'muKE':array('f',[0.0]),
           'maxprotonKE':array('f',[0.0]),
           'pionKE':array('f',[0.0]),
+          'maxelectronKE':array('f',[0.0]),
+          'maxphotonKE':array('f',[0.0]),
+          'hadronicM':array('f',[0.0]),
           'is_target_1mu1piNproton':array('i',[0])
         }
         self._counts = {
           13:self._vars['nmuons'],
           211:self._vars['npions'],
-          2212:self._vars['nprotons']
+          2212:self._vars['nprotons'],
+          22:array('i',[0]), # gamma does something different, since we save nshowers=nphotons+nelectrons
+          11:array('i',[0])  # electron does something different, since we save nshowers=nphotons+nelectrons
         }
         
     
@@ -171,6 +179,10 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             self._vars[varname][0] = 0.0
           elif var.typecode=='i':
             self._vars[varname][0] = 0
+
+        # also clear our special photon and electron counters
+        self._counts[22][0] = 0
+        self._counts[11][0] = 0
 
 
     
@@ -251,6 +263,57 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         # required_inputs.append("visible_energy")
         
         return required_inputs
+
+    def _calc_hadronic_invariant_mass( self, ntuple, proton_idx, pion_idx ):
+
+      pdir_p  = np.zeros(3)
+      pdir_pi = np.zeros(3)
+      KE_p  = 0.0
+      KE_pi = 0.0
+
+      if proton_idx<100:
+        KE_p = ntuple.trackRecoE[proton_idx]
+        pdir_p[0] = ntuple.trackStartDirX[proton_idx]
+        pdir_p[1] = ntuple.trackStartDirY[proton_idx]
+        pdir_p[2] = ntuple.trackStartDirZ[proton_idx]
+      else:
+        KE_p = ntuple.showerRecoE[proton_idx-100]
+        pdir_p[0] = ntuple.showerStartDirX[proton_idx-100]
+        pdir_p[1] = ntuple.showerStartDirY[proton_idx-100]
+        pdir_p[2] = ntuple.showerStartDirZ[proton_idx-100]
+
+      if pion_idx<100:
+        KE_pi = ntuple.trackRecoE[pion_idx]
+        pdir_pi[0] = ntuple.trackStartDirX[pion_idx]
+        pdir_pi[1] = ntuple.trackStartDirY[pion_idx]
+        pdir_pi[2] = ntuple.trackStartDirZ[pion_idx]
+      else:
+        KE_pi = ntuple.showerRecoE[pion_idx-100]
+        pdir_pi[0] = ntuple.showerStartDirX[pion_idx-100]
+        pdir_pi[1] = ntuple.showerStartDirY[pion_idx-100]
+        pdir_pi[2] = ntuple.showerStartDirZ[pion_idx-100]
+
+      # make the 4-mom of the proton and pion using the KE and 3-momentum dir
+      E_p  = KE_p  + self.mp 
+      E_pi = KE_pi + self.mpi
+      mom3norm_p  = sqrt( max( E_p*E_p - self.mp*self.mp, 0 ) )
+      mom3norm_pi = sqrt( max( E_pi*E_pi - self.mpi*self.mpi, 0) )
+      mom4_p  = np.zeros(4)
+      mom4_pi = np.zeros(4)
+      mom4_p[0]  = E_p
+      mom4_pi[0] = E_pi
+      for i in range(3):
+        mom4_p[i+1]  = mom3norm_p*pdir_p[i]
+      for i in range(3):
+        mom4_pi[i+1] = mom3norm_pi*pdir_pi[i]
+
+      s = mom4_pi + mom4_p
+      s2 = s*s
+      W2 = np.sum( s2*self.gii )
+
+      return sqrt(W2)
+
+      
     
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -307,13 +370,18 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         max_idx = {
           13:-1,
           211:-1,
-          2212:-1
+          2212:-1,
+          22:-1,
+          11:-1
         }
         max_energy = {
           13:0.0,
           211:0.0,
-          2212:0.0
+          2212:0.0,
+          22:0.0,
+          11:0.0
         }
+
 
         if ntuple.foundVertex==1:
           for i in range(ntuple.nTracks):
@@ -336,12 +404,16 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
               if ntuple.showerRecoE[i]>self.thresholds[pid]:
                 self._counts[pid][0] += 1
                 if ntuple.showerRecoE[i]>max_energy[pid]:
-                  max_idx[pid] = i
+                  max_idx[pid] = i+100
                   max_energy[pid] = ntuple.showerRecoE[i]
+
+          nshowers = self._counts[22][0]+self._counts[11][0]
+          self._vars['nshowers'][0] = nshowers
 
           if ( self._counts[13][0]==1 and
                self._counts[211][0]==1 and
-               self._counts[2212][0]>=1 ):
+               self._counts[2212][0]>=1 and 
+               nshowers==0 ):
             self._vars['is_target_1mu1piNproton'][0] = 1
           else:
             self._vars['is_target_1mu1piNproton'][0] = 0
@@ -352,13 +424,28 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             self._vars['pionKE'][0] = max_energy[211]
           if self._counts[2212][0]>0:
             self._vars['maxprotonKE'][0] = max_energy[2212] 
-        # end of if vertex found       
+          if self._counts[22][0]>0:
+            self._vars['maxphotonKE'][0] = max_energy[22]
+          if self._counts[11][0]>0:
+            self._vars['maxelectronKE'][0] = max_energy[11]
+
+        # end of if vertex found  
+
+        # kinetic variables
+        # if we found at least 1 proton and 1 pion, we calculate the invariant mass
+        if max_idx[2212]>=0 and max_idx[211]>=0:
+          self._vars['hadronicM'][0] = self._calc_hadronic_invariant_mass( ntuple, max_idx[2212], max_idx[211] )   
+        else:
+          self._vars['hadronicM'][0] = 0.0
 
         # STEP 5: RETURN SUMMARY (for other producers to use)
         # ===================================================
         # Return a dictionary so other producers can access your results
         # Copy over the values of all the variables we're going to store in the tree
-        out = {}
+        out = {
+          'max_idx':max_idx,
+          'max_energy':max_energy
+        }
 
         for varname, var in self._vars.items():
           out[varname] = var[0]

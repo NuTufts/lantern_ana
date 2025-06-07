@@ -3,8 +3,6 @@ import ROOT as rt
 from math import sqrt
 
 
-"""
-"""
 targetpot = 1.32e21
 
 samples = ['numu','numu_reco']
@@ -17,9 +15,10 @@ scaling = {
 }
 
 files = {
-#    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_17cm_truefv.root",
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
-    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250607_113723.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250607_113630.root"
 }
 
 tfiles = {}
