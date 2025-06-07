@@ -81,3 +81,6 @@ producers:
         usetruevtx: true
         width: 5.0
         apply_scc: false
+  numuCC1piNpReco:
+    type: recoCCnumu1piNprotonProducer
+    config: {}

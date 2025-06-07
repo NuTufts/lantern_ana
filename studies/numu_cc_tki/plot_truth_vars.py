@@ -1,22 +1,25 @@
 import os,sys
 import ROOT as rt
+from math import sqrt
 
 
 """
 """
 targetpot = 1.32e21
 
-samples = ['numu']
+samples = ['numu','numu_reco']
 
 scaling = {
     "numu":targetpot/4.5221966264744385e+20,
+    "numu_reco":targetpot/4.5221966264744385e+20,
     #"extbnb":(176222.0/368589)*0.8,
     #"data":1.0
 }
 
 files = {
 #    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_17cm_truefv.root",
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_131119.root",
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
 }
 
 tfiles = {}
@@ -33,10 +36,10 @@ for sample in samples:
 out = rt.TFile("temp.root","recreate")
 
 vars = [
-    ('numuCC1piNp_muonKE',  200, 0.0, 4000.0, f'True Muon KE ({targetpot:.2e} POT)',         0),
-    ('numuCC1piNp_protonKE',150, 0.0, 3000.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
-    ('numuCC1piNp_pionKE',  150, 0.0, 3000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
-    ('eventweight_weight',  150, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
+    ('numuCC1piNp_muonKE',  50, 0.0, 4000.0, f'True Muon KE ({targetpot:.2e} POT)',         0),
+    ('numuCC1piNp_protonKE',50, 0.0, 3000.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
+    ('numuCC1piNp_pionKE',  50, 0.0, 3000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
+#    ('eventweight_weight',  50, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
 ]
 
 hists = {}
@@ -50,13 +53,17 @@ cut = "(numuCC1piNp_is_infv==1 && numuCC1piNp_is_target_cc_numu_1pi_nproton==1)"
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
     cname = f"c{var}"
-    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1000,800)
+    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1800,800)
+    canvs[var].Divide(2,1)
     canvs[var].Draw()
+    canvs[var].cd(1)
 
     for sample in samples:
         hname = f'h{var}_{sample}'
         hists[(var,sample)] = rt.TH1D( hname, "", nbins, xmin, xmax )
         samplecut = cut
+        if sample in ['numu_reco']:
+            samplecut += " && (numuCC1piNpReco_is_target_1mu1piNproton==1)"
         if var!="eventweight_weight":
             trees[sample].Draw(f"{var}>>{hname}",f"({samplecut})*eventweight_weight")
             hists[(var,sample)].Scale( scaling[sample] )
@@ -66,8 +73,11 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         print(f"{var}-{sample}: ",hists[(var,sample)].Integral()," scale-factor=",scaling[sample])
 
     if (var,'numu') in hists:
-        hists[(var,"numu")].SetFillColor(rt.kRed-3)
-        hists[(var,"numu")].SetFillStyle(3003)
+        hists[(var,"numu")].SetFillColor(rt.kBlue-3)
+        hists[(var,"numu")].SetFillStyle(0)
+    if (var,'numu_reco') in hists:
+        hists[(var,"numu_reco")].SetFillColor(rt.kRed-3)
+        hists[(var,"numu_reco")].SetFillStyle(3003)
     # if (var,'extbnb') in hists:
     #     hists[(var,"extbnb")].SetFillColor(rt.kGray)
     #     hists[(var,"extbnb")].SetFillStyle(3144)
@@ -107,6 +117,30 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     if (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
 
+    if (var,'numu_reco') in hists:
+        hists[(var,'numu_reco')].Draw('histsame')
+
+    canvs[var].cd(2)
+    canvs[var].cd(2).SetGridx(1)
+    canvs[var].cd(2).SetGridy(1)
+
+    heffname = f'h{var}_eff'
+    heff = hists[(var,'numu_reco')].Clone(heffname)
+    heff.SetFillColor(0)
+    heff.Divide( hists[(var,'numu')] )
+
+    for ibin in range(heff.GetXaxis().GetNbins()):
+        x = heff.GetBinContent(ibin+1) # efficiency
+        xm = hists[(var,'numu_reco')].GetBinContent(ibin+1)  # number of events in numerator
+        xn = hists[(var,'numu')].GetBinContent(ibin+1)  # number of events in denomenator
+        if xn>0:
+            err = sqrt( xm*(1-x) )/xn
+        else:
+            err = 0
+        heff.SetBinError(ibin+1,err)
+
+    heff.Draw("histE1")
+    hists[heffname] = heff
     canvs[var].Update()
 
     print("[enter] to continue")
