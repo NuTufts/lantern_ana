@@ -1,0 +1,159 @@
+import os,sys
+import ROOT as rt
+from math import sqrt
+
+"""
+"""
+targetpot = 4.4e19
+
+samples = ['numu_sig',"numu_bg","extbnb","data"]
+
+scaling = {
+    "numu_sig":targetpot/4.5221966264744385e+20,
+    "numu_bg":targetpot/4.5221966264744385e+20,
+    "extbnb":(176222.0/368589),
+    "data":1.0
+}
+
+files = {
+#    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_17cm_truefv.root",
+    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
+    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_225128.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250607_002753.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250607_002843.root"
+}
+
+tfiles = {}
+trees = {}
+
+rt.gStyle.SetOptStat(0)
+
+for sample in samples:
+    tfiles[sample] = rt.TFile( files[sample] )
+    trees[sample] = tfiles[sample].Get("analysis_tree")
+    nentries = trees[sample].GetEntries()
+    print(f"sample={sample} has {nentries} entries")
+
+out = rt.TFile("temp.root","recreate")
+
+vars = [
+    ('numuCC1piNpReco_muKE',        40, 0.0, 2000.0, f'Reco Muon KE ({targetpot:.2e} POT)',         0),
+    ('numuCC1piNpReco_maxprotonKE', 40, 0.0, 1000.0, f'Reco Max Proton KE ({targetpot:.2e} POT)',   0),
+    ('numuCC1piNpReco_pionKE',      40, 0.0, 1000.0, f'Reco Charged Pion KE ({targetpot:.2e} POT)', 0),
+]
+
+hists = {}
+canvs = {}
+
+
+signalcut = "(numuCC1piNp_is_infv==1 && numuCC1piNp_is_target_cc_numu_1pi_nproton==1)"
+misidcut  = "(numuCC1piNp_is_infv==0 || numuCC1piNp_is_target_cc_numu_1pi_nproton==0)"
+cut = "numuCC1piNpReco_is_target_1mu1piNproton==1"
+#cut = "numuCC1piNp_is_infv==1 && numuCC1piNp_muonKE>=0.050" # should be proxy for CCnumu with vertex in TPC
+
+
+for var, nbins, xmin, xmax, htitle, setlogy in vars:
+
+    cname = f"c{var}"
+    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1800,600)
+    canvs[var].Divide(2,1)
+    canvs[var].Draw()
+
+    canvs[var].cd(1)
+
+    for sample in samples:
+
+        hname = f'h{var}_{sample}'
+
+        hists[(var,sample)] = rt.TH1D( hname, "", nbins, xmin, xmax )
+
+        samplecut = cut
+        if sample == "numu_sig":
+            samplecut += " && "+signalcut
+        elif sample == "numu_bg":
+            samplecut += " && "+misidcut
+
+        trees[sample].Draw(f"{var}>>{hname}",f"({samplecut})*eventweight_weight")
+        hists[(var,sample)].Scale( scaling[sample] )
+        
+        print(f"{var}-{sample}: ",hists[(var,sample)].Integral()," scale-factor=",scaling[sample])
+
+    if (var,'numu_sig') in hists:
+        hists[(var,"numu_sig")].SetFillColor(rt.kRed-3)
+        hists[(var,"numu_sig")].SetFillStyle(3003)
+    if (var,'numu_bg') in hists:
+        hists[(var,"numu_bg")].SetFillColor(rt.kBlue-3)
+        hists[(var,"numu_bg")].SetFillStyle(3003)
+    if (var,'extbnb') in hists:
+        hists[(var,"extbnb")].SetFillColor(rt.kGray)
+        hists[(var,"extbnb")].SetFillStyle(3144)
+    if (var,'data') in hists:
+        hists[(var,"data")].SetLineColor(rt.kBlack)
+        hists[(var,"data")].SetLineWidth(2)
+
+    hstack_name = f"hs_{var}"
+    hstack = rt.THStack(hstack_name,"")
+    if (var,'extbnb') in hists:
+        hstack.Add( hists[(var,"extbnb")])
+    if (var,'numu_sig') in hists:
+        hstack.Add( hists[(var,"numu_sig")])
+    if (var,'numu_bg') in hists:
+        hstack.Add( hists[(var,"numu_bg")])
+
+    hists[(hstack_name,sample)] = hstack
+
+    hstack.Draw("hist")
+    canvs[var].SetLogy(setlogy)
+
+    predmax = hstack.GetMaximum()
+    if (var,"data") in hists:
+        datamax = hists[(var,"data")].GetMaximum()
+    else:
+        datamax = -1.0
+
+    if predmax>datamax:
+        if setlogy==1:
+            hstack.GetYaxis().SetRangeUser(0.1,predmax*5)
+        hstack.SetTitle(htitle)
+        hstack.Draw("hist")
+    else:
+        if setlogy==1:
+            hists[(var,"data")].GetYaxis().SetRangeUser(0.1,predmax*5)
+        hists[(var,"data")].SetTitle(htitle)
+        hists[(var,"data")].Draw("E1")
+        hstack.Draw("histsame")
+
+    if (var,'data') in hists:
+        hists[(var,"data")].Draw("E1same")
+
+    canvs[var].cd(2)
+
+    # make purity plot
+    hpur_name = f"h{var}_purity"
+    hsum    = hists[(var,"numu_sig")].Clone( hpur_name+"_sum" )
+    hpurity = hists[(var,"numu_sig")].Clone( hpur_name )
+    hsum.Add( hists[(var,"numu_bg")] )
+    hsum.Add( hists[(var,"extbnb")] )
+    
+    hpurity.Divide( hsum )
+    for ibin in range(hpurity.GetXaxis().GetNbins()):
+        x = hpurity.GetBinContent(ibin+1) # efficiency
+        xm = hists[(var,'numu_sig')].GetBinContent(ibin+1)  # number of events in numerator
+        xn = hsum.GetBinContent(ibin+1)  # number of events in denomenator
+        if xn>0:
+            err = sqrt( xm*(1-x) )/xn
+        else:
+            err = 0
+        hpurity.SetBinError(ibin+1,err)
+    
+    hpurity.Draw("histE1")
+    hists[(var,'purity')] = hpurity
+    
+
+    canvs[var].Update()
+
+    print("[enter] to continue")
+    #input()
+
+print("[enter] to close")
+input()

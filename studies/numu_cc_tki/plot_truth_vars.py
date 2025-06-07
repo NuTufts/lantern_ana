@@ -140,7 +140,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         heff.SetBinError(ibin+1,err)
 
     heff.Draw("histE1")
-    hists[heffname] = heff
+    hists[(var,"efficiency")] = heff
     canvs[var].Update()
 
     print("[enter] to continue")
