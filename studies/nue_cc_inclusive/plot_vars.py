@@ -74,12 +74,10 @@ cut += " && (recoElectron_emax_charge>1.0e3)"
 cut += " && (recoElectron_emax_econfidence>5.0)"
 cut += " && (recoElectron_emax_fromcharged_score<0.10)"
 cut += " && (recoElectron_emax_el_normedscore>0.9)"
-#cut += " && (vertex_properties_cosmicfrac<0.40)"
 cut += " && (vertex_properties_score>0.80)"
 cut += " && (recoElectron_emax_fromcharged_score<0.05)"
 cut += " && (vertex_properties_frac_outoftime_pixels>0.90)"
 cut += " && (recoElectron_emax_fromneutral_score<0.15)"
-#cut += " && (vertex_properties_frac_intime_unreco_pixels<0.5)"
 
 
 # 
