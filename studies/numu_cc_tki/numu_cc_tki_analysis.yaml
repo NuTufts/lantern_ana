@@ -33,18 +33,20 @@ datasets:
     process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+    friendtrees:
+      FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
-    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune_v2.root
   run1_bnb5e19:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
     - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 

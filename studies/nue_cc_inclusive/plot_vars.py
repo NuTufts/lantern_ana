@@ -5,18 +5,19 @@ import ROOT as rt
 """
 """
 targetpot = 4.4e19
+signal_factor = 100.0
 samples = ['nue_sig','nue_bg','numu','extbnb','data']
 #samples = ['nue','numu']
 scaling = {"numu":targetpot/4.5221966264744385e+20,
-           "nue_sig":targetpot/1.0696499342682672e+22,
+           "nue_sig":targetpot/1.059100558499451e+22*signal_factor,
            "nue_bg":targetpot/1.0696499342682672e+22,
            "extbnb":(176222.0/368589)*0.8,
            "data":1.0}
-files = {"numu":   "./output/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250606_132821.root",
-         "nue_sig":"./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250606_132729.root",
-         "nue_bg": "./output/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250606_132729.root",
-         "extbnb": "./output/run1_extbnb_mcc9_v29e_C1_20250606_133737.root",
-         "data":"./output/run1_bnb5e19_20250606_134137.root"}
+files = {"numu":   "./output_with_flashdev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250617_142741.root",
+         "nue_sig":"./output_with_flashdev/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250617_142445.root",
+         "nue_bg": "./output_with_flashdev/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250617_142445.root",
+         "extbnb": "./output_with_flashdev/run1_extbnb_mcc9_v29e_C1_20250617_143455.root",
+         "data":   "./output_with_flashdev/run1_bnb5e19_20250617_143733.root"}
 tfiles = {}
 trees = {}
 
@@ -45,6 +46,8 @@ vars = [
     ('recoMuonTrack_nMuTracks',20,0,20,'number of mu-like track-prongs',0),
     ('recoMuonTrack_max_muscore',42,-20,1,'max mu-like score',1),
     ('recoMuonTrack_max_mucharge',100,0,100e3,'max mu-like charge',1),
+    ('flashpred_sinkhorn_div',200,0,100,'sinkhorn divcergence',1),
+    ('flashpred_fracerr',120,-2,10,'fractional error',1),
 ]
 
 hists = {}
@@ -52,15 +55,15 @@ canvs = {}
 
 
 cut = "(vertex_properties_found==1 && vertex_properties_infiducial)"
-cut += " && (vertex_properties_cosmicfrac<0.15)"
-cut += " && (recoMuonTrack_max_muscore<-2.5)"
-cut += " && (recoElectron_emax_primary_score>0.7)"
-cut += " && (vertex_properties_frac_intime_unreco_pixels<0.9)"
-cut += " && (recoElectron_emax_el_normedscore>0.9)"
-cut += " && (recoElectron_emax_fromcharged_score<0.05)"
-cut += " && (vertex_properties_score>0.85)"
-cut += " && (vertex_properties_frac_outoftime_pixels>0.75)"
-cut += " && (recoElectron_emax_econfidence>6.0)"
+# cut += " && (vertex_properties_cosmicfrac<0.15)"
+# cut += " && (recoMuonTrack_max_muscore<-2.5)"
+# cut += " && (recoElectron_emax_primary_score>0.7)"
+# cut += " && (vertex_properties_frac_intime_unreco_pixels<0.9)"
+# cut += " && (recoElectron_emax_el_normedscore>0.9)"
+# cut += " && (recoElectron_emax_fromcharged_score<0.05)"
+# cut += " && (vertex_properties_score>0.85)"
+# cut += " && (vertex_properties_frac_outoftime_pixels>0.75)"
+# cut += " && (recoElectron_emax_econfidence>6.0)"
 
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
@@ -75,9 +78,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
         samplecut = cut
         if sample=="nue_sig":
-            samplecut += " && (nueCCinc_is_target_nuecc_inclusive==1)"
+            samplecut += " && (nueCCinc_is_target_nuecc_inclusive_nofvcut==1 && nueCCinc_dwalltrue>=5.0)"
         elif sample=="nue_bg":
-            samplecut += " && (nueCCinc_is_target_nuecc_inclusive!=1)"
+            samplecut += " && (nueCCinc_is_target_nuecc_inclusive_nofvcut!=1 || nueCCinc_dwalltrue<5.0)"
 
         trees[sample].Draw(f"{var}>>{hname}",f"({samplecut})*eventweight_weight")
         hists[(var,sample)].Scale( scaling[sample] )

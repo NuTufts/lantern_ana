@@ -23,6 +23,7 @@ class RootDataset(Dataset):
                 - ismc: Whether this is a Monte Carlo dataset, {default: False}
                 - nspills: Number of spills this data set represents (optional) {default: None}
                 - pot: POT for this data set (optional) {default: None}
+                - friendtrees: A dict with keys being name of the friend tree and value being the file
         """
         super().__init__(name, config)
         self._tree_name = config.get('tree')
@@ -34,6 +35,10 @@ class RootDataset(Dataset):
         self._pot = 0.0
         self._nspills = 0.0
         self._added_filepaths = []
+
+        # friend trees
+        self._friend_tree_cfg = config.get('friendtrees',{})
+        self._friend_trees = []
         
     def initialize(self) -> None:
         """
@@ -69,8 +74,30 @@ class RootDataset(Dataset):
                     for i in range(pot_tree.GetEntries()):
                         pot_tree.GetEntry(i)
                         self._pot += pot_tree.totGoodPOT
-           
-        self._num_entries = self._tree.GetEntries()                    
+
+        self._num_entries = self._tree.GetEntries()       
+
+        self._friend_trees = []
+        for friend_tree_name in self._friend_tree_cfg:
+            friend_tree = ROOT.TChain( friend_tree_name )
+            fpath = self._friend_tree_cfg[friend_tree_name]
+            if len(fpath)>0 and fpath[0]!="/":
+                xfpath = self.find_file_in_folders( fpath, self._folders )
+                if xfpath is None:
+                    raise ValueError(f"Could not find file={fpath} in folders: {self._folders}")
+            else:
+                xfpath = fpath
+            if not os.path.exists(xfpath):
+                raise ValueError(f"could not load filepath for '{self._tree_name}': {xfpath}" )
+            friend_tree.Add( xfpath )
+            print(f'Adding friend tree, {friend_tree_name} to Main Tree[{self._tree_name}]: {xfpath}')
+            friend_nentries = friend_tree.GetEntries()
+            if friend_nentries!=self._num_entries:
+                raise ValueError("friend tree does not have the same number of entries: main=%d friend=%d"%(self._num_entries,friend_nentries))
+            self._tree.AddFriend(friend_tree)
+
+
+                        
         self._initialized = True
 
     def find_file_in_folders(self, filename, folder_list):
