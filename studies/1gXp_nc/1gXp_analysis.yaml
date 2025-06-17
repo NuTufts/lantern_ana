@@ -1,0 +1,98 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output"
+
+# Maximum events to process (set to -1 for all events)
+#max_events: -1 #Running all the data!
+max_events: 10000 #Testing configuration
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+
+  #MC simulated data
+  bnbnumu:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
+    
+  #Cosmic data
+  extbnb:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root #off-beam data
+   
+  #Cosmic data
+  beamData:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root #Beam data
+
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  # vertex properties
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  # photon data
+  photon_data:
+    type: recoPhotonDataProducer
+    config: 
+      #maxnphotons: 5
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":10}
+
+  # detectable particle tallies
+  detectable_particle_data:
+    type: recoDetectableParticleCountsProducer
+    config: {}
+
+  # true photon data for MC
+  true_photon_data:
+    type: truePhotonDataProducer
+    config: {}
+
+  # true detectable particle data for MC
+  true_detectable_particle_data:
+    type: trueDetectableParticleCountsProducer
+    config: {}
+
+  # tags for sample distribution
+  event_sorter:
+    type: oneGxPEventSortingProducer
+    config: {}
+
+ 
