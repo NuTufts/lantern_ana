@@ -5,7 +5,7 @@ import ROOT as rt
 """
 """
 targetpot = 4.4e19
-signal_factor = 100.0
+signal_factor = 1.0
 samples = ['nue_sig','nue_bg','numu','extbnb','data']
 #samples = ['nue','numu']
 scaling = {"numu":targetpot/4.5221966264744385e+20,
@@ -41,29 +41,52 @@ vars = [
     ('recoElectron_emax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
     ('recoElectron_emax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
     ('recoElectron_emax_el_normedscore',40,0,1.0,'electron score (normalized)', 1),
-    ('recoElectron_emax_charge',50,0,1000e3,'electron charge',1),
+    ('recoElectron_emax_charge',100,0,1000e3,'electron charge',1),
     ('visible_energy',15,0,3000,'visible energy; MeV', 0),
     ('recoMuonTrack_nMuTracks',20,0,20,'number of mu-like track-prongs',0),
     ('recoMuonTrack_max_muscore',42,-20,1,'max mu-like score',1),
     ('recoMuonTrack_max_mucharge',100,0,100e3,'max mu-like charge',1),
     ('flashpred_sinkhorn_div',200,0,100,'sinkhorn divcergence',1),
-    ('flashpred_fracerr',120,-2,10,'fractional error',1),
+    ('flashpred_fracerr',240,-2,10,'fractional error',1),
+    ('vertex_properties_dwall',100,-5,200,'dwall',0),
 ]
 
 hists = {}
 canvs = {}
 
+# Loose cuts
+# cut = "(vertex_properties_found==1 && vertex_properties_infiducial)"
+# cut += " && (flashpred_fracerr>-0.95 && flashpred_fracerr<3.0)"
+# cut += " && (flashpred_sinkhorn_div<40.0)"
+# cut += " && (vertex_properties_frac_outoftime_pixels>0.5)"
+# cut += " && (recoMuonTrack_max_muscore<-1.0)"
+# cut += " && (recoElectron_emax_primary_score>0.1)"
+# cut += " && (vertex_properties_frac_intime_unreco_pixels<0.95)"
 
 cut = "(vertex_properties_found==1 && vertex_properties_infiducial)"
-# cut += " && (vertex_properties_cosmicfrac<0.15)"
-# cut += " && (recoMuonTrack_max_muscore<-2.5)"
-# cut += " && (recoElectron_emax_primary_score>0.7)"
-# cut += " && (vertex_properties_frac_intime_unreco_pixels<0.9)"
-# cut += " && (recoElectron_emax_el_normedscore>0.9)"
-# cut += " && (recoElectron_emax_fromcharged_score<0.05)"
-# cut += " && (vertex_properties_score>0.85)"
-# cut += " && (vertex_properties_frac_outoftime_pixels>0.75)"
-# cut += " && (recoElectron_emax_econfidence>6.0)"
+cut += " && (flashpred_fracerr>-0.95 && flashpred_fracerr<3.0)"
+cut += " && (flashpred_sinkhorn_div<40.0)"
+cut += " && (vertex_properties_frac_outoftime_pixels>0.50)"
+cut += " && (recoMuonTrack_max_muscore<-3.0)"
+cut += " && (recoElectron_emax_primary_score>0.7)"
+cut += " && (vertex_properties_frac_intime_unreco_pixels<0.95)"
+cut += " && (recoElectron_emax_charge>1.0e3)"
+cut += " && (recoElectron_emax_econfidence>5.0)"
+cut += " && (recoElectron_emax_fromcharged_score<0.10)"
+cut += " && (recoElectron_emax_el_normedscore>0.9)"
+#cut += " && (vertex_properties_cosmicfrac<0.40)"
+cut += " && (vertex_properties_score>0.80)"
+cut += " && (recoElectron_emax_fromcharged_score<0.05)"
+cut += " && (vertex_properties_frac_outoftime_pixels>0.90)"
+cut += " && (recoElectron_emax_fromneutral_score<0.15)"
+#cut += " && (vertex_properties_frac_intime_unreco_pixels<0.5)"
+
+
+# 
+
+# 
+
+
 
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
