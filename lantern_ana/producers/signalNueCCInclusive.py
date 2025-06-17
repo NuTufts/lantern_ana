@@ -6,6 +6,7 @@ from lantern_ana.producers.producer_factory import register
 from lantern_ana.utils.get_primary_electron_candidates import get_primary_electron_candidates
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.utils.true_particle_counts import get_true_primary_particle_counts 
+from lantern_ana.utils.fiducial_volume import dwall
 from math import exp
 import ROOT
 
@@ -20,12 +21,14 @@ class signalNueCCInclusive(ProducerBaseClass):
         
         # Configuration
         self.particle_count_params = config.get('part_count_params',self.get_default_particle_thresholds())
-        self.fv_params  = config.get('fv_params',{'width':10.0,'apply_scc':False})
+        self.fv_params  = config.get('fv_params',{'width':5.0,'apply_scc':False})
         self.fv_params['usetruevtx'] = True
         
         # Output variables 
         self._vars = {
-            'is_target_nuecc_inclusive':array('i',[0])
+            'is_target_nuecc_inclusive':array('i',[0]),
+            'is_target_nuecc_inclusive_nofvcut':array('i',[0]),
+            'dwalltrue':array('f',[0.0])
         }
 
     def get_default_particle_thresholds(self):
@@ -71,20 +74,27 @@ class signalNueCCInclusive(ProducerBaseClass):
             return self._get_results()
         
         # Check if it's from a nue neutrino and CC interaction
+        pass_cc = True
         if ntuple.trueNuCCNC != 0 or abs(ntuple.trueNuPDG) != 12:
-            return self._get_results()
+            pass_cc = False
         
         # Check fiducial volume using true vertex
-        pass_fv = fiducial_cut(ntuple, self.fv_params)
-        if not pass_fv:
-            return self._get_results()
+        dwall_true = dwall( ntuple.trueVtxX, ntuple.trueVtxY, ntuple.trueVtxZ )
+        pass_fv = dwall_true>=self.fv_params['width']
+
     
         # Check for primary electrons
         counts = get_true_primary_particle_counts(ntuple, self.particle_count_params)
         nprim_e = counts.get(11, 0) + counts.get(-11, 0)
-        
-        if nprim_e >= 1:
+        pass_prim_el = nprim_e>=1
+
+        if pass_cc and pass_fv and pass_prim_el:
             self._vars['is_target_nuecc_inclusive'][0] = 1
+
+        if pass_cc and pass_prim_el:
+            self._vars['is_target_nuecc_inclusive_nofvcut'][0] = 1
+
+        self._vars['dwalltrue'][0] = dwall_true
 
         return self._get_results()
 

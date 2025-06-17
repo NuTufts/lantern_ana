@@ -11,14 +11,14 @@ samples = ['numu_sig',"numu_bg","extbnb","data"]
 scaling = {
     "numu_sig":targetpot/4.5221966264744385e+20,
     "numu_bg":targetpot/4.5221966264744385e+20,
-    "extbnb":(176222.0/368589),
+    "extbnb":(176222.0/372480),
     "data":1.0
 }
 
 files = {
     "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
     "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250607_113723.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250614_184623.root",
     "data":"./output_tki_dev/run1_bnb5e19_20250607_113630.root"
 }
 
@@ -36,10 +36,10 @@ for sample in samples:
 out = rt.TFile("temp.root","recreate")
 
 vars = [
-    ('numuCC1piNpReco_muKE',        40, 0.0, 2000.0, f'Reco Muon KE ({targetpot:.2e} POT)',         0),
-    ('numuCC1piNpReco_maxprotonKE', 40, 0.0, 1000.0, f'Reco Max Proton KE ({targetpot:.2e} POT)',   0),
-    ('numuCC1piNpReco_pionKE',      40, 0.0, 1000.0, f'Reco Charged Pion KE ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNpReco_hadronicM',  200, 0.0, 2000.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNpReco_muKE',        40, 0.0, 2000.0, f'Reco Muon KE ({targetpot:.2e} POT);muon KE (MeV)',         0),
+    ('numuCC1piNpReco_maxprotonKE', 40, 0.0, 1000.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
+    ('numuCC1piNpReco_pionKE',      40, 0.0, 1000.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
+    ('numuCC1piNpReco_hadronicM',  200, 0.0, 2000.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
 ]
 
 hists = {}
@@ -65,7 +65,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
         hname = f'h{var}_{sample}'
 
-        hists[(var,sample)] = rt.TH1D( hname, "", nbins, xmin, xmax )
+        hists[(var,sample)] = rt.TH1D( hname, htitle, nbins, xmin, xmax )
 
         samplecut = cut
         if sample == "numu_sig":
@@ -92,6 +92,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].SetLineWidth(2)
 
     hstack_name = f"hs_{var}"
+    #hstack = rt.THStack(hstack_name,htitle)
     hstack = rt.THStack(hstack_name,"")
     if (var,'extbnb') in hists:
         hstack.Add( hists[(var,"extbnb")])
@@ -114,12 +115,12 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     if predmax>datamax:
         if setlogy==1:
             hstack.GetYaxis().SetRangeUser(0.1,predmax*5)
-        hstack.SetTitle(htitle)
+        #hstack.SetTitle(htitle)
         hstack.Draw("hist")
     else:
         if setlogy==1:
             hists[(var,"data")].GetYaxis().SetRangeUser(0.1,predmax*5)
-        hists[(var,"data")].SetTitle(htitle)
+        #hists[(var,"data")].SetTitle(htitle)
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")
 

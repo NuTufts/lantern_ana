@@ -4,6 +4,7 @@ from array import array
 from typing import Dict, Any, List
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
+from lantern_ana.utils.fiducial_volume import dwall
 
 @register
 class VertexPropertiesProducer(ProducerBaseClass):
@@ -48,7 +49,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
         self.vertex_vars['score'][0] = 0.0
         self.vertex_vars['infiducial'][0] = 0
         self.vertex_vars['cosmicfrac'][0] = 0.0
-        self.vertex_vars['dwall'][0] = 0.0
+        self.vertex_vars['dwall'][0] = -999.0
         self.vertex_vars['frac_outoftime_pixels'][0] = 0.0
         self.vertex_vars['frac_intime_unreco_pixels'][0] = 0.0
         self.vertex_vars['mc_dist2true'][0] = 10000.0
@@ -75,6 +76,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
             self.vertex_vars['z'][0] = ntuple.vtxZ
             self.vertex_vars['score'][0] = ntuple.vtxScore
             self.vertex_vars['cosmicfrac'][0] = ntuple.vtxFracHitsOnCosmic
+            self.vertex_vars['dwall'][0] = dwall(ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
             
             # Calculate pixel fractions
             max_outoftime = 0.0
