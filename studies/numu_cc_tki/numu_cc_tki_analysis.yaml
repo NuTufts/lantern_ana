@@ -4,7 +4,7 @@
 output_dir: "./output_tki_dev"
 
 # Maximum events to process (set to -1 for all events)
-max_events: -1
+max_events: 100
 
 # Filter out failed events from output tree
 filter_events: True
@@ -41,7 +41,7 @@ datasets:
     ismc: false
     process: false
     filepaths:
-    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune_v2.root
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
   run1_bnb5e19:
     type: RootDataset
     tree: EventTree
