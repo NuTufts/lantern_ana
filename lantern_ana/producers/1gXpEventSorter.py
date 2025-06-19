@@ -52,6 +52,26 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.twoGoneMu = array('i',[0])
         self.twoGxPi = array('i',[0])
 
+        #Background tags - explain why the event is background
+        self.overThresholdMuon = array('i',[0])
+        self.tooManyProtons = array('i',[0])
+        self.overThresholdElectron = array('i',[0])
+        self.overThresholdPion = array('i',[0])
+        self.noPhotons = array('i',[0])
+        self.tooManyPhotons = array('i',[0])
+
+        #Mixup tags - what sideband should the event have been in?
+        #self.notOneGnoX = array('i',[0])
+        #self.notOneGoneP = array('i',[0])
+        #self.notOneGtwoP = array('i',[0])
+        #self.notOneGoneMu = array('i',[0])
+        #self.notOneGxPi = array('i',[0])
+        #self.notTwoGnoX = array('i',[0])
+        #self.notTwoGoneP = array('i',[0])
+        #self.notTwoGtwoP = array('i',[0])
+        #self.notTwoGoneMu = array('i',[0])
+        #self.notTwoGxPi = array('i',[0])
+
 
     def setDefaultValues(self): #Not clear what to do here?
         self.recoPhotonCount[0] = 0
@@ -221,14 +241,30 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         #Ignore files that aren't Montecarlo:
         ismc = params.get('ismc',False)
         if ismc:
-            if (self.trueMuonCount[0] > self.trueJustOverMuons[0]
-                    or self.trueJustOverMuons[0] > 1
-                    or self.trueElectronCount[0] > 0
-                    or self.truePionCount[0] > self.trueJustOverPions[0]
-                    or self.trueProtonCount[0] > 2
-                    or self.truePhotonCount[0] > 2
-                    or self.truePhotonCount[0] == 0):
+            if self.trueMuonCount[0] > self.trueJustOverMuons[0] or self.trueJustOverMuons[0] > 1:
                 self.isBackground[0] = 1
+                self.overThresholdMuon[0] = 1
+
+            elif self.trueElectronCount[0] > 0:
+                self.isBackground[0] = 1
+                self.overThresholdElectron[0] = 1
+
+            elif self.truePionCount[0] > self.trueJustOverPions[0]:
+                self.isBackground[0] = 1
+                self.overThresholdPion[0] = 1
+
+            elif self.trueProtonCount[0] > 2:
+                self.isBackground[0] = 1
+                self.tooManyProtons[0] = 1
+
+            elif self.truePhotonCount[0] > 2:
+                self.isBackground[0] = 1
+                self.tooManyPhotons[0] = 1
+
+            elif self.truePhotonCount[0] == 0:
+                self.isBackground[0] = 1
+                self.noPhotons[0] = 1
+
 
             #If it's not background, determine if we got all of our counts right:
             elif (self.truePhotonCount[0] != self.recoPhotonCount[0]
@@ -236,15 +272,15 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
                     or self.trueJustOverPions[0] != self.recoJustOverPions[0]
                     or self.trueJustOverMuons[0] != self.recoJustOverMuons[0]):
                 self.isWrongSideband[0] = 1
-                print("NEW EVENT FAILS SIDEBAND:")
-                if self.truePhotonCount[0] != self.recoPhotonCount[0]:
-                    print("Photon count incorrect:", self.truePhotonCount[0], "true vs", self.recoPhotonCount[0], "reco.")
-                if self.trueProtonCount[0] != self.recoProtonCount[0]:
-                    print("Proton count incorrect:", self.trueProtonCount[0], "true vs", self.recoProtonCount[0], "reco.")
-                if self.trueJustOverPions[0] != self.recoJustOverPions[0]:
-                    print("Pion count incorrect:", self.truePionCount[0], "true vs", self.recoPionCount[0], "reco.")
-                if self.trueJustOverMuons[0] != self.recoJustOverMuons[0]:
-                    print("Muon count incorrect:", self.trueMuonCount[0], "true vs", self.recoMuonCount[0], "reco.")
+                #print("NEW EVENT FAILS SIDEBAND:")
+                #if self.truePhotonCount[0] != self.recoPhotonCount[0]:
+                #    print("Photon count incorrect:", self.truePhotonCount[0], "true vs", self.recoPhotonCount[0], "reco.")
+                #if self.trueProtonCount[0] != self.recoProtonCount[0]:
+                #    print("Proton count incorrect:", self.trueProtonCount[0], "true vs", self.recoProtonCount[0], "reco.")
+                #if self.trueJustOverPions[0] != self.recoJustOverPions[0]:
+                #    print("Pion count incorrect:", self.truePionCount[0], "true vs", self.recoPionCount[0], "reco.")
+                #if self.trueJustOverMuons[0] != self.recoJustOverMuons[0]:
+                #    print("Muon count incorrect:", self.trueMuonCount[0], "true vs", self.recoMuonCount[0], "reco.")
 
 
             #If our counts are right and it's not background, it must be signal
