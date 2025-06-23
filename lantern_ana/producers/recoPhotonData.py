@@ -56,15 +56,8 @@ class recoPhotonDataProducer(ProducerBaseClass):
         """Get the energy and x, y, z coordinates of each photon."""
         ntuple = data["gen2ntuple"]
         
-        # Find and store data on showers ID'd as photons
-        numPhotons = 0
-        self.nphotons[0] = 0
-        self.leadingPhotonEnergy[0] = 0
-        for x in range(5):
-            self.photonEnergies[x] = 0.0
-            self.photonPositionX[x] = 0.0
-            self.photonPositionY[x] = 0.0
-            self.photonPositionZ[x] = 0.0
+        self.setDefaultValues()
+
 
         photonEList = []
 

@@ -73,7 +73,7 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         #self.notTwoGxPi = array('i',[0])
 
 
-    def setDefaultValues(self): #Not clear what to do here?
+    def setDefaultValues(self):
         self.recoPhotonCount[0] = 0
         self.truePhotonCount[0] = 0
         self.recoProtonCount[0] = 0
@@ -111,7 +111,12 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.twoGoneMu[0] = 0
         self.twoGxPi[0] = 0
 
-
+        self.overThresholdMuon[0] = 0
+        self.tooManyProtons[0] = 0
+        self.overThresholdElectron[0] = 0
+        self.overThresholdPion[0] = 0
+        self.noPhotons[0] = 0
+        self.tooManyPhotons[0] = 0
 
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
@@ -130,6 +135,14 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         output.Branch("isBackground", self.isBackground, "isBackground/I")
         output.Branch("isWrongSideband", self.isWrongSideband, "isWrongSideband/I")
         output.Branch("isSignal", self.isSignal, "isSignal/I")
+
+        output.Branch("overThresholdMuon", self.overThresholdMuon, "overThresholdMuon/I")
+        output.Branch("tooManyProtons", self.tooManyProtons, "tooManyProtons/I")
+        output.Branch("overThresholdElectron", self.overThresholdElectron, "overThresholdElectron/I")
+        output.Branch("overThresholdPion", self.overThresholdPion, "overThresholdPion/I")
+        output.Branch("noPhotons", self.noPhotons, "noPhotons/I")
+        output.Branch("tooManyPhotons", self.tooManyPhotons, "tooManyPhotons/I")
+
 
     
     def requiredInputs(self):
@@ -171,12 +184,12 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.recoElectronCount[0] = recoParticleData["electrons"]
 
         #Now we filter out events reconstructed as background:
-        if (self.recoMuonCount[0] > self.recoJustOverMuons[0]
-                or self.recoJustOverMuons[0] > 1
-                or self.recoElectronCount[0] > 0
-                or self.recoPionCount[0] > self.recoJustOverPions[0]
-                or self.recoProtonCount[0] > 2
-                or self.recoPhotonCount[0] > 2
+        if (self.recoMuonCount[0] > self.recoJustOverMuons[0] 
+                or self.recoJustOverMuons[0] > 1 
+                or self.recoElectronCount[0] > 0 
+                or self.recoPionCount[0] > self.recoJustOverPions[0] 
+                or self.recoProtonCount[0] > 2 
+                or self.recoPhotonCount[0] > 2 
                 or self.recoPhotonCount[0] == 0):
 
             return {"outcome":0}
@@ -265,7 +278,6 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
                 self.isBackground[0] = 1
                 self.noPhotons[0] = 1
 
-
             #If it's not background, determine if we got all of our counts right:
             elif (self.truePhotonCount[0] != self.recoPhotonCount[0]
                     or self.trueProtonCount[0] != self.recoProtonCount[0]
@@ -288,3 +300,6 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
                 self.isSignal[0] = 1
 
         return {"Result":0}
+
+
+        {"Key": value, "key"}

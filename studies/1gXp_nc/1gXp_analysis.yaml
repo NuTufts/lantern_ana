@@ -4,8 +4,8 @@
 output_dir: "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output"
 
 # Maximum events to process (set to -1 for all events)
-#max_events: -1 #Running all the data!
-max_events: 10000 #Testing configuration
+max_events: -1 #Running all the data!
+#max_events: 20000 #Testing configuration
 
 # Filter out failed events from output tree
 filter_events: True
@@ -95,4 +95,7 @@ producers:
     type: oneGxPEventSortingProducer
     config: {}
 
- 
+  # tags events that fit our sideband signal definitions
+  signal_tagger:
+    type: oneGxPSignalTagProducer
+    config: {}
