@@ -15,10 +15,10 @@ scaling = {
 }
 
 files = {
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
-    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250607_113130.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250607_113723.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250607_113630.root"
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250623_155712.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250623_155906.root"
 }
 
 tfiles = {}
@@ -140,10 +140,16 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
     heff.Draw("histE1")
     hists[(var,"efficiency")] = heff
-    canvs[var].Update()
+    
+    #canvs[var].Update()
 
-    print("[enter] to continue")
+    #print("[enter] to continue")
     #input()
 
-print("[enter] to close")
-input()
+    # save canvas as pdf (for quality) 
+    outdir = "plots"
+    os.makedirs(outdir, exist_ok=True)
+    canvs[var].SaveAs(f"{outdir}/truth_{var}.pdf")
+
+#print("[enter] to close")
+#input()
