@@ -38,19 +38,38 @@ recoBackgroundTypes = ['Vertex Not Reconstructed',
 
 noBackgrounds = len(recoBackgroundTypes)
 
-recoBackgroundCuts = {'Vertex Not Reconstructed': "&& (noVertex == 1)",
-    'Vertex Reconstructed Out of Fiducial': "&& (outOfFiducial == 1)",
-    'Cosmic Fraction Cut': "&& (cosmicFracCut == 1)",
-    'Unreconstructed Pixel Cut': "&& (unReconstructedPixelCut == 1)",
-    'Charged Score Cut': "&& (photonFromChargedCut == 1)",
-    'Significantly Over-Threshold Muon': "&& (overThresholdMuon == 1)",
-    '2+ Slightly Over-Threshold Muons': "&& (manyJustOverMuons == 1)",
-    'Over-Threshold Electron': "&& (overThresholdElectron == 1)",
-    'Over-Threshold Pion': "&& (overThresholdPion == 1)",
-    '3+ Protons': "&& (tooManyProtons == 1)",
-    'No Photons': "&& (noPhotons == 1)",
-    'Excess Photons': "&& (manyPhotons == 1)"
+recoBackgroundCuts = {'Vertex Not Reconstructed': "&& (vertex_properties_found != 1)",
+    'Vertex Reconstructed Out of Fiducial': "&& (vertex_properties_infiducial != 1)",
+    'Cosmic Fraction Cut': "&& (vertex_properties_cosmicfrac > 0.15)",
+    'Unreconstructed Pixel Cut': "&& (vertex_properties_frac_intime_unreco_pixels > 0.9)",
+    'Charged Score Cut': "&& (photonFromCharged < 5)",
+    'Significantly Over-Threshold Muon': "&& (nMuons > nJustOverMuons)",
+    '2+ Slightly Over-Threshold Muons': "&& (nMuons > 1)",
+    'Over-Threshold Electron': "&& (nElectrons > 0)",
+    'Over-Threshold Pion': "&& (nPions > nJustOverPions)",
+    '3+ Protons': "&& (nProtons > 2)",
+    'No Photons': "&& (nphotons == 0)",
+    'Excess Photons': "&& (nphotons > 2)",
+    'Sinkhorn Div': "&& (sinkhornDiv > 40)",
+    'observedPE': "&& (observedPE < 250)"
     }
+
+recoBackgroundCutsUsed = {'Vertex Not Reconstructed': "&& (vertex_properties_found == 1)",
+    'Vertex Reconstructed Out of Fiducial': "&& (vertex_properties_infiducial == 1)",
+    'Cosmic Fraction Cut': "&& (vertex_properties_cosmicfrac <= 0.15)",
+    'Unreconstructed Pixel Cut': "&& (vertex_properties_frac_intime_unreco_pixels <= 0.9)",
+    'Charged Score Cut': "&& (photonFromCharged >= 5)",
+    'Significantly Over-Threshold Muon': "&& (nMuons <= nJustOverMuons)",
+    '2+ Slightly Over-Threshold Muons': "&& (nJustOverMuons <= 1)",
+    'Over-Threshold Electron': "&& (nElectrons == 0)",
+    'Over-Threshold Pion': "&& (nPions <= nJustOverPions)",
+    '3+ Protons': "&& (nProtons <= 2)",
+    'No Photons': "&& (nphotons != 0)",
+    'Excess Photons': "&& (nphotons <= 2)",
+    'Sinkhorn Div': "&& (sinkhornDiv <= 40)",
+    'observedPE': "&& (observedPE >= 250)"
+    }
+
 
 recoSidebandCuts = {'reco 1g0X': "&& (oneGnoX == 1)",
     'reco 1g1p': "&& (oneGoneP == 1)",
@@ -82,7 +101,7 @@ trueSidebandCuts = {
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250627_112700.root",
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250630_130759.root",
     }
 
 
@@ -110,7 +129,7 @@ graphingVar = "trueLeadingPhotonE"
 
 nBins = 60
 xMin = 0
-xMax = 700
+xMax = 2500
 
 trueSidebandList = [
     ("oneGinclusiveTrue",nBins, xMin, xMax,'1g + X Inclusive Outcomes',"True", -1), #No signal category
@@ -145,7 +164,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
     histIntTotal = 0
 
     #We use these to color our histograms
-    colors = [rt.kBlue, rt.kOrange+1, rt.kViolet+3, rt.kBlue+3, rt.kCyan, rt.kGreen +2, rt.kMagenta, rt.kYellow+1, rt.kViolet]
+    colors = [rt.kP10Cyan, rt.kP10Ash, rt.kP10Green, rt.kP10Orange, rt.kP10Brown, rt.kP10Violet, rt.kP10Gray, rt.kP10Red, rt.kP10Yellow, rt.kP10Blue]
     noColors = len(colors)
     colorIndex = 0
 
@@ -164,20 +183,20 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
         if correctSidebandIndex == x:
             legendName = f'{recoSideband} (CORRECTLY IDENTIFIED)'
         hists[(sideband,recoSideband)] = rt.TH1D(hname, "", nbins, xmin, xmax )
-        if sideband == 'oneGinclusiveTrue' and recoSideband == 'reco 1g0X':
+        if sideband == 'oneGnoXtrue' and recoSideband == 'reco 1g0X':
             print("filling ",hname)
 
         recoSidebandCut = trueSidebandCut + recoSidebandCuts[str(recoSideband)]
 
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({recoSidebandCut})*eventweight_weight") #Execute all cuts
-        if sideband == 'oneGinclusiveTrue' and recoSideband == 'reco 1g0X':
+        if sideband == 'oneGnoXtrue' and recoSideband == 'reco 1g0X':
             print("Drawing based on:", recoSidebandCut)
         hists[(sideband,recoSideband)].Scale(scaling[sample])
 
         bins = hists[(sideband,recoSideband)].GetNbinsX()
 
         histInt = hists[(sideband,recoSideband)].Integral(1, int(bins))
-        if sideband == 'oneGinclusiveTrue' and recoSideband == 'reco 1g0X':
+        if sideband == 'oneGnoXtrue' and recoSideband == 'reco 1g0X':
             print("Histint:", histInt)
         
         #Make it look pretty
@@ -206,7 +225,9 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({backgroundCut})*eventweight_weight") #Execute all cuts
         #print("Drawing based on:", backgroundCut)
         hists[(sideband,background)].Scale(scaling[sample])
-        
+
+        trueSidebandCut += recoBackgroundCutsUsed[str(background)]
+
         stack.Add(hists[(sideband,background)])
 
         

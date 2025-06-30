@@ -34,13 +34,23 @@ trueBackgroundTypes = ['Significantly Over Threshold Muon',
 noBackgrounds = len(trueBackgroundTypes)
 
 trueBackgroundCuts = {
-    'Significantly Over Threshold Muon': "&& (trueOverThresholdMuon == 1)",
-    'Multiple, Slightly Over-Threshold Muons': "&& (trueManyJustOverMuons == 1)",
-    'Over Threshold Electron': "&& (trueOverThresholdElectron == 1)",
-    '> 2 Detectable Protons': "&& (trueTooManyProtons == 1)",
-    'Over Threshold Pion': "&& (trueOverThresholdPion == 1)",
-    'No Photons': "&& (trueNoPhotons == 1)",
-    'Too Many Photons': "&& (trueManyPhotons == 1)"
+    'Significantly Over Threshold Muon': "&& (nTrueMuons > nTrueMuonsBarelyOver)",
+    'Multiple, Slightly Over-Threshold Muons': "&& (nTrueMuonsBarelyOver > 1)",
+    'Over Threshold Electron': "&& (nTrueElectrons > 0)",
+    '> 2 Detectable Protons': "&& (nTrueProtons > 2)",
+    'Over Threshold Pion': "&& (nTruePions > nTruePionsBarelyOver)",
+    'No Photons': "&& (nTruePhotons == 0)",
+    'Too Many Photons': "&& (nTruePhotons > 2)"
+}
+
+trueBackgroundCutsUsed = {
+    'Significantly Over Threshold Muon': "&& (nTrueMuons <= nTrueMuonsBarelyOver)",
+    'Multiple, Slightly Over-Threshold Muons': "&& (nTrueMuonsBarelyOver <= 1)",
+    'Over Threshold Electron': "&& (nTrueElectrons == 0)",
+    '> 2 Detectable Protons': "&& (nTrueProtons <= 2)",
+    'Over Threshold Pion': "&& (nTruePions <= nTruePionsBarelyOver)",
+    'No Photons': "&& (nTruePhotons != 0)",
+    'Too Many Photons': "&& (nTruePhotons < 2)"
 }
 
 
@@ -73,9 +83,9 @@ trueSidebandCuts = {'true 1g0X': "&& (oneGnoXtrue == 1)",
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250627_112700.root",
-    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250627_113741.root",
-    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250627_114046.root"
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250630_145735.root",
+    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250630_151126.root",
+    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250630_151526.root"
 }
 
 
@@ -127,8 +137,6 @@ canvs = {}
 #CUT LIST
 #Cut based on basic vertex properties
 cut = "1==1"
-cut += "&& (flashpred_sinkhorn_div < 40)"
-cut += "&& (flashpred_observedpe > 250)"
 
 
 #Now we actually go through and store the data
@@ -141,7 +149,8 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
     histIntTotal = 0
 
     #We use these to color our histograms
-    colors = [rt.kBlue, rt.kCopper, rt.kOrange+1, rt.kViolet+3, rt.kBlue+3, rt.kCyan, rt.kGreen +2, rt.kMagenta, rt.kYellow+1, rt.kViolet]
+    #colors = [rt.kOrange+1, rt.kViolet+3, rt.kSpring, rt.kBlue+3, rt.kCyan, rt.kGreen +2, rt.kMagenta, rt.kAzure, rt.kYellow+1, rt.kViolet, rt.kPearl, rt.kPink]
+    colors = [rt.kCyan, rt.kGray + 2, rt.kGreen, rt.kOrange, rt.kOrange + 2, rt.kViolet, rt.kGray, rt.kRed, rt.kYellow]
     colorIndex = 0 
     noColors = len(colors)
 
@@ -176,10 +185,10 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
 
         #Make it look pretty
         hists[(sideband,trueSideband)].SetLineColor(rt.kBlack)
-        if sideband == 'oneGinclusive' and trueSideband == 'true 1g0X':
+        if sideband == 'oneGnoX' and trueSideband == 'true 1g0X':
             bins = hists[(sideband,trueSideband)].GetNbinsX()
             histInt = hists[(sideband,trueSideband)].Integral(1, int(bins))
-            print("Filling oneGinclusive. Cuts:", trueSidebandCut, "histInt:", histInt)
+            print("Filling oneGnoX. Cuts:", trueSidebandCut, "histInt:", histInt)
         #If we got it right, we fill it in with green
         if correctSidebandIndex == x: 
             hists[(sideband,trueSideband)].SetFillColor(rt.kGreen)
@@ -204,11 +213,14 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
         hists[(sideband,background)] = rt.TH1D(hname, "", nbins, xmin, xmax )
         #print("fill ",hname)
 
-        backgroundCut = sidebandCut + trueBackgroundCuts[str(background)]
+        baseBackgroundCut = sidebandCut
+        backgroundCut = baseBackgroundCut + trueBackgroundCuts[str(background)]
 
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({backgroundCut})*eventweight_weight") #Execute all cuts
         hists[(sideband,background)].Scale(scaling[sample])
         
+        baseBackgroundCut += trueBackgroundCutsUsed[str(background)] #This allows us to avoid double-counting events
+
         #Make it look pretty
         hists[(sideband,background)].SetLineColor(rt.kBlack)
         hists[(sideband,background)].SetFillColor(colors[colorIndex%noColors])
@@ -229,7 +241,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
         
     #Make it look pretty
     hists[(sideband,sample)].SetLineColor(rt.kBlack)
-    hists[(sideband,sample)].SetFillColor(rt.kBlack)
+    hists[(sideband,sample)].SetFillColor(rt.kBlue)
     colorIndex += 1
 
 
@@ -247,7 +259,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
     hists[(sideband,sample)].Scale(scaling["Beam Data"])
 
     #Make it look pretty
-    hists[(sideband,sample)].SetLineColor(rt.kRed)
+    hists[(sideband,sample)].SetLineColor(rt.kBlack)
     colorIndex += 1
  
     #Draw the data hist to the canvas, on top of the stack
@@ -259,7 +271,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
     #Add data to the legend
     bins = hists[(sideband,sample)].GetNbinsX()
     histInt = hists[(sideband,sample)].Integral(1, int(bins))
-    legend.AddEntry(hists[(sideband,sample)], str(hname)+": "+str(round(histInt, 1)), "l")
+    legend.AddEntry(hists[(sideband,sample)], "Beam Data"+": "+str(round(histInt, 1)), "l")
 
     #Add off-beam to the legend
     sample = "Off-Beam"
@@ -298,7 +310,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
 
 
     #Now we draw the legend and save the whole canvas
-    legendHeaderString = "Total: " + str(round((histIntTotal),1)) 
+    legendHeaderString = "Total (Not Including Beam Data): " + str(round((histIntTotal),1)) 
     legend.SetHeader(str(legendHeaderString), "C")
     legend.Draw()
 

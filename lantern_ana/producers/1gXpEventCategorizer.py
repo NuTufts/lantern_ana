@@ -47,8 +47,8 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         self.truePionCount = array('i',[0])
         self.trueElectronCount = array('i',[0])
 
-        #self.sinkhornDiv[0] = array('i',[0])
-        #self.observedPE[0] = array('i',[0])
+        self.sinkhornDiv = array('f',[0])
+        self.observedPE = array('f',[0])
 
         #Reco success (ie. was the reco correct? Was the event in a different sideband?)
         self.isBackground = array('i',[0])
@@ -113,8 +113,8 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         self.recoMuonCount[0] = 0
         self.recoPionCount[0] = 0
         self.recoElectronCount[0] = 0
-        #self.sinkhornDiv[0] = 0
-        #self.observedPE[0] = 0
+        self.sinkhornDiv[0] = 0
+        self.observedPE[0] = 0
 
         self.trueMuonCount[0] = 0
         self.truePionCount[0] = 0
@@ -243,8 +243,8 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         self.recoPionCount[0] = recoParticleData["pions"]
         self.recoElectronCount[0] = recoParticleData["electrons"]
 
-        #self.sinkhornDiv[0] = flashpred["flashpred_sinkhorn_div"]
-        #self.observedPE[0] = flashpred["flashpred_observedpe"]
+        self.sinkhornDiv[0] = flashpred["sinkhorn_div"]
+        self.observedPE[0] = flashpred["observedpe"]
 
 
         #See if the event vertex is reconstructed in the fiducial:
@@ -269,9 +269,9 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
                 or self.recoProtonCount[0] > 2 
                 or self.recoPhotonCount[0] > 2 
                 or self.recoPhotonCount[0] == 0
-                or self.photonFromCharged[0] < 5):
-                #or self.observedPE[0] < 250
-                #or self.sinkhornDiv[0] > 40):
+                or self.photonFromCharged[0] < 5
+                or self.observedPE[0] < 250
+                or self.sinkhornDiv[0] > 40):
 
             self.recoBackground[0] = 1
 
@@ -447,7 +447,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
             "twoGtwoPtrue": self.twoGtwoPtrue[0],
             "twoGoneMutrue": self.twoGoneMutrue[0],
             "twoGxPitrue": self.twoGxPitrue[0],
-            "inFiducial": self.inFiducial[0]
-            #"sinkhornDiv": self.sinkhornDiv[0],
-            #"observedPE": self.observedPE[0]
+            "inFiducial": self.inFiducial[0],
+            "sinkhornDiv": self.sinkhornDiv[0],
+            "observedPE": self.observedPE[0]
             }
