@@ -37,7 +37,8 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
         output.Branch(f"nTruePions", self.truePionsOverThreshold, f"nTruePions/I")
         output.Branch(f"nTrueMuons", self.trueMuonsOverThreshold, f"nTrueMuons/I")
         output.Branch(f"nTrueElectrons", self.trueElectronsOverThreshold, f"nTrueElectrons/I")
-
+        output.Branch(f"nTrueMuonsBarelyOver",  self.trueMuonsBarelyOverThreshold[0], "nTrueMuonsBarelyOver/I")
+        output.Branch(f"nTruePionsBarelyOver",  self.truePionsBarelyOverThreshold[0], "nTruePionsBarelyOver/I")
     
     def requiredInputs(self):
         """Specify required inputs."""

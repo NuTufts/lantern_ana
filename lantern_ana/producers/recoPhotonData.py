@@ -30,17 +30,17 @@ class recoPhotonDataProducer(ProducerBaseClass):
         self.photonPositionZ = array('f',[0.0]*self._maxnphotons)
 
         #These variables help us identify cosmic background events
-        self.photonFromCharged = array('f',[0.0]*self._maxnphotons)
+        self.photonFromCharged = array('f',[0])
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
         self.leadingPhotonEnergy[0] = 0.0
+        self.photonFromCharged[0] = 0.0
         for x in range(5):
             self.photonEnergies[x] = 0.0
             self.photonPositionX[x] = 0.0
             self.photonPositionY[x] = 0.0
             self.photonPositionZ[x] = 0.0
-            self.photonFromCharged[x] = 0.0
 
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
@@ -60,6 +60,8 @@ class recoPhotonDataProducer(ProducerBaseClass):
 
 
         photonEList = []
+        numPhotons = 0
+        photonFromChargedScores = []
 
         for i in range(ntuple.nShowers):
             #Make sure reco thinks we have a photon
@@ -80,10 +82,10 @@ class recoPhotonDataProducer(ProducerBaseClass):
                 inFiducial = True
             else:
                 continue
-                
+            
             #Now we store the photon's data in our arrays
             self.photonEnergies[numPhotons] = ntuple.showerRecoE[i]
-            self.photonFromCharged[numPhotons] = abs(ntuple.showerFromChargedScore[i])
+            photonFromChargedScores.append(abs(ntuple.showerFromChargedScore[i]))
             self.photonPositionX[numPhotons] = ntuple.showerStartPosX[i]
             self.photonPositionY[numPhotons] = ntuple.showerStartPosY[i]
             self.photonPositionZ[numPhotons] = ntuple.showerStartPosZ[i]
@@ -122,7 +124,7 @@ class recoPhotonDataProducer(ProducerBaseClass):
 
             #Store data for any photons that pass our criteria
             self.photonEnergies[numPhotons] = ntuple.trackRecoE[i]
-            self.photonFromCharged[numPhotons] = abs(ntuple.trackFromChargedScore[i])
+            photonFromChargedScores.append(abs(ntuple.trackFromChargedScore[i]))
             self.photonPositionX[numPhotons] = ntuple.trackStartPosX[i]
             self.photonPositionY[numPhotons] = ntuple.trackStartPosY[i]
             self.photonPositionZ[numPhotons] = ntuple.trackStartPosZ[i]
@@ -139,8 +141,16 @@ class recoPhotonDataProducer(ProducerBaseClass):
         self.leadingPhotonEnergy[0] = maxPhotonE
         #print("Photon Energies:", self.photonEnergies, flush=True)
 
+        if len(photonFromChargedScores) > 0:
+            self.photonFromCharged[0] = min(photonFromChargedScores)
 
         #Store the data as a dictionary:
-        photonDataDict = {"nphotons":self.nphotons[0], "energy":self.photonEnergies[0], "posX":self.photonPositionX[0], "posY":self.photonPositionY[0], "posZ": self.photonPositionZ[0]}
+        photonDataDict = {"nphotons":self.nphotons[0], 
+            "energy":self.photonEnergies[0], 
+            "posX":self.photonPositionX[0], 
+            "posY":self.photonPositionY[0], 
+            "posZ": self.photonPositionZ[0], 
+            "photonFromCharged": self.photonFromCharged[0]
+            }
 
         return photonDataDict
