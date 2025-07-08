@@ -74,7 +74,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         return ["gen2ntuple"]
     
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
-        """Determine if event is signal nue CC inclusive."""
+        """Determine if event is signal numu CC charged pion + N proton"""
         ntuple = data["gen2ntuple"]
         ismc = params.get('ismc', False)
         self.fv_params['ismc'] = ismc
@@ -103,13 +103,13 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         indices = counts['indices']
         
         # get number of muons
-        nprim_mu = counts.get(13,0) + counts.get(-13,0)
+        nprim_mu = counts.get(13,0)
         nprim_proton = counts.get(2212,0)
         nprim_charged_pi = counts.get(211,0) + counts.get(-211,0)
         #print("nprim_mu: ",nprim_mu)
 
         if nprim_mu>0:
-            for pid in [-13,13]:
+            for pid in [13]:
                 if pid in indices:
                     for idx in indices[pid]:
                         if ntuple.trueSimPartContained[idx]==1:
