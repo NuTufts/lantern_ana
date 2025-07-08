@@ -1,0 +1,71 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output"
+
+# Maximum events to process (set to -1 for all events)
+#max_events: -1 #Running all the data!
+max_events: 10 #Testing configuration
+
+# Filter out failed events from output tree
+filter_events: false
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+    - /Users/char.holmes/vscode/lantern_ana/studies/invariant_mass
+
+  #MC simulated data
+  bnbnumu:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
+    
+  #Cosmic data
+  extbnb:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root #off-beam data
+   
+  #Cosmic data
+  beamData:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root #Beam data
+
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  #trueNu:
+  #  type: trueNuPropertiesProducer
+  #  config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  #visible_energy:
+  #  type: VisibleEnergyProducer
+  #  config: {}
+
+  invariantmass:
+    type: invariantmassproducer
+    config: {}
+
+ 
