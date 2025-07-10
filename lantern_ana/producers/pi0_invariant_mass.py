@@ -21,7 +21,7 @@ class invariantmassproducer(ProducerBaseClass):
         #These variables are what we're interested in passing to the ntuple
        
 
-    def setDefaultValues(self): #Not clear what to do here?
+    def setDefaultValues(self): 
         self.nphotons[0] = 0
         self.invariantmass[0]=0
     
@@ -34,55 +34,44 @@ class invariantmassproducer(ProducerBaseClass):
         return ["gen2ntuple"]
     
     def processEvent(self, data, params):
-        """Get the energy and x, y, z coordinates of each photon."""
         ntuple = data["gen2ntuple"]
         self.setDefaultValues()
-        
-        photonIDList=[]
-        photonEnergiesList=[]
-        photonStartPosXList=[]
-        photonStartPosYList=[]
-        photonStartPosZList=[]
-        photonDirectionXList=[]
-        photonDirectionYList=[]
-        photonDirectionZList=[]
+    
+        photonIDList = []
+        photonEnergiesList = []
+        photonDirectionXList = []
+        photonDirectionYList = []
+        photonDirectionZList = []
 
-        for i in range(ntuple.nShowers):
-            #Make sure reco thinks we have a photon
-            if ntuple.showerPID[i] != 22:
-                continue
-            
-           
-            if ntuple.showerDistToVtx[i] <5:
-                continue
+        for i in range(ntuple.n_true_showers):
+            if ntuple.true_shower_pdg[i] != 22:
+                continue  # Not a photon
 
             self.nphotons[0] += 1
             photonIDList.append(i)
-            photonEnergiesList.append(ntuple.showerRecoE[i])
-            photonStartPosXList.append(ntuple.showerStartPosX[i])
-            photonStartPosYList.append(ntuple.showerStartPosY[i])
-            photonStartPosZList.append(ntuple.showerStartPosZ[i])
-            photonDirectionXList.append(ntuple.showerStartDirX[i])
-            photonDirectionYList.append(ntuple.showerStartDirY[i])
-            photonDirectionZList.append(ntuple.showerStartDirZ[i])
+            photonEnergiesList.append(ntuple.true_shower_energy[i])
+            photonDirectionXList.append(ntuple.true_shower_dir_x[i])
+            photonDirectionYList.append(ntuple.true_shower_dir_y[i])
+            photonDirectionZList.append(ntuple.true_shower_dir_z[i])
 
+        if self.nphotons[0] < 2:
+            return 0  # Need at least 2 photons to compute invariant mass
 
-    
-        if self.nphotons[0] != 2:
-            return 0
-        # print("found 2 photons")
-
-        gi1, gi2 = photonIDList[0],photonIDList[1]
         ge1, ge2 = photonEnergiesList[0], photonEnergiesList[1]
 
-        momentumX1 = ge1*photonDirectionXList[0]
-        momentumY1 = ge1*photonDirectionYList[0]
-        momentumZ1 = ge1*photonDirectionZList[0]
-        momentumX2 = ge1*photonDirectionXList[1]
-        momentumY2 = ge1*photonDirectionYList[1]
-        momentumZ2 = ge1*photonDirectionZList[1]
+        momentumX1 = ge1 * photonDirectionXList[0]
+        momentumY1 = ge1 * photonDirectionYList[0]
+        momentumZ1 = ge1 * photonDirectionZList[0]
+        momentumX2 = ge2 * photonDirectionXList[1]
+        momentumY2 = ge2 * photonDirectionYList[1]
+        momentumZ2 = ge2 * photonDirectionZList[1]
 
-        self.invariantmass[0] = np.sqrt((np.square(ge1+ge2))-((np.square(photonDirectionXList[0]+photonDirectionXList[1]))+(np.square(photonDirectionYList[0]+photonDirectionYList[1]))+(np.square(photonDirectionZList[0]+photonDirectionZList[1]))))
-        # print("invariant mass:", self.invariantmass[0]) 
+        total_E = ge1 + ge2
+        total_px = momentumX1 + momentumX2
+        total_py = momentumY1 + momentumY2
+        total_pz = momentumZ1 + momentumZ2
 
-        return {"invariantmass":self.invariantmass[0]}
+        self.invariantmass[0] = np.sqrt(max(0, total_E**2 - (total_px**2 + total_py**2 + total_pz**2)))
+
+        return {"invariantmass": self.invariantmass[0]}
+

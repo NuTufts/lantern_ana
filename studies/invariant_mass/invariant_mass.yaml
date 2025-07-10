@@ -66,6 +66,7 @@ producers:
 
   invariantmass:
     type: invariantmassproducer
+    module: 1gXp_NC_producers
     config: {}
 
  
