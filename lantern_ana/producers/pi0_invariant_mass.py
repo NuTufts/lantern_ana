@@ -6,6 +6,7 @@ from lantern_ana.producers.producer_factory import register
 from lantern_ana.tags.tag_factory import TagFactory
 from array import array
 import sys
+from math import sqrt
 
 @register
 class invariantmassproducer(ProducerBaseClass):
@@ -21,7 +22,7 @@ class invariantmassproducer(ProducerBaseClass):
         #These variables are what we're interested in passing to the ntuple
        
 
-    def setDefaultValues(self): 
+    def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
         self.invariantmass[0]=0
     
@@ -43,16 +44,20 @@ class invariantmassproducer(ProducerBaseClass):
         photonDirectionYList = []
         photonDirectionZList = []
 
-        for i in range(ntuple.n_true_showers):
-            if ntuple.true_shower_pdg[i] != 22:
+        for i in range(ntuple.nTrueSimParts):
+            if ntuple.trueSimPartPDG[i] != 22:
                 continue  # Not a photon
 
             self.nphotons[0] += 1
             photonIDList.append(i)
-            photonEnergiesList.append(ntuple.true_shower_energy[i])
-            photonDirectionXList.append(ntuple.true_shower_dir_x[i])
-            photonDirectionYList.append(ntuple.true_shower_dir_y[i])
-            photonDirectionZList.append(ntuple.true_shower_dir_z[i])
+            photonEnergiesList.append(ntuple.trueSimPartE[i])
+            px = ntuple.trueSimPartPx[i]
+            py = ntuple.trueSimPartPy[i]
+            pz = ntuple.trueSimPartPz[i]
+            pnorm = sqrt(px*px+py*py+pz*pz)
+            photonDirectionXList.append(ntuple.trueSimPartPx[i]/pnorm)
+            photonDirectionYList.append(ntuple.trueSimPartPy[i]/pnorm)
+            photonDirectionZList.append(ntuple.trueSimPartPz[i]/pnorm)
 
         if self.nphotons[0] < 2:
             return 0  # Need at least 2 photons to compute invariant mass
