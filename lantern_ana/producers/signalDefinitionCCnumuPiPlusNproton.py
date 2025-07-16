@@ -42,12 +42,22 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
     def get_default_particle_thresholds(self):
         """Get default particle energy thresholds."""
         true_part_cfg = {}
-        true_part_cfg['eKE']  = 30.0
-        true_part_cfg['muKE'] = 30.0
-        true_part_cfg['piKE'] = 30.0
-        true_part_cfg['pKE']  = 60.0
-        true_part_cfg['gKE']  = 10.0
-        true_part_cfg['xKE']  = 60.0
+
+        # min thresholds (MeV)
+        true_part_cfg['eKE']  = float('inf') # don't want any primary electrons
+        true_part_cfg['muKE'] = 0.0
+        true_part_cfg['piKE'] = 16.62
+        true_part_cfg['pKE']  = 46.8
+        true_part_cfg['gKE']  = float('inf') # don't want any primary photons
+        true_part_cfg['xKE']  = float('inf') # don't want any primary other particles (*** edit to allow neutron) 
+
+        # max thresholds (MeV)
+        true_part_cfg['eKE_max']  = float('inf')
+        true_part_cfg['muKE_max'] = 1398.06
+        true_part_cfg['piKE_max'] = float('inf')
+        true_part_cfg['pKE_max']  = 433.01
+        true_part_cfg['gKE_max']  = float('inf')
+        true_part_cfg['xKE_max']  = float('inf')
 
         return true_part_cfg
 
