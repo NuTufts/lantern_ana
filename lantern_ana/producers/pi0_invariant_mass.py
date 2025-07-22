@@ -20,8 +20,8 @@ class invariantmassproducer(ProducerBaseClass):
         self.nphotons= array('i',[0])
         self.invariantmass=array('f',[0])
         #These variables are what we're interested in passing to the ntuple
-       self.nphotons_reco= array('i',[0])
-       self.invariantmass_reco=array('f',[0])
+        self.nphotons_reco= array('i',[0])
+        self.invariantmass_reco=array('f',[0])
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
@@ -102,7 +102,7 @@ class invariantmassproducer(ProducerBaseClass):
                 continue
 
 
-            self.nphotons[0] += 1
+            self.nphotons_reco[0] += 1
             photonIDList.append(i)
             photonEnergiesList.append(ntuple.showerRecoE[i])
             py = ntuple.showerStartDirY[i]*ntuple.showerRecoE[i]
@@ -113,7 +113,7 @@ class invariantmassproducer(ProducerBaseClass):
             photonDirectionYList.append(ntuple.showerStartDirY[i]/pnorm)
             photonDirectionZList.append(ntuple.showerStartDirZ[i]/pnorm)
 
-        if self.nphotons[0] < 2:
+        if self.nphotons_reco[0] < 2:
             return 0  # Need at least 2 photons to compute invariant mass
 
         ge1, ge2 = photonEnergiesList[0], photonEnergiesList[1]
