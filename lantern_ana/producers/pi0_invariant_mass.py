@@ -22,17 +22,21 @@ class invariantmassproducer(ProducerBaseClass):
         #These variables are what we're interested in passing to the ntuple
         self.nphotons_reco= array('i',[0])
         self.invariantmass_reco=array('f',[0])
+        self.proton=array('i',[0])
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
         self.invariantmass[0]=0
         self.nphotons_reco[0] = 0
         self.invariantmass_reco[0]=0
-    
+        self.proton[0]=0
+
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
         output.Branch("invariantmass", self.invariantmass, "invariantmass/F")
         output.Branch("invariantmass_reco", self.invariantmass_reco, "invariantmass_reco/F")
+        output.Branch("proton", self.proton, "proton/i")
+
     def requiredInputs(self):
         """Specify required inputs."""
         return ["gen2ntuple"]
@@ -132,6 +136,18 @@ class invariantmassproducer(ProducerBaseClass):
 
         self.invariantmass_reco[0] = np.sqrt(max(0, total_E**2 - (total_px**2 + total_py**2 + total_pz**2)))
 
+        #look for proton
+        self.proton[0]=0
+        
+        for i in range(ntuple.nTracks):
+
+            if ntuple.trackIsSecondary[i]!=1:
+                continue
+            if ntuple.trackClassified[i]!=1:
+                continue
+            if ntuple.trackPID[i]==2212:
+                self.proton[0]+=1
+
         return {"invariantmass": self.invariantmass[0],
-                "invariantmass_reco": self.invariantmass_reco[0]}
+                "invariantmass_reco": self.invariantmass_reco[0], "proton": self.proton[0]}
 
