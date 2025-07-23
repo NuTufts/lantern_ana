@@ -23,7 +23,10 @@ datasets:
     process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+<<<<<<< HEAD
      #- run1_nuwro_jul23.root # temporarily using nuwro here
+=======
+>>>>>>> comment out friend trees, turn on processes
   #  friendtrees:
   #    FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:
