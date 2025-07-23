@@ -49,7 +49,8 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         true_part_cfg['piKE'] = 16.62
         true_part_cfg['pKE']  = 46.8
         true_part_cfg['gKE']  = float('inf') # don't want any primary photons
-        true_part_cfg['xKE']  = float('inf') # don't want any primary other particles (*** edit to allow neutron) 
+        true_part_cfg['nKE']  = 0.0 # any neutrons allowed
+        true_part_cfg['xKE']  = float('inf') # don't want any other primary particles
 
         # max thresholds (MeV)
         true_part_cfg['eKE_max']  = float('inf')
@@ -57,6 +58,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         true_part_cfg['piKE_max'] = float('inf')
         true_part_cfg['pKE_max']  = 433.01
         true_part_cfg['gKE_max']  = float('inf')
+        true_part_cfg['nKE_max']  = float('inf')
         true_part_cfg['xKE_max']  = float('inf')
 
         return true_part_cfg
