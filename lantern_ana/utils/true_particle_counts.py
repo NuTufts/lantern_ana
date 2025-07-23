@@ -20,10 +20,6 @@ def get_true_primary_particle_counts(ntuple,params):
     - pKE_max: maximum kinetic energy threshold in MeV for primary protons [default: float('inf')]
     - piKE_max: maximum kinetic energy threshold in MeV for primary pions [default: float('inf')]
     - gKE_max: maximum kinetic energy threshold in MeV for primary gammas (using initial kinetic energy, not energy deposited) [default: float('inf')]
-<<<<<<< HEAD
-    - nKE_max: maximum kinetic energy threshold in MeV for primary neutrons (using initial kinetic energy, not energy deposited) [default: float('inf')]
-=======
->>>>>>> added max thresholds
     - xKE_max: maximum kinetic energy threshold in MeV for particles that do not include the above [default: float('inf')]
     """
     eKE=params.get('eKE',0.0)
@@ -39,10 +35,6 @@ def get_true_primary_particle_counts(ntuple,params):
     piKE_max=params.get('piKE_max',float('inf'))
     pKE_max=params.get('pKE_max',float('inf'))
     gKE_max=params.get('gKE_max',float('inf'))
-<<<<<<< HEAD
-    nKE_max=params.get('nKE_max',float('inf'))
-=======
->>>>>>> added max thresholds
     xKE_max=params.get('xKE_max',float('inf'))
 
     thresholds={
@@ -50,10 +42,6 @@ def get_true_primary_particle_counts(ntuple,params):
         13: (muKE, muKE_max),
         211: (piKE, piKE_max),
         2212: (pKE, pKE_max),
-<<<<<<< HEAD
-        2112: (nKE, nKE_max),
-=======
->>>>>>> added max thresholds
         22: (gKE, gKE_max)
     }
 
