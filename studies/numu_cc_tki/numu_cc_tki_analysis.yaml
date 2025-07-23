@@ -4,7 +4,7 @@
 output_dir: "./output_tki_dev"
 
 # Maximum events to process (set to -1 for all events)
-max_events: 100
+max_events: -1
 
 # Filter out failed events from output tree
 filter_events: True
@@ -33,20 +33,20 @@ datasets:
     process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
-    friendtrees:
-      FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+  #  friendtrees:
+  #    FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: false
+    process: true
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
   run1_bnb5e19:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: false
+    process: true
     filepaths:
     - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 
