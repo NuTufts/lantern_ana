@@ -113,6 +113,8 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         # Count primary particles that pass thresholds
         counts = get_true_primary_particle_counts(ntuple, self.particle_count_params)
         indices = counts['indices']
+
+        
         
         # get number of muons
         nprim_mu = counts.get(13,0)
