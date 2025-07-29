@@ -100,6 +100,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         self.min_pion_energy       = config.get('min_pion_energy', 16.62)  # Minimum energy threshold (MeV)
         self.min_proton_energy     = config.get('min_proton_energy', 46.8)  # Minimum energy threshold (MeV)
         self.min_shower_energy     = config.get('min_shower_energy', 30.0)  # Minimum energy threshold for shower prong to be counted (MeV)
+        self.max_muon_energy       = config.get('max_muon_energy', 1398.06)  # Maximum energy threshold (MeV)
+        self.max_pion_energy       = config.get('max_pion_energy', float('inf'))  # Maximum energy threshold (MeV)
+        self.max_proton_energy     = config.get('max_proton_energy', 433.01)  # Maximum energy threshold (MeV)
         self.max_totphoton_energy  = config.get('max_totphoton_energy', 30.0)  # Minimum energy threshold (MeV)
         self.min_muon_completeness = config.get('min_muon_completeness',0.5)
         self.min_muon_purity = config.get('min_muon_purity',0.5)
@@ -112,7 +115,13 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         self.min_thresholds = {
           13:self.min_muon_energy,
           211:self.min_pion_energy,
-          2212:self.min_proton_energy,
+          2212:self.min_proton_energy
+        }
+
+        self.max_thresholds = {
+          13:self.max_muon_energy,
+          211:self.max_pion_energy,
+          2212:self.max_proton_energy,
           22:self.max_totphoton_energy
         }
         
@@ -390,11 +399,11 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
               if pid == -13:  # Skip antimuons explicitly
                 continue
               pid = abs(pid)
-              if pid not in self.min_thresholds:
+              if pid not in self.min_thresholds or pid not in self.max_thresholds:
                 continue
-              if ntuple.trackRecoE[i]>self.min_thresholds[pid]:
+              if self.min_thresholds[pid] < ntuple.trackRecoE[i] < self.max_thresholds[pid]:
                 self._counts[pid][0] += 1
-                if ntuple.trackRecoE[i]>max_energy[pid]:
+                if ntuple.trackRecoE[i] > max_energy[pid]:
                   max_idx[pid] = i
                   max_energy[pid] = ntuple.trackRecoE[i]
 
@@ -402,9 +411,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           for i in range(ntuple.nShowers):
             if ntuple.showerIsSecondary[i] == 0:  # Only primary tracks
               pid = abs(ntuple.showerPID[i])
-              if pid not in self.min_thresholds:
+              if pid not in self.max_thresholds:
                 continue
-              if ntuple.showerRecoE[i]>self.min_thresholds[pid]:
+              if ntuple.showerRecoE[i]>self.max_thresholds[pid]:
                 self._counts[pid][0] += 1
                 if ntuple.showerRecoE[i]>max_energy[pid]:
                   max_idx[pid] = i+100
