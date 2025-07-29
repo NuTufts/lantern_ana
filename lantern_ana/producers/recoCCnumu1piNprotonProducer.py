@@ -105,6 +105,8 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         self.max_proton_energy     = config.get('max_proton_energy', 433.01)  # Maximum energy threshold (MeV)
         self.max_totphoton_energy  = config.get('max_totphoton_energy', 30.0)  # Minimum energy threshold (MeV)
         self.min_muon_completeness = config.get('min_muon_completeness',0.5)
+        self.min_pion_completeness = config.get('min_pion_completeness',0.5)
+        self.min_proton_completeness = config.get('min_proton_completeness',0.5)
         self.min_muon_purity = config.get('min_muon_purity',0.5)
         self.use_tracks = config.get('use_tracks', True)   # Whether to include tracks
         self.use_showers = config.get('use_showers', True) # Whether to include showers
