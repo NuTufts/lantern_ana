@@ -139,6 +139,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'npions':array('i',[0]),
           'nprotons':array('i',[0]),
           'nshowers':array('i',[0]),
+          'pionpdg':array('i',[0]), # to check if it was a pi+ or pi-
           'muKE':array('f',[0.0]),
           'maxprotonKE':array('f',[0.0]),
           'pionKE':array('f',[0.0]),
@@ -391,15 +392,22 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           11:0.0
         }
 
+        pionpid = 0
+        nonsignal_primaries = 0
+
 
         if ntuple.foundVertex==1:
           for i in range(ntuple.nTracks):
             if ntuple.trackIsSecondary[i] == 0:  # Only primary tracks
               pid = ntuple.trackPID[i]  # Use raw PID value
               if pid == -13:  # Skip antimuons explicitly
+                nonsignal_primaries += 1
                 continue
+              if pid == 211 or pid == -211:
+                pionpid = pid
               pid = abs(pid)
               if pid not in self.min_thresholds or pid not in self.max_thresholds:
+                nonsignal_primaries += 1
                 continue
               if self.min_thresholds[pid] < ntuple.trackRecoE[i] < self.max_thresholds[pid]:
                 self._counts[pid][0] += 1
@@ -425,8 +433,10 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           if ( self._counts[13][0]==1 and
                self._counts[211][0]==1 and
                self._counts[2212][0]>=1 and 
-               nshowers==0 ):
+               nshowers==0 and
+               nonsignal_primaries == 0 ): # exclude events with any other primaries
             self._vars['is_target_1mu1piNproton'][0] = 1
+            self._vars['pionpdg'][0] = pionpid
           else:
             self._vars['is_target_1mu1piNproton'][0] = 0
 
