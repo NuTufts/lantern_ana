@@ -15,10 +15,10 @@ scaling = {
 }
 
 files = {
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
-    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250623_155712.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250623_155906.root"
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250723_125242.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250723_125242.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250723_130530.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250723_130749.root"
 }
 
 tfiles = {}
@@ -35,9 +35,9 @@ for sample in samples:
 out = rt.TFile("temp.root","recreate")
 
 vars = [
-    ('numuCC1piNp_muonKE',  50, 0.0, 4000.0, f'True Muon KE ({targetpot:.2e} POT)',         0),
-    ('numuCC1piNp_protonKE',50, 0.0, 3000.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
-    ('numuCC1piNp_pionKE',  50, 0.0, 3000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_muonKE',  25, 0.0, 1500.0, f'True Muon KE ({targetpot:.2e} POT)',         0),
+    ('numuCC1piNp_protonKE',25, 0.0, 500.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
+    ('numuCC1piNp_pionKE',  25, 0.0, 2000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
 #    ('eventweight_weight',  50, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
 ]
 
