@@ -31,11 +31,13 @@ class recoPhotonDataProducer(ProducerBaseClass):
 
         #These variables help us identify cosmic background events
         self.photonFromCharged = array('f',[0])
+        self.visibleEnergy = array('f',[0])
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
         self.leadingPhotonEnergy[0] = 0.0
         self.photonFromCharged[0] = 0.0
+        self.visibleEnergy[0] = -1
         for x in range(5):
             self.photonEnergies[x] = 0.0
             self.photonPositionX[x] = 0.0
@@ -47,6 +49,7 @@ class recoPhotonDataProducer(ProducerBaseClass):
         output.Branch(f"nphotons", self.nphotons, f"nphotons/I")
         output.Branch(f"leadingPhotonE", self.leadingPhotonEnergy, f"leadingPhotonE/F")
         output.Branch(f"photonFromCharged", self.leadingPhotonEnergy, f"photonFromCharged/F")
+        output.Branch(f"visibleEnergy", self.visibleEnergy, f"visibleEnergy")
 
     def requiredInputs(self):
         """Specify required inputs."""
@@ -63,7 +66,14 @@ class recoPhotonDataProducer(ProducerBaseClass):
         numPhotons = 0
         photonFromChargedScores = []
 
+        ismc = params.get('ismc',False)
+
         for i in range(ntuple.nShowers):
+            #Determine the reconstructed energy for all true photons (even if we mis-ID them)
+            if ismc:
+                if ntuple.showerTruePID[i] == 22:
+                    self.visibleEnergy[0] = ntuple.showerRecoE[i]
+
             #Make sure reco thinks we have a photon
             if ntuple.showerPID[i] != 22:
                 continue
@@ -82,7 +92,7 @@ class recoPhotonDataProducer(ProducerBaseClass):
                 inFiducial = True
             else:
                 continue
-            
+
             #Now we store the photon's data in our arrays
             self.photonEnergies[numPhotons] = ntuple.showerRecoE[i]
             photonFromChargedScores.append(abs(ntuple.showerFromChargedScore[i]))
@@ -101,6 +111,10 @@ class recoPhotonDataProducer(ProducerBaseClass):
         # Find and store data on tracks ID'd as photons
         # First we make sure we're actually looking at something reco thinks is a photon
         for i in range(ntuple.nTracks):
+            if ismc:
+                if ntuple.trackTruePID[i] == 22:
+                    self.visibleEnergy[0] = ntuple.trackRecoE[i]
+
             if numPhotons >= 5:
                 break
 

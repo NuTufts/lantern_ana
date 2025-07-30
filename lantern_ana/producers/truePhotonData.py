@@ -21,12 +21,30 @@ class truePhotonDataProducer(ProducerBaseClass):
         #These variables are what we're interested in passing to the ntuple
         self.nTruePhotons = array('i',[0]) #This tells us if the event is useful for our analysis
         self.trueLeadingPhotonEnergy = array('f',[0.0]) #This will be our graphing variable
+        self.EDepSumU = array('f',[0.0])
+        self.EDepSumV = array('f',[0.0])
+        self.EDepSumY = array('f',[0.0])
+        self.EDepSumMax = array('f',[0.0])
+        self.MaxPlaneList = array('f',[0.0]*self._maxnphotons)
 
         #These variables are just for other producers
         self.truePhotonEnergies = array('f',[0.0]*self._maxnphotons)
         self.truePhotonPositionX = array('f',[0.0]*self._maxnphotons)
         self.truePhotonPositionY = array('f',[0.0]*self._maxnphotons)
         self.truePhotonPositionZ = array('f',[0.0]*self._maxnphotons)
+
+    def prepareStorage(self, output):
+        """Set up branch in the output ROOT TTree."""
+        output.Branch(f"nTruePhotons", self.nTruePhotons, f"nTruePhotons/I")
+        output.Branch(f"trueLeadingPhotonE", self.trueLeadingPhotonEnergy, f"trueLeadingPhotonE/F")
+        output.Branch(f"eDepSumU", self.EDepSumU, f"eDepSumU/F")
+        output.Branch(f"eDepSumV", self.EDepSumV, f"eDepSumV/F")
+        output.Branch(f"eDepSumY", self.EDepSumY, f"eDepSumY/F")
+        output.Branch(f"EDepSumMax", self.EDepSumMax, f"EDepSumMax/F")
+  
+    def requiredInputs(self):
+        """Specify required inputs."""
+        return ["gen2ntuple"]
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nTruePhotons[0] = 0
@@ -36,21 +54,18 @@ class truePhotonDataProducer(ProducerBaseClass):
             self.truePhotonPositionX[x] = 0.0
             self.truePhotonPositionY[x] = 0.0
             self.truePhotonPositionZ[x] = 0.0
+            self.MaxPlaneList[x] = 0.0
 
-    def prepareStorage(self, output):
-        """Set up branch in the output ROOT TTree."""
-        output.Branch(f"nTruePhotons", self.nTruePhotons, f"nTruePhotons/I")
-        output.Branch(f"trueLeadingPhotonE", self.trueLeadingPhotonEnergy, f"trueLeadingPhotonE/F")
 
-    def requiredInputs(self):
-        """Specify required inputs."""
-        return ["gen2ntuple"]
+        self.EDepSumU[0] = 0.0
+        self.EDepSumV[0] = 0.0
+        self.EDepSumY[0] = 0.0
+        self.EDepSumMax[0] = 0.0
+
     
     def processEvent(self, data, params):        
         """Get the energy and x, y, z coordinates of each photon."""
         ntuple = data["gen2ntuple"]
-
-        
 
         #Only run this on Montecarlo files
         ismc = params.get('ismc',False)
@@ -79,6 +94,12 @@ class truePhotonDataProducer(ProducerBaseClass):
 
             #See if the photon exceeds the energy threshold
             pixelList = [ntuple.trueSimPartPixelSumUplane[i], ntuple.trueSimPartPixelSumVplane[i], ntuple.trueSimPartPixelSumYplane[i]]
+            self.EDepSumU[0] = ntuple.trueSimPartPixelSumUplane[i]
+            self.EDepSumV[0] = ntuple.trueSimPartPixelSumVplane[i]
+            self.EDepSumY[0] = ntuple.trueSimPartPixelSumYplane[i]            
+            self.MaxPlaneList[numPhotons] = np.max(pixelList) * 0.0126
+
+
             nplanes = 0
             for pixsum in pixelList:
                 if pixsum*0.0126>5.0:
@@ -93,7 +114,8 @@ class truePhotonDataProducer(ProducerBaseClass):
             self.truePhotonPositionY[numPhotons] = ntuple.trueSimPartEDepY[i]
             self.truePhotonPositionZ[numPhotons] = ntuple.trueSimPartEDepZ[i]
             #Track that we've found a detectable photon
-            
+
+
             self.nTruePhotons[0] += 1
             #Occasionally we get more than 5 photons, but we shouldn't need to worry about storing those
             if self.nTruePhotons[0] < 5:
@@ -104,17 +126,22 @@ class truePhotonDataProducer(ProducerBaseClass):
  
         #Store the energy of the leading photon
         maxPhotonE = np.max(self.truePhotonEnergies)
+        maxPlaneE = np.max(self.truePhotonEnergies)
         self.trueLeadingPhotonEnergy[0] = maxPhotonE
-        #print("Photon Energies:", self.photonEnergies, flush=True)
+        self.EDepSumMax[0] = maxPlaneE
+        #if self.nTruePhotons[0] > 0 and self.nTruePhotons[0] == 1:
+            #print(self.trueLeadingPhotonEnergy[0])
 
 
         #Store the data as a dictionary:
         truePhotonDataDict = {
             "ntruePhotons":self.nTruePhotons[0], 
-            "energy":self.truePhotonEnergies[0], 
+            "energy":self.truePhotonEnergies[0],
             "posX":self.truePhotonPositionX[0], 
             "posY":self.truePhotonPositionY[0], 
-            "posZ": self.truePhotonPositionZ[0]
+            "posZ":self.truePhotonPositionZ[0],
+            "EDepMax":self.EDepSumMax[0],
+            "LeadingPhoton":self.trueLeadingPhotonEnergy[0],
             }
 
         return truePhotonDataDict

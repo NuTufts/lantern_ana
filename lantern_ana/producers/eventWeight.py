@@ -41,5 +41,9 @@ class eventWeightProducer(ProducerBaseClass):
         
         # Reset output variable
         self.eventweight[0] = ntuple.xsecWeight
+
+        #Remove events with infinite event weights
+        if ntuple.xsecWeight > 100000000000000:
+            self.eventweight[0] = 1
         
         return {"weight":self.eventweight[0]}

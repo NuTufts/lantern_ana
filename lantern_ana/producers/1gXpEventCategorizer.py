@@ -18,8 +18,8 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         #Vertex variables:
         self.VertexFound = array('i',[0])
         self.inFiducial = array('i',[0])
-        self.fiducial = config.get('fiducialData', {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":15})
-
+        self.fiducial = config.get('fiducialData', {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0})
+        self.flashPred = config.get('flashpred')
 
         #Cosmic cut variables:
         self.cosmicFraction = array('f',[0])
@@ -190,6 +190,8 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         output.Branch("twoGoneMutrue", self.twoGoneMutrue, "twoGoneMutrue/I")
         output.Branch("twoGxPitrue", self.twoGxPitrue, "twoGxPitrue/I")
 
+        output.Branch("inFiducial", self.inFiducial, "inFiducial/I")
+
 
     
     def requiredInputs(self):
@@ -243,8 +245,9 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         self.recoPionCount[0] = recoParticleData["pions"]
         self.recoElectronCount[0] = recoParticleData["electrons"]
 
-        self.sinkhornDiv[0] = flashpred["sinkhorn_div"]
-        self.observedPE[0] = flashpred["observedpe"]
+        if self.flashPred == True:
+            self.sinkhornDiv[0] = flashpred["sinkhorn_div"]
+            self.observedPE[0] = flashpred["observedpe"]
 
 
         #See if the event vertex is reconstructed in the fiducial:
@@ -270,10 +273,13 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
                 or self.recoPhotonCount[0] > 2 
                 or self.recoPhotonCount[0] == 0
                 or self.photonFromCharged[0] < 5
-                or self.observedPE[0] < 250
-                or self.sinkhornDiv[0] > 40):
+                ):
 
             self.recoBackground[0] = 1
+        
+        if self.flashPred == True:
+            if self.observedPE[0] < 250 or self.sinkhornDiv[0] > 40:
+                self.recoBackground[0] = 1
 
         #Next we determine what sideband the particle belongs to:
         #SIDEBANDS WITH ONE PHOTON
@@ -371,6 +377,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
 
         if self.truePhotonCount[0] == 1 and self.trueBackground[0] == 0:
             self.trueOnePhotonInclusive[0] = 1
+            
             if (self.trueProtonCount[0] == 0 
                     and self.trueJustOverMuons[0] == 0 
                     and self.trueJustOverPions[0] == 0):

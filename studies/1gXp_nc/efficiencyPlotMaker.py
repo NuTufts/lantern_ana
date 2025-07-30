@@ -1,5 +1,7 @@
 import os,sys
 import ROOT as rt
+import math
+
 
 
 targetpot = 4.4e19
@@ -39,7 +41,7 @@ recoBackgroundTypes = ['Vertex Not Reconstructed',
 noBackgrounds = len(recoBackgroundTypes)
 
 recoBackgroundCuts = {'Vertex Not Reconstructed': "&& (vertex_properties_found != 1)",
-    'Vertex Reconstructed Out of Fiducial': "&& (vertex_properties_infiducial != 1)",
+    'Vertex Reconstructed Out of Fiducial': "&& (inFiducial != 1)",
     'Cosmic Fraction Cut': "&& (vertex_properties_cosmicfrac > 0.15)",
     'Unreconstructed Pixel Cut': "&& (vertex_properties_frac_intime_unreco_pixels > 0.9)",
     'Charged Score Cut': "&& (photonFromCharged < 5)",
@@ -55,7 +57,7 @@ recoBackgroundCuts = {'Vertex Not Reconstructed': "&& (vertex_properties_found !
     }
 
 recoBackgroundCutsUsed = {'Vertex Not Reconstructed': "&& (vertex_properties_found == 1)",
-    'Vertex Reconstructed Out of Fiducial': "&& (vertex_properties_infiducial == 1)",
+    'Vertex Reconstructed Out of Fiducial': "&& (inFiducial == 1)",
     'Cosmic Fraction Cut': "&& (vertex_properties_cosmicfrac <= 0.15)",
     'Unreconstructed Pixel Cut': "&& (vertex_properties_frac_intime_unreco_pixels <= 0.9)",
     'Charged Score Cut': "&& (photonFromCharged >= 5)",
@@ -83,6 +85,8 @@ recoSidebandCuts = {'reco 1g0X': "&& (oneGnoX == 1)",
     'reco 2gXpi': "&& (twoGxPi == 1)"
     }
 
+graphingVar = "trueLeadingPhotonE"
+
 trueSidebandCuts = {
     'oneGnoXtrue': "&& (oneGnoXtrue == 1)",
     'oneGonePtrue': "&& (oneGonePtrue == 1)",
@@ -101,8 +105,10 @@ trueSidebandCuts = {
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250630_130759.root",
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250730_122502.root",
     }
+
+
 
 
 tfiles = {}
@@ -125,15 +131,13 @@ vars = [
     ("leadingPhotonE",60,0, 1000,'2g2p Sample',"Reco", 0)
 ]
 
-graphingVar = "trueLeadingPhotonE"
-
 nBins = 60
 xMin = 0
-xMax = 2500
+xMax = 700
 
 trueSidebandList = [
     ("oneGinclusiveTrue",nBins, xMin, xMax,'1g + X Inclusive Outcomes',"True", -1), #No signal category
-    ("twoGinclusiveTrue",nBins, xMin, xMax,'2g + X Inclusive Sample',"True", -1), #No signal category
+    ("twoGinclusiveTrue",nBins, xMin, xMax,'2g + X Inclusive Outcomes',"True", -1), #No signal category
     ("oneGnoXtrue",nBins, xMin, xMax,'True 1g0X Outcomes',"True", 0),
     ("oneGonePtrue",nBins, xMin, xMax,'True 1g1p Outcomes',"True", 1),
     ("oneGtwoPtrue",nBins, xMin, xMax,'True 1g2p Outcomes',"True", 2),
@@ -151,7 +155,8 @@ canvs = {}
 
 #CUT LIST
 #Cut based on basic vertex properties
-cut = "1==1"
+cut = "(eventweight_weight > -1e9 && eventweight_weight < 1e9)"
+#cut = f"(TMath::IsFinite({graphingVar}) && TMath::IsFinite(eventweight_weight))"
 
 
 #Now we actually go through and store the data
@@ -164,7 +169,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
     histIntTotal = 0
 
     #We use these to color our histograms
-    colors = [rt.kP10Cyan, rt.kP10Ash, rt.kP10Green, rt.kP10Orange, rt.kP10Brown, rt.kP10Violet, rt.kP10Gray, rt.kP10Red, rt.kP10Yellow, rt.kP10Blue]
+    colors = [rt.kCyan, rt.kGray + 2, rt.kGreen, rt.kOrange, rt.kOrange + 2, rt.kViolet, rt.kGray, rt.kRed, rt.kYellow]
     noColors = len(colors)
     colorIndex = 0
 
@@ -189,16 +194,24 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
         recoSidebandCut = trueSidebandCut + recoSidebandCuts[str(recoSideband)]
 
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({recoSidebandCut})*eventweight_weight") #Execute all cuts
-        if sideband == 'oneGnoXtrue' and recoSideband == 'reco 1g0X':
-            print("Drawing based on:", recoSidebandCut)
+        #print("Drawing based on:", recoSidebandCut)
         hists[(sideband,recoSideband)].Scale(scaling[sample])
 
         bins = hists[(sideband,recoSideband)].GetNbinsX()
 
         histInt = hists[(sideband,recoSideband)].Integral(1, int(bins))
-        if sideband == 'oneGnoXtrue' and recoSideband == 'reco 1g0X':
-            print("Histint:", histInt)
+        #print("Histint:", histInt)
         
+        hist = hists[(sideband, recoSideband)]
+        bins = hist.GetNbinsX()
+        #for i in range(1, nbins + 1):  # ROOT bins start at 1
+        #    val = hist.GetBinContent(i)
+        #    print(val)
+            #if math.isnan(val) or math.isinf(val):
+            #    print(f"Bad bin content at bin {i}: {val}")
+
+
+
         #Make it look pretty
         hists[(sideband,recoSideband)].SetLineColor(rt.kBlack)
         if correctSidebandIndex == x:
@@ -225,6 +238,10 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({backgroundCut})*eventweight_weight") #Execute all cuts
         #print("Drawing based on:", backgroundCut)
         hists[(sideband,background)].Scale(scaling[sample])
+        h = rt.gDirectory.Get(hname)
+        #trees[sample].Scan(f"{graphingVar}:eventweight_weight", 
+        #           "!(eventweight_weight < 1e9 && eventweight_weight > -1e9)")
+
 
         trueSidebandCut += recoBackgroundCutsUsed[str(background)]
 
@@ -275,6 +292,34 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
     legend.SetHeader(str(legendHeaderString), "C")
     legend.Draw()
 
+    
+
 
     canvs[sideband].Update()
     canvs[sideband].Write()
+
+#Now we draw a histogram for the visible vs. true photon energy:
+energyVisibleCut = "(trueOnePhotonInclusive == 1 && eventweight_weight > -1e9 && eventweight_weight < 1e9 && visibleEnergy > -1 && trueLeadingPhotonE < 300 && visibleEnergy < 300)"
+
+trueVsVisibleECanvas = rt.TCanvas("1g + X Inclusive","v3dev: 1g + X Inclusive",1000,800)
+trueVsVisiblePad = rt.TPad("trueVsVisiblePad", "trueVsVisiblePad", 0.0, 0.0, 1.0, 1.0) #Allows us to change axis labels
+trueVsVisibleEHist = rt.TH2D("1g + X True Vs. Visible Histograms", "1g + X Inclusive True Vs. Visible Histograms", 600, 0, 600, 600, 0, 600)
+sample = "Montecarlo"
+
+graphingVary = "visibleEnergy"
+graphingVarx = "trueLeadingPhotonE"
+
+trueVsVisiblePad.SetTitle("1g + X Inclusive True Vs. Desposited Energy")
+xAxis = trueVsVisibleEHist.GetXaxis()
+yAxis = trueVsVisibleEHist.GetYaxis()
+trueVsVisiblePad.Draw()
+trueVsVisibleEHist.Draw()
+
+trees[sample].Draw(f"{graphingVary}:{graphingVarx}>>{trueVsVisibleEHist}", f"({energyVisibleCut})*eventweight_weight", "COLZ")
+
+
+xAxis.SetTitle("Deposited Leading Photon Energy (MeV)")
+yAxis.SetTitle("True Leading Photon Energy (MeV)")
+xAxis.Draw()
+
+trueVsVisibleECanvas.Write()
