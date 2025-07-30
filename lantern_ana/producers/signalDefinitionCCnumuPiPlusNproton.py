@@ -116,11 +116,20 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
 
         
         
-        # get number of muons
+        # get number of primary particles
         nprim_mu = counts.get(13,0)
         nprim_proton = counts.get(2212,0)
         nprim_charged_pi = counts.get(211,0) + counts.get(-211,0)
+        nprim_npi = counts.get(111,0) # neutral pions
         #print("nprim_mu: ",nprim_mu)
+
+        if nprim_npi > 0: # kick out events with primary neutral pions, according to genie
+            return self._get_results()
+        
+        # Note if there is a geant-tracked primary particle that is NOT a muon, proton, charged pion, 
+        # or neutron, this event is not included. This is because the min and max energy thresholds
+        # for xKE ("all other particles") is (inf, inf), meaning none of these events are 
+        # included in the counts. 
 
         if nprim_mu>0:
             for pid in [13]:

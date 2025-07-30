@@ -79,5 +79,26 @@ def get_true_primary_particle_counts(ntuple,params):
             indices[pid] = []
         indices[pid].append(i)
 
+    # separate loop through genie pdgs to check for neutral pions
+    for i in range(ntuple.nTruePrimParts):
+
+        pdg = ntuple.truePrimPartPDG[i]
+
+        # Only process neutral pions
+        if pdg != 111:
+            continue
+
+        if ntuple.truePrimPartProcess[i] != 0: # Skip non-primary neutral pions
+            continue  
+
+        if 111 not in counts:
+            counts[111] = 0
+        counts[111] += 1
+
+        if 111 not in indices:
+            indices[111] = []
+        indices[111].append(i)
+
+
     counts['indices'] = indices
     return counts
