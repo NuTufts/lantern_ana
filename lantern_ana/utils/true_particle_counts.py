@@ -88,9 +88,6 @@ def get_true_primary_particle_counts(ntuple,params):
         if pdg != 111:
             continue
 
-        if ntuple.truePrimPartProcess[i] != 0: # Skip non-primary neutral pions
-            continue  
-
         if 111 not in counts:
             counts[111] = 0
         counts[111] += 1
