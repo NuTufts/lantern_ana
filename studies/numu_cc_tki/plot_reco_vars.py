@@ -16,10 +16,10 @@ scaling = {
 }
 
 files = {
-    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
-    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250623_154720.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250623_155712.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250623_155906.root"
+    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250730_134435.root",
+    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250730_134435.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250730_135343.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250730_135526.root"
 }
 
 tfiles = {}
@@ -36,10 +36,10 @@ for sample in samples:
 out = rt.TFile("temp.root","recreate")
 
 vars = [
-    ('numuCC1piNpReco_muKE',        40, 0.0, 2000.0, f'Reco Muon KE ({targetpot:.2e} POT);muon KE (MeV)',         0),
-    ('numuCC1piNpReco_maxprotonKE', 40, 0.0, 1000.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
-    ('numuCC1piNpReco_pionKE',      40, 0.0, 1000.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
-    ('numuCC1piNpReco_hadronicM',  200, 0.0, 2000.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
+    ('numuCC1piNpReco_muKE',        25, 0.0, 1500.0, f'Reco Muon KE ({targetpot:.2e} POT);muon KE (MeV)',         0),
+    ('numuCC1piNpReco_maxprotonKE', 25, 0.0, 500.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
+    ('numuCC1piNpReco_pionKE',      25, 0.0, 500.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
+    ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
 ]
 
 hists = {}
@@ -153,7 +153,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save plots as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/reco_{var}.pdf")
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_073025.pdf")
     
 
     #canvs[var].Update()
