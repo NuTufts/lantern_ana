@@ -15,10 +15,10 @@ scaling = {
 }
 
 files = {
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250723_125242.root",
-    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250723_125242.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250723_130530.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250723_130749.root"
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250730_134435.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250730_134435.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250730_135343.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250730_135526.root"
 }
 
 tfiles = {}
@@ -149,7 +149,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save canvas as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/truth_{var}.pdf")
+    canvs[var].SaveAs(f"{outdir}/truth_{var}_073025.pdf")
 
 #print("[enter] to close")
 #input()
