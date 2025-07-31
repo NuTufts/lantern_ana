@@ -114,6 +114,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         self.use_showers = config.get('use_showers', True) # Whether to include showers
         self.mp  = 938.27209
         self.mpi = 139.57039
+        self.mmu = 105.66
         self.gii = np.array( (1.0, -1.0, -1.0, -1.0 )) # space-time signature we're using
 
         self.min_thresholds = {
@@ -424,11 +425,30 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
 
 
           # save respective particle kinematics for tki 
-          muMomFromDir = np.array([ntuple.trueSimPartPx[max_idx[13]]/1000., ntuple.trueSimPartPy[max_idx[13]]/1000., ntuple.trueSimPartPz[max_idx[13]]/1000.]) # convert to GeV
+
+          recoMuE = ntuple.trackRecoE[max_idx[13]] # in MeV
+          recoMomMu = tki.recoMomCalc(recoMuE, self.mmu) # now in GeV
+          trkDirMuX = ntuple.trackStartDirX[max_idx[13]]*recoMomMu
+          trkDirMuY = ntuple.trackStartDirY[max_idx[13]]*recoMomMu
+          trkDirMuZ = ntuple.trackStartDirZ[max_idx[13]]*recoMomMu
+
+          recoPiE = ntuple.trackRecoE[max_idx[211]] # in MeV
+          recoMomPi = tki.recoMomCalc(recoPiE, self.mpi) # now in GeV
+          trkDirPiX = ntuple.trackStartDirX[max_idx[211]]*recoMomPi
+          trkDirPiY = ntuple.trackStartDirY[max_idx[211]]*recoMomPi
+          trkDirPiZ = ntuple.trackStartDirZ[max_idx[211]]*recoMomPi
+
+          recoPE = ntuple.trackRecoE[max_idx[2212]] # in MeV
+          recoMomP = tki.recoMomCalc(recoPE, self.mp) # now in GeV
+          trkDirPX = ntuple.trackStartDirX[max_idx[2212]]*recoMomP
+          trkDirPY = ntuple.trackStartDirY[max_idx[2212]]*recoMomP
+          trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
+
+          muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
           energyMu = ntuple.trueSimPartE[max_idx[13]]/1000. # convert to GeV
-          piMomFromDir = np.array([ntuple.trueSimPartPx[max_idx[211]]/1000., ntuple.trueSimPartPy[max_idx[211]]/1000., ntuple.trueSimPartPz[max_idx[211]]/1000.]) # convert to GeV
+          piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
           energyPi = ntuple.trueSimPartE[max_idx[211]]/1000. # convert to GeV
-          pMomFromDir = np.array([ntuple.trueSimPartPx[max_idx[2212]]/1000., ntuple.trueSimPartPy[max_idx[2212]]/1000., ntuple.trueSimPartPz[max_idx[2212]]/1000.]) # convert to GeV
+          pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
           energyP = ntuple.trueSimPartE[max_idx[2212]]/1000. # convert to GeV
                   
             
