@@ -39,6 +39,8 @@ vars = [
     ('numuCC1piNp_protonKE',25, 0.0, 500.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
     ('numuCC1piNp_pionKE',  25, 0.0, 2000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
 #    ('eventweight_weight',  50, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
+    ('numuCC1piNp_delPTT', 25, -100, 100, f'True δp<sub>TT</sub> ({targetpot:.2e} POT)', 0),
+    
 ]
 
 hists = {}
