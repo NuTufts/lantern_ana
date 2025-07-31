@@ -7,7 +7,7 @@ from lantern_ana.utils.get_primary_electron_candidates import get_primary_electr
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.utils.true_particle_counts import get_true_primary_particle_counts 
 from lantern_ana.utils.kinematics import KE_from_fourmom
-from lantern_ana.utils.kinematics import transverse_kinemaic_imbalance as tki
+from lantern_ana.utils.kinematics import transverse_kinematic_imbalance as tki
 from math import exp
 import ROOT
 
