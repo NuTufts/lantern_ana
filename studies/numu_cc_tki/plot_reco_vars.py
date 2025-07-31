@@ -40,6 +40,9 @@ vars = [
     ('numuCC1piNpReco_maxprotonKE', 25, 0.0, 500.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
     ('numuCC1piNpReco_pionKE',      25, 0.0, 500.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
     ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
+    ('numuCC1piNp_delPTT', 50, -1, 1, f'True delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_pN', 50, 0, 1.6, f'True pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_delAlphaT', 50, 0, 180, f'True delAlphaT )deg) ({targetpot:.2e} POT)', 0)
 ]
 
 hists = {}
@@ -153,7 +156,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save plots as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/reco_{var}_073025.pdf")
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_073125_tki.pdf")
     
 
     #canvs[var].Update()

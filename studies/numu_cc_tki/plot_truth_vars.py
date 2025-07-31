@@ -39,7 +39,9 @@ vars = [
     ('numuCC1piNp_protonKE',25, 0.0, 500.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
     ('numuCC1piNp_pionKE',  25, 0.0, 2000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
 #    ('eventweight_weight',  50, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
-    ('numuCC1piNp_delPTT', 50, -1, 1, f'True delPTT ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_delPTT', 50, -1, 1, f'True delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_pN', 50, 0, 1.6, f'True pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_delAlphaT', 50, 0, 180, f'True delAlphaT )deg) ({targetpot:.2e} POT)', 0)
     
 ]
 
@@ -151,7 +153,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save canvas as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/truth_{var}_073125_test.pdf")
+    canvs[var].SaveAs(f"{outdir}/truth_{var}_073125_tki.pdf")
 
 #print("[enter] to close")
 #input()
