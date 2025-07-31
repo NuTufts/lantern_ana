@@ -27,9 +27,7 @@ def delPT(pxPi, pxP, pxMu, pyPi, pyP, pyMu):
 # longitudinal component
 def pL(pzP, pzMu, pzPi, eP, eMu, ePi, delPT): 
     mP = constants.physical_constants['proton mass energy equivalent in MeV'][0]/1000 
-    #print("mP: ", mP)
     mN = constants.physical_constants['neutron mass energy equivalent in MeV'][0]/1000
-    #print("mN: ", mN)
     B = 0.34381
     mA = 22*mN + 18*mP - B
     mA1 = mA - mN + epsilon
@@ -41,7 +39,6 @@ def pL(pzP, pzMu, pzPi, eP, eMu, ePi, delPT):
 def pLGKI(pzP, pzMu, pzPi, eP, eMu, ePi):
     pRest = constants.physical_constants['proton mass energy equivalent in MeV'][0]/1000
     piRest = 139.57/1000 # GeV
-    #print("piRest:", piRest)
     #Ecal = eMu + (eP-pRest) + (ePi-piRest) + epsilon
     Ecal = eMu + (eP-pRest) + ePi + epsilon
     return pzMu + pzP + pzPi - Ecal
