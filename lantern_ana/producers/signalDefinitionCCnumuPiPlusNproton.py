@@ -38,7 +38,9 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             'muonKE':array('f',[0.0]),
             'protonKE':array('f',[0.0]),
             'pionKE':array('f',[0.0]), 
-            'delPTT':array('f',[0.0])
+            'delPTT':array('f',[0.0]),
+            'pN':array('f',[0.0]),
+            'delAlphaT':array('f',[0.0])
         }
 
     def get_default_particle_thresholds(self):
@@ -147,6 +149,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
 
                         self._vars['muonKE'][0] = muKE
                         muMomFromDir = np.array([ntuple.trueSimPartPx[idx]/1000., ntuple.trueSimPartPy[idx]/1000., ntuple.trueSimPartPz[idx]/1000.]) # convert to GeV
+                        energyMu = ntuple.trueSimPartE[idx]/1000. # convert to GeV
 
         if nprim_charged_pi>0:
             self._vars['is_pion_contained'][0] = 1
@@ -168,6 +171,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                         ntuple.trueSimPartE[ maxpionidx] )
                 self._vars['pionKE'][0] = piKE
                 piMomFromDir = np.array([ntuple.trueSimPartPx[maxpionidx]/1000., ntuple.trueSimPartPy[maxpionidx]/1000., ntuple.trueSimPartPz[maxpionidx]/1000.]) # convert to GeV
+                energyPi = ntuple.trueSimPartE[idx]/1000. # convert to GeV
                 
         if nprim_proton>0:
             # find max proton energy
@@ -186,6 +190,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                        ntuple.trueSimPartE[ maxidx] )
                 self._vars['protonKE'][0] = pKE
                 pMomFromDir = np.array([ntuple.trueSimPartPx[maxidx]/1000., ntuple.trueSimPartPy[maxidx]/1000., ntuple.trueSimPartPz[maxidx]/1000.]) # convert to GeV
+                energyP = ntuple.trueSimPartE[idx]/1000. # convert to GeV
             
         # if signal, grab tki variables
         if nprim_mu==1 and nprim_charged_pi==1 and nprim_proton>=1:
@@ -194,6 +199,15 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
             delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
             self._vars['delPTT'][0] = delPTT
+
+            delPT = tki.delPT(piMomFromDir[0], pMomFromDir[0], muMomFromDir[0], piMomFromDir[1], pMomFromDir[1], muMomFromDir[1])
+            pL = tki.pL(pMomFromDir[2], muMomFromDir[2], piMomFromDir[2], energyP, energyMu, energyPi, delPT)
+            pN = np.sqrt( np.dot(delPT, delPT) + np.dot(pL, pL) )
+            self._vars['pN'][0] = pN
+
+            delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
+            self._vars['delAlphaT'][0] = delAlphaT
+
 
         return self._get_results()
 
