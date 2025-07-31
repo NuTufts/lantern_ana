@@ -7,6 +7,7 @@ from lantern_ana.utils.get_primary_electron_candidates import get_primary_electr
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.utils.true_particle_counts import get_true_primary_particle_counts 
 from lantern_ana.utils.kinematics import KE_from_fourmom
+from lantern_ana.utils.kinematics import transverse_kinemaic_imbalance as tki
 from math import exp
 import ROOT
 
@@ -36,7 +37,8 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             'is_maxproton_contained':array('i',[0]),
             'muonKE':array('f',[0.0]),
             'protonKE':array('f',[0.0]),
-            'pionKE':array('f',[0.0])
+            'pionKE':array('f',[0.0]), 
+            'delPTT':array('f',[0.0])
         }
 
     def get_default_particle_thresholds(self):
@@ -144,6 +146,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                                 ntuple.trueSimPartE[idx] )
 
                         self._vars['muonKE'][0] = muKE
+                        muMomFromDir = np.array([ntuple.trueSimPartPx[i], ntuple.trueSimPartPy[i], ntuple.trueSimPartPz[i]]) # MeV
 
         if nprim_charged_pi>0:
             self._vars['is_pion_contained'][0] = 1
@@ -164,6 +167,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                         ntuple.trueSimPartPz[maxpionidx],
                                         ntuple.trueSimPartE[ maxpionidx] )
                 self._vars['pionKE'][0] = piKE
+                piMomFromDir = np.array([ntuple.trueSimPartPx[i], ntuple.trueSimPartPy[i], ntuple.trueSimPartPz[i]]) # MeV
                 
         if nprim_proton>0:
             # find max proton energy
@@ -181,9 +185,15 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                        ntuple.trueSimPartPz[maxidx],
                                        ntuple.trueSimPartE[ maxidx] )
                 self._vars['protonKE'][0] = pKE
+                pMomFromDir = np.array([ntuple.trueSimPartPx[i], ntuple.trueSimPartPy[i], ntuple.trueSimPartPz[i]]) # MeV
             
+        # if signal, grab tki variables
         if nprim_mu==1 and nprim_charged_pi==1 and nprim_proton>=1:
             self._vars['is_target_cc_numu_1pi_nproton'][0] = 1
+            eNu = ntuple.trueNuE
+            z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
+            delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
+            self._vars['delPTT'][0] = delPTT
 
         return self._get_results()
 
