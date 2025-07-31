@@ -470,11 +470,11 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
 
             muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
-            energyMu = ntuple.trueSimPartE[max_idx[13]]/1000. # convert to GeV
+            energyMu = recoMuE/1000. # convert to GeV
             piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
-            energyPi = ntuple.trueSimPartE[max_idx[211]]/1000. # convert to GeV
+            energyPi = recoPiE/1000. # convert to GeV
             pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
-            energyP = ntuple.trueSimPartE[max_idx[2212]]/1000. # convert to GeV
+            energyP = recoPE/1000. # convert to GeV
 
           # calculate and save tki
             eNu = ntuple.trueNuE
