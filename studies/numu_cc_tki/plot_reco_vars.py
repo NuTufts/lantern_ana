@@ -43,9 +43,15 @@ vars = [
     ('numuCC1piNpReco_maxprotonKE', 25, 0.0, 500.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
     ('numuCC1piNpReco_pionKE',      25, 0.0, 500.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
     ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
+<<<<<<< HEAD
     ('numuCC1piNpReco_delPTT', 25, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT);#Delta p_{{TT}}', 0),
     ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT);p_{{N}}', 0),
     ('numuCC1piNpReco_delAlphaT', 10, 0, 180, f'Reco delAlphaT (deg) ({targetpot:.2e} POT);#Delta #alpha_{{T}}', 0)
+=======
+    ('numuCC1piNp_delPTT', 50, -1, 1, f'True delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_pN', 50, 0, 1.6, f'True pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_delAlphaT', 50, 0, 180, f'True delAlphaT )deg) ({targetpot:.2e} POT)', 0)
+>>>>>>> add rest of tki vars to plotting scripts
 ]
 
 truth_var = {
