@@ -477,7 +477,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             energyP = recoPE/1000. # convert to GeV
 
           # calculate and save tki
-            eNu = ntuple.trueNuE
+            eNu = ntuple.recoNuE/1000. # convert to MeV
 
             z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
             delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
