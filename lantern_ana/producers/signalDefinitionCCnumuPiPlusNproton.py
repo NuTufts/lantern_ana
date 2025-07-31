@@ -195,7 +195,9 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         # if signal, grab tki variables
         if nprim_mu==1 and nprim_charged_pi==1 and nprim_proton>=1:
             self._vars['is_target_cc_numu_1pi_nproton'][0] = 1
+            
             eNu = ntuple.trueNuE
+
             z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
             delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
             self._vars['delPTT'][0] = delPTT
