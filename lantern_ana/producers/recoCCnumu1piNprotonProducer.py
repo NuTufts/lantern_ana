@@ -425,13 +425,13 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
                 # save respective particle kinematics for tki 
                 if pid == 13: 
                   muMomFromDir = np.array([ntuple.trueSimPartPx[i]/1000., ntuple.trueSimPartPy[i]/1000., ntuple.trueSimPartPz[i]/1000.]) # convert to GeV
-                  energyMu = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                  energyMu = ntuple.trueSimPartE[i]/1000. # convert to GeV
                 if pid == 211: # either pi+ or pi-, remember we took abs above
                   piMomFromDir = np.array([ntuple.trueSimPartPx[i]/1000., ntuple.trueSimPartPy[i]/1000., ntuple.trueSimPartPz[i]/1000.]) # convert to GeV
-                  energyPi = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                  energyPi = ntuple.trueSimPartE[i]/1000. # convert to GeV
                 if pid == 2212:
                   pMomFromDir = np.array([ntuple.trueSimPartPx[i]/1000., ntuple.trueSimPartPy[i]/1000., ntuple.trueSimPartPz[i]/1000.]) # convert to GeV
-                  energyP = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                  energyP = ntuple.trueSimPartE[i]/1000. # convert to GeV
                   
           # Count and sum shower energies  
           for i in range(ntuple.nShowers):
