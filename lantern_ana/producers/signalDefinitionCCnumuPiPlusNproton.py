@@ -146,7 +146,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                                 ntuple.trueSimPartE[idx] )
 
                         self._vars['muonKE'][0] = muKE
-                        muMomFromDir = np.array([ntuple.trueSimPartPx[idx], ntuple.trueSimPartPy[idx], ntuple.trueSimPartPz[idx]]) # MeV
+                        muMomFromDir = np.array([ntuple.trueSimPartPx[idx]/1000., ntuple.trueSimPartPy[idx]/1000., ntuple.trueSimPartPz[idx]/1000.]) # convert to GeV
 
         if nprim_charged_pi>0:
             self._vars['is_pion_contained'][0] = 1
@@ -167,7 +167,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                         ntuple.trueSimPartPz[maxpionidx],
                                         ntuple.trueSimPartE[ maxpionidx] )
                 self._vars['pionKE'][0] = piKE
-                piMomFromDir = np.array([ntuple.trueSimPartPx[maxpionidx], ntuple.trueSimPartPy[maxpionidx], ntuple.trueSimPartPz[maxpionidx]]) # MeV
+                piMomFromDir = np.array([ntuple.trueSimPartPx[maxpionidx]/1000., ntuple.trueSimPartPy[maxpionidx]/1000., ntuple.trueSimPartPz[maxpionidx]/1000.]) # convert to GeV
                 
         if nprim_proton>0:
             # find max proton energy
@@ -185,7 +185,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
                                        ntuple.trueSimPartPz[maxidx],
                                        ntuple.trueSimPartE[ maxidx] )
                 self._vars['protonKE'][0] = pKE
-                pMomFromDir = np.array([ntuple.trueSimPartPx[maxidx], ntuple.trueSimPartPy[maxidx], ntuple.trueSimPartPz[maxidx]]) # MeV
+                pMomFromDir = np.array([ntuple.trueSimPartPx[maxidx]/1000., ntuple.trueSimPartPy[maxidx]/1000., ntuple.trueSimPartPz[maxidx]/1000.]) # convert to GeV
             
         # if signal, grab tki variables
         if nprim_mu==1 and nprim_charged_pi==1 and nprim_proton>=1:
