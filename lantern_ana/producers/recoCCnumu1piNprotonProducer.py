@@ -422,34 +422,6 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
                 if ntuple.trackRecoE[i] > max_energy[pid]:
                   max_idx[pid] = i
                   max_energy[pid] = ntuple.trackRecoE[i]
-
-
-          # save respective particle kinematics for tki 
-
-          recoMuE = ntuple.trackRecoE[max_idx[13]] # in MeV
-          recoMomMu = tki.recoMomCalc(recoMuE, self.mmu) # now in GeV
-          trkDirMuX = ntuple.trackStartDirX[max_idx[13]]*recoMomMu
-          trkDirMuY = ntuple.trackStartDirY[max_idx[13]]*recoMomMu
-          trkDirMuZ = ntuple.trackStartDirZ[max_idx[13]]*recoMomMu
-
-          recoPiE = ntuple.trackRecoE[max_idx[211]] # in MeV
-          recoMomPi = tki.recoMomCalc(recoPiE, self.mpi) # now in GeV
-          trkDirPiX = ntuple.trackStartDirX[max_idx[211]]*recoMomPi
-          trkDirPiY = ntuple.trackStartDirY[max_idx[211]]*recoMomPi
-          trkDirPiZ = ntuple.trackStartDirZ[max_idx[211]]*recoMomPi
-
-          recoPE = ntuple.trackRecoE[max_idx[2212]] # in MeV
-          recoMomP = tki.recoMomCalc(recoPE, self.mp) # now in GeV
-          trkDirPX = ntuple.trackStartDirX[max_idx[2212]]*recoMomP
-          trkDirPY = ntuple.trackStartDirY[max_idx[2212]]*recoMomP
-          trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
-
-          muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
-          energyMu = ntuple.trueSimPartE[max_idx[13]]/1000. # convert to GeV
-          piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
-          energyPi = ntuple.trueSimPartE[max_idx[211]]/1000. # convert to GeV
-          pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
-          energyP = ntuple.trueSimPartE[max_idx[2212]]/1000. # convert to GeV
                   
             
                   
@@ -476,6 +448,33 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
                nonsignal_primaries == 0 ): # exclude events with any other primaries
             self._vars['is_target_1mu1piNproton'][0] = 1
             self._vars['pionpdg'][0] = pionpid
+
+          # save respective particle kinematics for tki 
+
+            recoMuE = ntuple.trackRecoE[max_idx[13]] # in MeV
+            recoMomMu = tki.recoMomCalc(recoMuE, self.mmu) # now in GeV
+            trkDirMuX = ntuple.trackStartDirX[max_idx[13]]*recoMomMu
+            trkDirMuY = ntuple.trackStartDirY[max_idx[13]]*recoMomMu
+            trkDirMuZ = ntuple.trackStartDirZ[max_idx[13]]*recoMomMu
+
+            recoPiE = ntuple.trackRecoE[max_idx[211]] # in MeV
+            recoMomPi = tki.recoMomCalc(recoPiE, self.mpi) # now in GeV
+            trkDirPiX = ntuple.trackStartDirX[max_idx[211]]*recoMomPi
+            trkDirPiY = ntuple.trackStartDirY[max_idx[211]]*recoMomPi
+            trkDirPiZ = ntuple.trackStartDirZ[max_idx[211]]*recoMomPi
+
+            recoPE = ntuple.trackRecoE[max_idx[2212]] # in MeV
+            recoMomP = tki.recoMomCalc(recoPE, self.mp) # now in GeV
+            trkDirPX = ntuple.trackStartDirX[max_idx[2212]]*recoMomP
+            trkDirPY = ntuple.trackStartDirY[max_idx[2212]]*recoMomP
+            trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
+
+            muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
+            energyMu = ntuple.trueSimPartE[max_idx[13]]/1000. # convert to GeV
+            piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
+            energyPi = ntuple.trueSimPartE[max_idx[211]]/1000. # convert to GeV
+            pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
+            energyP = ntuple.trueSimPartE[max_idx[2212]]/1000. # convert to GeV
 
           # calculate and save tki
             eNu = ntuple.trueNuE
