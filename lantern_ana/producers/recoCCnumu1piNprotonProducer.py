@@ -28,6 +28,8 @@ from array import array
 import ROOT
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
+from lantern_ana.utils import transverse_kinematic_imbalance as tki
+
 
 
 # ==========================================
@@ -148,6 +150,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'maxelectronKE':array('f',[0.0]),
           'maxphotonKE':array('f',[0.0]),
           'hadronicM':array('f',[0.0]),
+          'delPTT':array('f',[0.0]),
+          'pN':array('f',[0.0]),
+          'delAlphaT':array('f',[0.0]),
           'is_target_1mu1piNproton':array('i',[0])
         }
         self._counts = {
@@ -417,6 +422,17 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
                   max_idx[pid] = i
                   max_energy[pid] = ntuple.trackRecoE[i]
 
+                # save respective particle kinematics for tki 
+                if pid == 13: 
+                  muMomFromDir = np.array([ntuple.trueSimPartPx[idx]/1000., ntuple.trueSimPartPy[idx]/1000., ntuple.trueSimPartPz[idx]/1000.]) # convert to GeV
+                  energyMu = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                if pid == 211: # either pi+ or pi-, remember we took abs above
+                  piMomFromDir = np.array([ntuple.trueSimPartPx[maxpionidx]/1000., ntuple.trueSimPartPy[maxpionidx]/1000., ntuple.trueSimPartPz[maxpionidx]/1000.]) # convert to GeV
+                  energyPi = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                if pid == 2212:
+                  pMomFromDir = np.array([ntuple.trueSimPartPx[maxidx]/1000., ntuple.trueSimPartPy[maxidx]/1000., ntuple.trueSimPartPz[maxidx]/1000.]) # convert to GeV
+                  energyP = ntuple.trueSimPartE[idx]/1000. # convert to GeV
+                  
           # Count and sum shower energies  
           for i in range(ntuple.nShowers):
             if ntuple.showerIsSecondary[i] == 0:  # Only primary tracks
@@ -432,6 +448,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           nshowers = self._counts[22][0]+self._counts[11][0]
           self._vars['nshowers'][0] = nshowers
 
+          # catching and saving target selection
           if ( self._counts[13][0]==1 and
                self._counts[211][0]==1 and
                self._counts[2212][0]>=1 and 
@@ -439,6 +456,22 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
                nonsignal_primaries == 0 ): # exclude events with any other primaries
             self._vars['is_target_1mu1piNproton'][0] = 1
             self._vars['pionpdg'][0] = pionpid
+
+          # calculate and save tki
+            eNu = ntuple.trueNuE
+
+            z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
+            delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
+            self._vars['delPTT'][0] = delPTT
+
+            delPT = tki.delPT(piMomFromDir[0], pMomFromDir[0], muMomFromDir[0], piMomFromDir[1], pMomFromDir[1], muMomFromDir[1])
+            pL = tki.pL(pMomFromDir[2], muMomFromDir[2], piMomFromDir[2], energyP, energyMu, energyPi, delPT)
+            pN = np.sqrt( np.dot(delPT, delPT) + np.dot(pL, pL) )
+            self._vars['pN'][0] = pN
+
+            delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
+            self._vars['delAlphaT'][0] = delAlphaT
+
           else:
             self._vars['is_target_1mu1piNproton'][0] = 0
 
