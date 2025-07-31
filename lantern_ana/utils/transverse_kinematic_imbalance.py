@@ -4,6 +4,11 @@ from scipy import constants
 # for TKI variables
 epsilon = 0.0309
 
+# grab momentum from KE in reco
+def recoMomCalc(recoE, mass):
+    p = recoE + mass
+    return np.sqrt( p**2 - mass**2 ) / 1000. # conversion from MeV to GeV
+
 def getTransverseAxis(eNu, pxMu, pyMu, pzMu):
     pV = np.array([0, 0, eNu])
     pMu = np.array([pxMu, pyMu, pzMu])
