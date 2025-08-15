@@ -12,6 +12,7 @@ from math import sqrt
 class invariantmassproducer(ProducerBaseClass):
     """
     Producer that tracks the location and energy of all photons.
+    Cuts events that don't have at least 2 photons and 1 proton.
     """
     
     def __init__(self, name, config):
@@ -23,6 +24,7 @@ class invariantmassproducer(ProducerBaseClass):
         self.nphotons_reco= array('i',[0])
         self.invariantmass_reco=array('f',[0])
         self.proton=array('i',[0])
+        self.proton_truth=array('i',[0])
 
     def setDefaultValues(self): #Not clear what to do here?
         self.nphotons[0] = 0
@@ -30,12 +32,14 @@ class invariantmassproducer(ProducerBaseClass):
         self.nphotons_reco[0] = 0
         self.invariantmass_reco[0]=0
         self.proton[0]=0
+        self.proton_truth[0]=0
 
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
         output.Branch("invariantmass", self.invariantmass, "invariantmass/F")
         output.Branch("invariantmass_reco", self.invariantmass_reco, "invariantmass_reco/F")
         output.Branch("proton", self.proton, "proton/i")
+        output.Branch("proton_truth", self.proton_truth, "proton_truth/i")
 
     def requiredInputs(self):
         """Specify required inputs."""
@@ -67,8 +71,9 @@ class invariantmassproducer(ProducerBaseClass):
             photonDirectionYList.append(ntuple.trueSimPartPy[i]/pnorm)
             photonDirectionZList.append(ntuple.trueSimPartPz[i]/pnorm)
 
+        # Cut events with less than 2 true photons
         if self.nphotons[0] < 2:
-            return 0  # Need at least 2 photons to compute invariant mass
+            return 0  # Event cut: Need at least 2 photons
 
         ge1, ge2 = photonEnergiesList[0], photonEnergiesList[1]
 
@@ -86,6 +91,14 @@ class invariantmassproducer(ProducerBaseClass):
 
         self.invariantmass[0] = np.sqrt(max(0, total_E**2 - (total_px**2 + total_py**2 + total_pz**2)))
 
+        # truth loop for protons
+        for i in range(ntuple.nTrueSimParts):
+            if ntuple.trueSimPartPDG[i] == 2212:  # Proton PDG code
+                self.proton_truth[0] += 1
+
+        # Cut events without at least 1 truth proton
+        if self.proton_truth[0] < 1:
+            return 0  # Event cut: Need at least 1 truth proton
 
         # reco loop
         photonIDList = []
@@ -105,7 +118,6 @@ class invariantmassproducer(ProducerBaseClass):
             if ntuple.showerPID[i]!=22:
                 continue
 
-
             self.nphotons_reco[0] += 1
             photonIDList.append(i)
             photonEnergiesList.append(ntuple.showerRecoE[i])
@@ -117,8 +129,9 @@ class invariantmassproducer(ProducerBaseClass):
             photonDirectionYList.append(ntuple.showerStartDirY[i]/pnorm)
             photonDirectionZList.append(ntuple.showerStartDirZ[i]/pnorm)
 
+        # Cut events with less than 2 reconstructed photons
         if self.nphotons_reco[0] < 2:
-            return 0  # Need at least 2 photons to compute invariant mass
+            return 0  # Event cut: Need at least 2 reconstructed photons
 
         ge1, ge2 = photonEnergiesList[0], photonEnergiesList[1]
 
@@ -136,11 +149,10 @@ class invariantmassproducer(ProducerBaseClass):
 
         self.invariantmass_reco[0] = np.sqrt(max(0, total_E**2 - (total_px**2 + total_py**2 + total_pz**2)))
 
-        #look for proton
+        # look for proton
         self.proton[0]=0
         
         for i in range(ntuple.nTracks):
-
             if ntuple.trackIsSecondary[i]!=1:
                 continue
             if ntuple.trackClassified[i]!=1:
@@ -148,6 +160,11 @@ class invariantmassproducer(ProducerBaseClass):
             if ntuple.trackPID[i]==2212:
                 self.proton[0]+=1
 
-        return {"invariantmass": self.invariantmass[0],
-                "invariantmass_reco": self.invariantmass_reco[0], "proton": self.proton[0]}
+        # Cut events without at least 1 proton
+        if self.proton[0] < 1:
+            return 0  # Event cut: Need at least 1 proton
 
+        return {"invariantmass": self.invariantmass[0],
+                "invariantmass_reco": self.invariantmass_reco[0], 
+                "proton": self.proton[0], 
+                "proton_truth": self.proton_truth[0]}
