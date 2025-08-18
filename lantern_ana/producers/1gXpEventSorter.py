@@ -301,5 +301,3 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
 
         return {"Result":0}
 
-
-        {"Key": value, "key"}

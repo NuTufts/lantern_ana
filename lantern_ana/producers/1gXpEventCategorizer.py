@@ -49,6 +49,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
 
         self.sinkhornDiv = array('f',[0])
         self.observedPE = array('f',[0])
+        self.minComp = array('f',[0])
 
         #Reco success (ie. was the reco correct? Was the event in a different sideband?)
         self.isBackground = array('i',[0])
@@ -120,6 +121,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
         self.truePionCount[0] = 0
         self.trueElectronCount[0] = 0
         
+        self.minComp[0] = 9999
 
         #Reco categories - that is, what sideband we reconstruct the event in
         self.suspectedCosmic[0] = 0
@@ -249,6 +251,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
             self.sinkhornDiv[0] = flashpred["sinkhorn_div"]
             self.observedPE[0] = flashpred["observedpe"]
 
+        self.minComp[0] = recoPhotonData["minComp"]
 
         #See if the event vertex is reconstructed in the fiducial:
         if ( ntuple.vtxX > (self.fiducial["xMin"] + self.fiducial["width"])
@@ -273,6 +276,7 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
                 or self.recoPhotonCount[0] > 2 
                 or self.recoPhotonCount[0] == 0
                 or self.photonFromCharged[0] < 5
+                or self.minComp[0] < 0.3
                 ):
 
             self.recoBackground[0] = 1

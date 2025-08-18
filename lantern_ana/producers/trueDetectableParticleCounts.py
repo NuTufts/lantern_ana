@@ -62,14 +62,21 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for protons
             if ntuple.trueSimPartPDG[i] == 2212:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999
                 if kineticMeV >= 60:
                     self.trueProtonsOverThreshold[0] += 1
 
             #Check for pions
             elif abs(ntuple.trueSimPartPDG[i]) == 211:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999
+
                 if kineticMeV >= 30:
                     self.truePionsOverThreshold[0] += 1
 
@@ -79,7 +86,11 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for muons
             elif ntuple.trueSimPartPDG[i] == 13:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999                
+                
                 if kineticMeV >= 100:                    
                     self.trueMuonsOverThreshold[0] += 1
 
@@ -89,7 +100,11 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for electrons
             elif ntuple.trueSimPartPDG[i] == 11: 
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999                
+                    
                 if kineticMeV >= 10:                    
                     self.trueElectronsOverThreshold[0] += 1
 

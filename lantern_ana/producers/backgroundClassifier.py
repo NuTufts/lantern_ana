@@ -46,8 +46,6 @@ class backgroundClassifyingProducer(ProducerBaseClass):
         self.truePionCount = array('i',[0])
         self.trueElectronCount = array('i',[0])
 
-        self.sinkhornDiv[0] = array('i',[0])
-        self.observedPE[0] = array('i',[0])
 
         #Reco success (ie. was the reco correct? Was the event in a different sideband?)
         self.isBackground = array('i',[0])
