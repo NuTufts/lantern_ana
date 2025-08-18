@@ -105,7 +105,7 @@ trueSidebandCuts = {
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250730_122502.root",
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250730_164857.root",
     }
 
 
@@ -299,7 +299,7 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in trueS
     canvs[sideband].Write()
 
 #Now we draw a histogram for the visible vs. true photon energy:
-energyVisibleCut = "(trueOnePhotonInclusive == 1 && eventweight_weight > -1e9 && eventweight_weight < 1e9 && visibleEnergy > -1 && trueLeadingPhotonE < 300 && visibleEnergy < 300)"
+energyVisibleCut = "(eventweight_weight > -1e9 && eventweight_weight < 1e9 && visibleEnergy > -1 && trueLeadingPhotonE < 300 && visibleEnergy < 300)"
 
 trueVsVisibleECanvas = rt.TCanvas("1g + X Inclusive","v3dev: 1g + X Inclusive",1000,800)
 trueVsVisiblePad = rt.TPad("trueVsVisiblePad", "trueVsVisiblePad", 0.0, 0.0, 1.0, 1.0) #Allows us to change axis labels
@@ -309,7 +309,7 @@ sample = "Montecarlo"
 graphingVary = "visibleEnergy"
 graphingVarx = "trueLeadingPhotonE"
 
-trueVsVisiblePad.SetTitle("1g + X Inclusive True Vs. Desposited Energy")
+trueVsVisiblePad.SetTitle("1g + X Inclusive True Vs. Visible Energy")
 xAxis = trueVsVisibleEHist.GetXaxis()
 yAxis = trueVsVisibleEHist.GetYaxis()
 trueVsVisiblePad.Draw()
@@ -317,9 +317,33 @@ trueVsVisibleEHist.Draw()
 
 trees[sample].Draw(f"{graphingVary}:{graphingVarx}>>{trueVsVisibleEHist}", f"({energyVisibleCut})*eventweight_weight", "COLZ")
 
+xAxis.SetTitle("Visible Leading Photon Energy (MeV)")
+yAxis.SetTitle("True Leading Photon Energy (MeV)")
+
+#GRAPH OF EDEP VS. TRUESIMPARTE, ALL EVENTS
+eDepTrueCut = "(eventweight_weight > -1e9 && eventweight_weight < 1e9 && visibleEnergy > -1 && trueLeadingPhotonE < 600 && EDepSumMax < 600)"
+
+trueVsEDepCanvas = rt.TCanvas("1g + X Inclusive EDep","v3dev: 1g + X Inclusive EDep",1000,800)
+trueVsEDepPad = rt.TPad("trueVsEDepPad", "trueVsEDepPad", 0.0, 0.0, 1.0, 1.0) #Allows us to change axis labels
+trueVsEDepHist = rt.TH2D("1g + X True Vs. EDep Histograms", "1g + X Inclusive True Vs. EDep Histograms", 600, 0, 600, 600, 0, 600)
+sample = "Montecarlo"
+
+graphingVary = "EDepSumMax"
+graphingVarx = "trueLeadingPhotonE"
+
+trueVsEDepPad.SetTitle("1g + X Inclusive True Vs. Desposited Energy")
+trees[sample].Draw(f"{graphingVary}:{graphingVarx}>>{trueVsEDepHist}", f"({eDepTrueCut})*eventweight_weight", "COLZ") #Draw the graph!
+xAxis = trueVsEDepHist.GetXaxis()
+yAxis = trueVsEDepHist.GetYaxis()
+trueVsEDepPad.Draw()
+trueVsEDepHist.Draw()
 
 xAxis.SetTitle("Deposited Leading Photon Energy (MeV)")
 yAxis.SetTitle("True Leading Photon Energy (MeV)")
-xAxis.Draw()
+
+
+trees[sample].Draw(f"{graphingVary}:{graphingVarx}>>{trueVsVisibleEHist}", f"({energyVisibleCut})*eventweight_weight", "COLZ")
+
 
 trueVsVisibleECanvas.Write()
+trueVsEDepCanvas.Write()

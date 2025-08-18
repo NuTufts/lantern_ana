@@ -48,12 +48,14 @@ categoryCuts = {'Found': "&& (isFound == 1)",
     }
 
 
+categoryCuts["Found"] = "&& (isFound == 1) && (vertex_properties_found==1 && vertex_properties_infiducial) && (vertex_properties_cosmicfrac<0.15) && (vertex_properties_frac_intime_unreco_pixels<0.9)"
+
+
 
 #What files are we drawing on?
 files = {
     "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250620_131849.root",
 }
-
 
 tfiles = {}
 trees = {}

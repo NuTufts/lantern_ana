@@ -5,7 +5,7 @@ output_dir: "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1 #Running all the data!
-#max_events: 20000 #Testing configuration
+#max_events: 10000 #Testing configuration
 
 # Filter out failed events from output tree
 filter_events: True
@@ -21,7 +21,9 @@ datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/gen2ntuple/
 
+  
   #MC simulated data
   bnbnumu:
     type: RootDataset
@@ -29,8 +31,11 @@ datasets:
     ismc: true
     process: true
     filepaths:
-    - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
-    
+    #- ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
+    - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_nuvtxphotonsel_vtest.root #Upgraded Montecarlo
+    #friendtrees:
+    #  FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+
   #Cosmic data
   extbnb:
     type: RootDataset
@@ -39,8 +44,11 @@ datasets:
     process: true
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root #off-beam data
+    friendtrees:
+      FlashPredictionTree: flashprediction_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
+
    
-  #Cosmic data
+  #Beam data
   beamData:
     type: RootDataset
     tree: EventTree
@@ -48,6 +56,8 @@ datasets:
     process: true
     filepaths:
     - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root #Beam data
+    friendtrees:
+      FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 
 
 # Producer configuration (producers run first)
@@ -67,15 +77,20 @@ producers:
   vertex_properties:
     type: VertexPropertiesProducer
     config: {}
+
+  # true vertex properties
+  true_vertex_properties:
+    type: TrueVertexPropertiesProducer
+    config: {}
   
   # photon data
   photon_data:
     type: recoPhotonDataProducer
     config: 
       #maxnphotons: 5
-      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":10}
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0}
 
-  # detectable particle tallies
+  # detectable particle talliexs
   detectable_particle_data:
     type: recoDetectableParticleCountsProducer
     config: {}
@@ -85,17 +100,25 @@ producers:
     type: truePhotonDataProducer
     config: {}
 
-  # true detectable particle data for MC
+  # # true detectable particle data for MC
   true_detectable_particle_data:
     type: trueDetectableParticleCountsProducer
     config: {}
 
-  # tags for sample distribution
-  event_sorter:
-    type: oneGxPEventSortingProducer
+  #flashpred:
+  #  type: FlashPredictionProducer
+  #  config: {}
+
+  event_categorizer:
+    type: oneGxPEventCategorizingProducer
+    config: 
+      flashPred: True
+      #fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0}
+
+  run_subrun_producer:
+    type: runSubrunProducer
     config: {}
 
-  # tags events that fit our sideband signal definitions
-  signal_tagger:
-    type: oneGxPSignalTagProducer
+  photon_energy_producer:
+    type: truePhotonEnergyProducer
     config: {}

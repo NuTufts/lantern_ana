@@ -50,7 +50,7 @@ trueBackgroundCutsUsed = {
     '> 2 Detectable Protons': "&& (nTrueProtons <= 2)",
     'Over Threshold Pion': "&& (nTruePions <= nTruePionsBarelyOver)",
     'No Photons': "&& (nTruePhotons != 0)",
-    'Too Many Photons': "&& (nTruePhotons < 2)"
+    'Too Many Photons': "&& (nTruePhotons <= 2)"
 }
 
 
@@ -83,9 +83,9 @@ trueSidebandCuts = {'true 1g0X': "&& (oneGnoXtrue == 1)",
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250630_145735.root",
-    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250630_151126.root",
-    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250630_151526.root"
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250808_111711.root",
+    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250808_112822.root",
+    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250808_113120.root"
 }
 
 
@@ -99,22 +99,22 @@ for sample in samples:
     tfiles[sample] = rt.TFile( files[sample] ) #Assign a file using the dictionary
     trees[sample] = tfiles[sample].Get("analysis_tree") #Extract the ttree from that file
     nentries = trees[sample].GetEntries() #Extract the number of entries from the tree
-    #print(f"sample={sample} has {nentries} entries")
+    print(f"sample={sample} has {nentries} entries")
 
 #Assign our output file
 out = rt.TFile("PurityOutput.root","recreate")
 
-graphingVar = "leadingPhotonE"
-#graphingVar = "flashpred_sinkhorn_div"
-#graphingVar = "flashpred_observedpe"
+#graphingVar = "leadingPhotonE"
+graphingVar = "recoComp"
 
-graphingVarName = "Reconstructed Leading Photon Energy"
-#graphingVarName = "Sinkhorn Divergence"
-#graphingVarName = "Observed PE"
+#graphingVarName = "Reconstructed Leading Photon Energy"
+graphingVarName = "Reconstructed Shower Comp"
 
 nBins = 100
 xMin = 0
-xMax = 2500
+#xMax = 2000
+xMax = 1.1
+
 
 sidebandList = [
     ("oneGinclusive",nBins, xMin, xMax,'1g + X Inclusive Sample',"Reco", -1), #No signal category
@@ -175,13 +175,13 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
         trueSidebandCut = sidebandCut + trueSidebandCuts[str(trueSideband)]
 
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({trueSidebandCut})*eventweight_weight") #Execute all cuts
-        #print("Drawn based on", trueSidebandCut)
+        print("Drawn based on", trueSidebandCut)
 
         hists[(sideband,trueSideband)].Scale(scaling[sample])
         bins = hists[(sideband,trueSideband)].GetNbinsX()
 
         histInt = hists[(sideband,trueSideband)].Integral(1, int(bins))
-        #print("Histint:", histInt)
+        print("Histint:", histInt)
 
         #Make it look pretty
         hists[(sideband,trueSideband)].SetLineColor(rt.kBlack)
@@ -207,14 +207,17 @@ for sideband, nbins, xmin, xmax, htitle, dataType, correctSidebandIndex in sideb
         trueSideband = trueSidebands[x]
         stack.Add(hists[(sideband,trueSideband)])
     
+    baseBackgroundCut = sidebandCut
+
     #Now we do the same for true background:
     for background in trueBackgroundTypes:
         hname = f'{sample}_{sideband}_{background}'
         hists[(sideband,background)] = rt.TH1D(hname, "", nbins, xmin, xmax )
-        #print("fill ",hname)
+        print("fill ",hname)
 
-        baseBackgroundCut = sidebandCut
         backgroundCut = baseBackgroundCut + trueBackgroundCuts[str(background)]
+        print("Drawing bassed on:", backgroundCut)
+
 
         trees[sample].Draw(f"{graphingVar}>>{hname}",f"({backgroundCut})*eventweight_weight") #Execute all cuts
         hists[(sideband,background)].Scale(scaling[sample])
