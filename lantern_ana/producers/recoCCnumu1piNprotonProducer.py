@@ -463,6 +463,21 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             trkDirPiY = ntuple.trackStartDirY[max_idx[211]]*recoMomPi
             trkDirPiZ = ntuple.trackStartDirZ[max_idx[211]]*recoMomPi
 
+            # --- debug proton indexing ---
+            p_i = max_idx[2212]
+            print(f"[DEBUG] proton index = {p_i}, nTracks={ntuple.nTracks}, nShowers={ntuple.nShowers}")
+
+            if p_i < 0:
+                print("[DEBUG] No proton selected (max_idx[2212] = -1)")
+            elif p_i < ntuple.nTracks:
+                print(f"[DEBUG] Proton chosen from tracks, valid range 0–{ntuple.nTracks-1}")
+            elif p_i >= 100 and (p_i - 100) < ntuple.nShowers:
+                print(f"[DEBUG] Proton chosen from showers, valid range 0–{ntuple.nShowers-1}")
+            else:
+                print("[DEBUG] Proton index is invalid! This will cause IndexError.")
+            # --- end debug ---
+
+
             recoPE = ntuple.trackRecoE[max_idx[2212]] # in MeV
             recoMomP = tki.recoMomCalc(recoPE, self.mp) # now in GeV
             trkDirPX = ntuple.trackStartDirX[max_idx[2212]]*recoMomP
