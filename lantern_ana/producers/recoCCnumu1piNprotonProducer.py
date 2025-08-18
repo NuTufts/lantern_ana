@@ -450,6 +450,31 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             self._vars['pionpdg'][0] = pionpid
 
           # save respective particle kinematics for tki 
+            
+          # === FIX: require muon, pion, and proton to be TRACKS and in-bounds ===
+            mu_i = max_idx[13]
+            pi_i = max_idx[211]
+            p_i  = max_idx[2212]
+
+            def _early_return():
+                self._vars['is_target_1mu1piNproton'][0] = 0
+                out = {'max_idx': max_idx, 'max_energy': max_energy}
+                for varname, var in self._vars.items():
+                    out[varname] = var[0]
+                return out
+
+            # muon must be a valid track index
+            if mu_i < 0 or mu_i >= 100 or mu_i >= ntuple.nTracks:
+                return _early_return()
+
+            # pion must be a valid track index
+            if pi_i < 0 or pi_i >= 100 or pi_i >= ntuple.nTracks:
+                return _early_return()
+
+            # proton must be a valid track index
+            if p_i < 0 or p_i >= 100 or p_i >= ntuple.nTracks:
+                return _early_return()
+            # === end FIX ===
 
             recoMuE = ntuple.trackRecoE[max_idx[13]] # in MeV
             recoMomMu = tki.recoMomCalc(recoMuE, self.mmu) # now in GeV
@@ -463,19 +488,19 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             trkDirPiY = ntuple.trackStartDirY[max_idx[211]]*recoMomPi
             trkDirPiZ = ntuple.trackStartDirZ[max_idx[211]]*recoMomPi
 
-            # --- debug proton indexing ---
-            p_i = max_idx[2212]
-            print(f"[DEBUG] proton index = {p_i}, nTracks={ntuple.nTracks}, nShowers={ntuple.nShowers}")
+            # # --- debug proton indexing ---
+            # p_i = max_idx[2212]
+            # print(f"[DEBUG] proton index = {p_i}, nTracks={ntuple.nTracks}, nShowers={ntuple.nShowers}")
 
-            if p_i < 0:
-                print("[DEBUG] No proton selected (max_idx[2212] = -1)")
-            elif p_i < ntuple.nTracks:
-                print(f"[DEBUG] Proton chosen from tracks, valid range 0–{ntuple.nTracks-1}")
-            elif p_i >= 100 and (p_i - 100) < ntuple.nShowers:
-                print(f"[DEBUG] Proton chosen from showers, valid range 0–{ntuple.nShowers-1}")
-            else:
-                print("[DEBUG] Proton index is invalid! This will cause IndexError.")
-            # --- end debug ---
+            # if p_i < 0:
+            #     print("[DEBUG] No proton selected (max_idx[2212] = -1)")
+            # elif p_i < ntuple.nTracks:
+            #     print(f"[DEBUG] Proton chosen from tracks, valid range 0–{ntuple.nTracks-1}")
+            # elif p_i >= 100 and (p_i - 100) < ntuple.nShowers:
+            #     print(f"[DEBUG] Proton chosen from showers, valid range 0–{ntuple.nShowers-1}")
+            # else:
+            #     print("[DEBUG] Proton index is invalid! This will cause IndexError.")
+            # # --- end debug ---
 
 
             recoPE = ntuple.trackRecoE[max_idx[2212]] # in MeV
