@@ -8,7 +8,7 @@ from lantern_ana.cuts.fiducial_cuts import fiducial_cut
 from lantern_ana.utils.true_particle_counts import get_true_primary_particle_counts 
 from lantern_ana.utils.kinematics import KE_from_fourmom
 from lantern_ana.utils import transverse_kinematic_imbalance as tki
-from math import exp
+from math import exp, degrees
 import ROOT
 
 @register
@@ -208,7 +208,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             self._vars['pN'][0] = pN
 
             delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
-            self._vars['delAlphaT'][0] = delAlphaT
+            self._vars['delAlphaT'][0] = math.degrees(delAlphaT)
 
 
         return self._get_results()
