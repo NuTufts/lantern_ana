@@ -73,9 +73,6 @@ class truePhotonEnergyProducer(ProducerBaseClass):
             truePhotonEnergyDict = {}
             return truePhotonEnergyDict
 
-
-        # Find and store data on showers ID'd as photons
-
         #Set/Reset Variables
         numPhotons = 0
         numInFiducial = 0

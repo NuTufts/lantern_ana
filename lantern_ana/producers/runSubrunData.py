@@ -40,6 +40,7 @@ class runSubrunProducer(ProducerBaseClass):
         """Get the energy and x, y, z coordinates of each photon."""
         ntuple = data["gen2ntuple"]
 
+        # Simply store the event, run, and subrun for each event
         self.event[0] = ntuple.event
         self.run[0] = ntuple.run
         self.subrun[0] = ntuple.subrun
