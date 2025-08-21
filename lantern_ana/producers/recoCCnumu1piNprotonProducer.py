@@ -25,6 +25,7 @@ Example usage in YAML config:
 import numpy as np
 from typing import Dict, Any, List
 from array import array
+import math
 import ROOT
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
@@ -529,7 +530,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             self._vars['pN'][0] = pN
 
             delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
-            self._vars['delAlphaT'][0] = delAlphaT
+            self._vars['delAlphaT'][0] = math.degrees(delAlphaT)
 
           else:
             self._vars['is_target_1mu1piNproton'][0] = 0
