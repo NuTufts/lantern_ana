@@ -38,7 +38,7 @@ class CutResultProducer(ProducerBaseClass):
         self.cut_result[0] = 0
         result = data.get(self.cut_name,None)
         if type(result) is not bool:
-            raise TypeError(f"Cut result for name={self.cut_name} is not boolean as required.")
+            raise TypeError(f"Cut result for name={self.cut_name} is not boolean as required: {result}")
         
         if result:
             self.cut_result[0] = 1

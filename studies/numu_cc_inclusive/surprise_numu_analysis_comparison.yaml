@@ -1,0 +1,91 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_numu_run4b"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: False
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /mnt/ddrive/data/
+    - /home/twongjirad/working/data/ntuples/
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  run3b_bnb_nu_overlay_500k_CV:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root
+  run4b_bnb_nu_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    ismc: true
+    process: false
+    pottree: lantern/potTree
+    filepaths:
+     - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
+  run1_bnb5e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
+  run1_extbnb_mcc9_v29e_C1:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: false
+    filepaths:
+    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+
+# Cut configuration
+cuts: {}
+#cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
+
+# Producer configuration
+producers:
+  sigdef_numuccinc:
+    type: signalDefNumuCCInclusive
+    config: {}
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
