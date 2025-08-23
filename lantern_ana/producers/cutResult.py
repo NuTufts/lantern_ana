@@ -36,7 +36,8 @@ class CutResultProducer(ProducerBaseClass):
         """Calculate total visible energy from all primary tracks and showers."""
 
         self.cut_result[0] = 0
-        result = data.get(self.cut_name,None)
+        # result = data.get(self.cut_name,None)
+        result = data.get(self.cut_name,False)
         if type(result) is not bool:
             raise TypeError(f"Cut result for name={self.cut_name} is not boolean as required: {result}")
         

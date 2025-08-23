@@ -1,19 +1,32 @@
 import os,sys
 import ROOT as rt
 
-targetpot = 4.4e19
+"""
+POT:
+BNB nu overlay  7.88166e+20
+BNB dirt        3.05893e+20
+BNB nue overlay 1.17858e+23
+BNB ncpi0       5.01921e+21
+BNB beam-on     9.75e+19
+
+Triggers:
+BNB beam-on 23090946 
+BNB EXT     94414115
+"""
+
+targetpot = 9.75e+19
 
 samples = ['nue','numu','extbnb','data']
 
-scaling = {"numu":targetpot/4.675690535431973e+20,
-		   "nue":targetpot/9.662529168587103e+22,
-		   "extbnb":(176153.0)/(433446.0),
+scaling = {"numu":targetpot/7.88166e+20,
+		   "nue":targetpot/1.17858e+23,
+		   "extbnb":(23090946)/(94414115),
 		   "data":1.0}
 
-files = {"numu":"./zev_mmr/mmr_outputs/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
-		 "nue":"./zev_mmr/mmr_outputs/run1_bnb_nue_overlay_mcc9_v28_wctagger.root", 
-		 "extbnb":"./zev_mmr/mmr_outputs/run1_extbnb_mcc9_v29e_C1.root",
-		 "data":"./zev_mmr/mmr_outputs/run1_bnb5e19.root"}
+files = {"numu":"./run4_mmr/run4_outputs/run4_bnb_nu_overlay.root",
+		 "nue":"./run4_mmr/run4_outputs/run4_bnb_nue_overlay.root", 
+		 "extbnb":"./run4_mmr/run4_outputs/run4_ext_bnb.root",
+		 "data":"./run4_mmr/run4_outputs/run4_data.root"}
 
 rt.gStyle.SetOptStat(0)
 
@@ -26,7 +39,7 @@ for sample in samples:
 	nentries = trees[sample].GetEntries()
 	print(f"sample={sample} has {nentries} entries")
 
-out = rt.TFile("./zev_mmr/numu_hists.root","recreate")
+out = rt.TFile("./run4_mmr/numu_hists.root","recreate")
 
 # Base cuts using NeutrinoSelectionProducer variables
 base_cut = f"(numuIncCC_has_vertex_in_fv==1)"  # Cut 1: Vertex in fiducial volume
@@ -81,6 +94,8 @@ categories = {
 	}
 }
 
+legend_POT_string = " Events Per "+str(targetpot)+" POT"
+
 # Define variables to plot
 variables = {
 	'neutrino_energy': {
@@ -88,7 +103,7 @@ variables = {
 		'nbins': 20,
 		'xmin': 0.0,
 		'xmax': 2.0,
-		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Neutrino Energy (GeV); Events',
+		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Neutrino Energy (GeV); '+legend_POT_string,
 		'cut_suffix': ''  # No additional cut
 	},
 	'muon_momentum': {
@@ -96,7 +111,7 @@ variables = {
 		'nbins': 25,
 		'xmin': 0.0,
 		'xmax': 1.5,
-		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Muon Momentum (GeV/c); Events',
+		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Muon Momentum (GeV/c); '+legend_POT_string,
 		'cut_suffix': '&& (numuIncCC_reco_muon_momentum>0)'  # Valid momentum only
 	},
 	'muon_costheta': {
@@ -104,7 +119,7 @@ variables = {
 		'nbins': 20,
 		'xmin': -1.0,
 		'xmax': 1.0,
-		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Muon cos(#theta); Events',
+		'title': 'Inclusive CC #nu_{#mu} Selected Events; Reconstructed Muon cos(#theta); '+legend_POT_string,
 		'cut_suffix': '&& (numuIncCC_reco_muon_costheta>-900)'  # Valid cos(theta) only
 	}
 }
