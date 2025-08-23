@@ -1,0 +1,72 @@
+analysis_statistics:
+  run4_bnb_nu_overlay:
+    cut_stats:
+      remove_true_nue_cc:
+        fail: 0
+        pass: 201771
+    failed: 201771
+    passed: 0
+    processing_time: 263.134250164032
+    total: 201771
+  run4_bnb_nue_overlay:
+    cut_stats:
+      remove_true_nue_cc:
+        fail: 635859
+        pass: 0
+    failed: 0
+    passed: 635859
+    processing_time: 349.2035593986511
+    total: 635859
+  run4_data:
+    cut_stats:
+      remove_true_nue_cc:
+        fail: 443044
+        pass: 0
+    failed: 0
+    passed: 443044
+    processing_time: 143.53627228736877
+    total: 443044
+  run4_ext_bnb:
+    cut_stats:
+      remove_true_nue_cc:
+        fail: 1156514
+        pass: 0
+    failed: 0
+    passed: 1156514
+    processing_time: 305.8616073131561
+    total: 1156514
+producer_statistics:
+  average_time_per_event: 0.00037868337520863027
+  execution_order:
+  - eventweight
+  - numuIncCC
+  - nueIncCC
+  - nue_selection_result
+  producer_metrics:
+    eventweight:
+      average_time: 4.42280517811979e-06
+      calls: 2437188
+      error_rate: 0.0
+      errors: 0
+      total_time: 10.779207706451416
+    nueIncCC:
+      average_time: 0.0002124419001383066
+      calls: 2437188
+      error_rate: 0.0
+      errors: 0
+      total_time: 517.7608497142792
+    nue_selection_result:
+      average_time: 1.1647273517338844e-06
+      calls: 2437188
+      error_rate: 0.0
+      errors: 0
+      total_time: 2.8386595249176025
+    numuIncCC:
+      average_time: 0.00016065394254047
+      calls: 2437188
+      error_rate: 0.0
+      errors: 0
+      total_time: 391.543860912323
+  total_events: 2437188
+  total_processing_time: 922.9225778579712
+  total_producers: 4

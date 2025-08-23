@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "./zev_mmr/mmr_outputs"
+output_dir: "./run4_mmr/run4_outputs"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -19,38 +19,47 @@ datasets:
     # - /cluster/tufts/wongjiradlabnu/zimani01/lantern_data/v3dev_reco_retune/
     - /exp/uboone/data/users/imani/nutples/
     - /exp/uboone/data/users/imani/nutples/v3dev_reco_retune/
-  run1_bnb_nue_overlay_mcc9_v28_wctagger:
+    - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/
+
+  ## Run4 Nue Overlay 
+  run4_bnb_nue_overlay:
     type: RootDataset
-    tree: EventTree
+    tree: lantern/EventTree
     ismc: true
     process: true
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
-    #  - ntuple_mcc9_v28_wctagger_nueintrinsics_v3dev_reco_retune.root
-  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    #  - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
+     - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
+
+  ## Run4 Nu Overlay 
+  run4_bnb_nu_overlay:
     type: RootDataset
-    tree: EventTree
+    tree: lantern/EventTree
     ismc: true
     process: true 
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
-    #  - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
-  run1_extbnb_mcc9_v29e_C1:
+    #  - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+      - MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
+
+  ##
+  run4_ext_bnb:
     type: RootDataset
-    tree: EventTree
+    tree: lantern/EventTree
     ismc: false
     process: true
     filepaths:
-    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
-      # - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
-  run1_bnb5e19:
+    # - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+      - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
+      
+  ## Run4 Data 
+  run4_data:
     type: RootDataset
-    tree: EventTree
+    tree: lantern/EventTree
     ismc: false
     process: true
     filepaths:
-    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
-      # - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
+    # - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
+    - MCC9.10_Run4b_v10_04_07_10_BNB_beam_on_surprise_mix_makeups.root
 
 # Producer configuration
 producers:
@@ -88,6 +97,6 @@ cuts:
   # Remove true nue CC events (based on MC truth)
   remove_true_nue_cc:
     applyto:
-      - run1_bnb_nu_overlay_mcc9_v28_wctagger
+      - run4_bnb_nu_overlay
 
 cut_logic: "not {remove_true_nue_cc}"
