@@ -82,10 +82,14 @@ class VertexPropertiesProducer(ProducerBaseClass):
             max_outoftime = 0.0
             max_intime_unreco = 0.0
             for p in range(3):
-                if ntuple.fracRecoOuttimePixels[p] > max_outoftime:
-                    max_outoftime = ntuple.fracRecoOuttimePixels[p]
-                if ntuple.fracUnrecoIntimePixels[p] > max_intime_unreco:
-                    max_intime_unreco = ntuple.fracUnrecoIntimePixels[p]
+                try:
+                    if hasattr(ntuple, "fracRecoOuttimePixels") and ntuple.fracRecoOuttimePixels[p] > max_outoftime:
+                        max_outoftime = ntuple.fracRecoOuttimePixels[p]
+                    if hasattr(ntuple, "fracUnrecoIntimePixels") and ntuple.fracUnrecoIntimePixels[p] > max_intime_unreco:
+                        max_intime_unreco = ntuple.fracUnrecoIntimePixels[p]
+                except AttributeError: # set to -1 to indicate missing info
+                    max_outoftime = -1.0
+                    max_intime_unreco = -1.0
             
             self.vertex_vars['frac_outoftime_pixels'][0] = max_outoftime
             self.vertex_vars['frac_intime_unreco_pixels'][0] = max_intime_unreco
