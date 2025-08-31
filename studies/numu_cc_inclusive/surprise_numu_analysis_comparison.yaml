@@ -15,31 +15,8 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    # - /mnt/ddrive/data/
-    # - /home/twongjirad/working/data/ntuples/
     - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/
-    - /nashome/z/zimani/lantern/ntuples/
-    - /exp/uboone/data/users/imani/nutples/
-  
-  ## Run Nu overlay 
-  run4_bnb_nu_overlay:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: false
-    filepaths:
-     - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
-
-  ## Nue overlay 
-  run3b_bnb_nu_overlay_500k_CV:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
-
-  ## 
+    - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_11/
   run4b_bnb_nu_overlay_surprise:
     type: RootDataset
     tree: lantern/EventTree
@@ -52,9 +29,7 @@ datasets:
       weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise.root    
     filepaths:
      - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
-
-  
-  run1_bnb5e19:
+  run4b_extbnb_mcc9_v29e_C1:
     type: RootDataset
     tree: lantern/EventTree
     pottree: lantern/potTree
@@ -63,17 +38,23 @@ datasets:
     friendtrees:
       weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise.root
     filepaths:
-    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
-  
-  ## Data 
-  run1_extbnb_mcc9_v29e_C1:
+     - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
+  run4b_bnb_beamdata_v10_04_07_10_mix_makeups:
     type: RootDataset
     tree: lantern/EventTree
     pottree: lantern/potTree
     ismc: false
     process: false
     filepaths:
-    - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/MCC9.10_Run4b_v10_04_07_10_BNB_beam_on_surprise_mix_makeups.root
+     - MCC9.10_Run4b_v10_04_07_10_BNB_beam_on_surprise_mix_makeups.root
+#     - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+  run4b_bnb_dirt_v10_04_07_09:
+    type: RootDataset
+    tree: lantern/EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - MCC9.10_Run4b_v10_04_07_09_BNB_dirt_surpise_reco2_hist.root
 
 # Cut configuration
 cuts: {}
