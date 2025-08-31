@@ -28,6 +28,12 @@ class VertexPropertiesProducer(ProducerBaseClass):
             'dwall': array('f', [0.0]),
             'frac_outoftime_pixels': array('f', [0.0]),
             'frac_intime_unreco_pixels': array('f', [0.0]),
+            'fracerrPE':array('f', [0.0]),
+            'sinkhorn_div':array('f', [0.0]),
+            'predictedPEtotal':array('f', [0.0]),
+            'observedPEtotal':array('f', [0.0]),
+            'vtxKPscore':array('f', [0.0]),
+            'vtxKPtype':array('i', [0]),
             'mc_dist2true': array('f', [10000.0])
         }
         
@@ -93,6 +99,13 @@ class VertexPropertiesProducer(ProducerBaseClass):
             
             self.vertex_vars['frac_outoftime_pixels'][0] = max_outoftime
             self.vertex_vars['frac_intime_unreco_pixels'][0] = max_intime_unreco
+
+            self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
+            self.vertex_vars['sinkhorn_div'][0] = ntuple.sinkhorn_div
+            self.vertex_vars['predictedPEtotal'][0] = ntuple.predictedPEtotal
+            self.vertex_vars['observedPEtotal'][0] = ntuple.observedPEtotal
+            self.vertex_vars['vtxKPscore'][0] = ntuple.vtxKPscore
+            self.vertex_vars['vtxKPtype'][0] = ntuple.vtxKPtype
             
             # MC truth distance if available
             if ismc:

@@ -21,7 +21,6 @@ class TrueVertexPropertiesProducer(ProducerBaseClass):
             'x': array('f', [-999.0]),
             'y': array('f', [-999.0]),
             'z': array('f', [-999.0]),
-            'found': array('i', [0]),
             'score': array('f', [0.0]),
             'infiducial': array('i', [0]),
             'cosmicfrac': array('f', [0.0]),
@@ -57,7 +56,7 @@ class TrueVertexPropertiesProducer(ProducerBaseClass):
         return ["gen2ntuple"]
     
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
-        """Calculate vertex properties."""
+        """Calculate true vertex properties."""
         ntuple = data["gen2ntuple"]
         ismc = params.get('ismc', False)
         if not ismc:
@@ -66,21 +65,11 @@ class TrueVertexPropertiesProducer(ProducerBaseClass):
         # Reset output variables
         self.setDefaultValues()
         
-        # Check if vertex was found
-        self.vertex_vars['found'][0] = ntuple.foundVertex
-
-
-        self.vertex_vars['infiducial'][0] = ntuple.vtxIsFiducial
-        
-        if ntuple.foundVertex == 1:
-            self.vertex_vars['x'][0] = ntuple.trueVtxX
-            self.vertex_vars['y'][0] = ntuple.trueVtxY
-            self.vertex_vars['z'][0] = ntuple.trueVtxZ
-            self.vertex_vars['dwall'][0] = dwall(ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
-            
-            # MC truth distance if available
-            if ismc:
-                self.vertex_vars['mc_dist2true'][0] = ntuple.vtxDistToTrue
+        # Check if vertex was found (reco vertex?)
+        self.vertex_vars['dwall'][0] = dwall(ntuple.trueVtxX, ntuple.trueVtxY, ntuple.trueVtxZ)
+        self.vertex_vars['x'][0] = ntuple.trueVtxX
+        self.vertex_vars['y'][0] = ntuple.trueVtxY
+        self.vertex_vars['z'][0] = ntuple.trueVtxZ
         
         return self._get_results()
     
