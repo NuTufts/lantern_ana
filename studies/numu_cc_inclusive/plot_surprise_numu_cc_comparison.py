@@ -18,12 +18,13 @@ scaling = {"numu_cc":targetpot/7.881656209241413e+20,
            "data":1.0
 }
 
-files = {
-    "numu_cc":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
-    "numu_bg":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
-     "extbnb":"./output_numu_run4b_weights/run4b_v10_04_07_09_extbnb_20250905_172804.root",
-       "dirt":"./output_numu_run4b_weights/",
-       "data":"./output_numu_run4b_weights/run4b_beamon_20250905_172855.root",
+files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
+         "numu_bg":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
+         "extbnb":"./output_numu_run4b/run4b_extbnb_mcc9_v29e_C1_20250823_131257.root",
+         "dirt":"./output_numu_run4b/run4b_bnb_dirt_v10_04_07_09_20250823_133614.root",
+         #"data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_11_20250823_131949.root",
+         "data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_10_mix_makeups_20250824_142631.root",
+         #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
 }
 
 tfiles = {}
