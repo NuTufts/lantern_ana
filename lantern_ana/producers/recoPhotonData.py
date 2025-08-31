@@ -93,6 +93,9 @@ class recoPhotonDataProducer(ProducerBaseClass):
             if ntuple.showerPID[i] != 22:
                 continue
 
+            if ntuple.showerIsSecondary[i]==1:
+                continue
+
             #See if the photon exceeds the energy threshold
             if ntuple.showerRecoE[i] < 10: #MeV
                 continue
@@ -122,10 +125,9 @@ class recoPhotonDataProducer(ProducerBaseClass):
 
             #Track that we've found a detectable photon
             self.nphotons[0] += 1
+            numPhotons += 1
             #Occasionally we get more than 5 photons, but we shouldn't need to worry about storing those
-            if self.nphotons[0] < 5:
-                numPhotons += 1
-            else:
+            if self.nphotons[0] >= 5:
                 break
 
         # Find and store data on tracks ID'd as photons
@@ -139,6 +141,9 @@ class recoPhotonDataProducer(ProducerBaseClass):
                 break
 
             if ntuple.trackPID[i] != 22:
+                continue
+
+            if ntuple.trackIsSecondary[i]==1:
                 continue
 
             #See if the photon exceeds the energy threshold
@@ -170,13 +175,13 @@ class recoPhotonDataProducer(ProducerBaseClass):
             self.recoComp[numPhotons] = ntuple.trackComp[i]
 
             self.nphotons[0] += 1
-            if self.nphotons[0] < 5:
-                numPhotons += 1
-            else:
+            numPhotons += 1
+            if self.nphotons[0] >= 5:
                 break
 
         #Store the energy of the leading photon
         maxPhotonE = np.max(self.photonEnergies)
+        imaxPhotonE = np.argmax(self.photonEnergies)
         self.leadingPhotonEnergy[0] = maxPhotonE
         #print("Photon Energies:", self.photonEnergies, flush=True)
 
@@ -198,6 +203,6 @@ class recoPhotonDataProducer(ProducerBaseClass):
             "photonFromCharged": self.photonFromCharged[0],
             "minComp": self.minComp[0],
             "minPur": self.minPur[0]
-            }
+        }
 
         return photonDataDict

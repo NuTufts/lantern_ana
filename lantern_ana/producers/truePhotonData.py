@@ -5,6 +5,7 @@ from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
 from lantern_ana.tags.tag_factory import TagFactory
 from array import array
+from lantern_ana.utils.fiducial_volume import dwall
 import sys
 
 @register
@@ -27,10 +28,16 @@ class truePhotonDataProducer(ProducerBaseClass):
         self.EDepSumU = array('f',[0.0]) #EDep determines if a given photon is elligible to be counted
         self.EDepSumV = array('f',[0.0])
         self.EDepSumY = array('f',[0.0])
-        #self.EDepSumMax = array('f',[0.0])
-        self.MaxPlaneList = array('f',[0.0]*self._maxnphotons)
+        self.EDepMaxPlane = array('f',[0.0])
+        self.LeadingEDepDwall = array('f',[-999.0])
+
+        # These variables measure the distance of the selected vertex to both
+        # the neutrino interaction vertex or the closest photon energy deposit location
+        self.recovtxtonuvtx = array('f',[9999.0])
+        self.recovtxtophotonedep = array('f',[9999.0])
 
         #These variables are just for other producers
+        self.MaxPlaneList = array('f',[0.0]*self._maxnphotons)
         self.truePhotonEnergies = array('f',[0.0]*self._maxnphotons)
         self.truePhotonPositionX = array('f',[0.0]*self._maxnphotons)
         self.truePhotonPositionY = array('f',[0.0]*self._maxnphotons)
@@ -44,6 +51,10 @@ class truePhotonDataProducer(ProducerBaseClass):
         output.Branch(f"eDepSumU", self.EDepSumU, f"eDepSumU/F")
         output.Branch(f"eDepSumV", self.EDepSumV, f"eDepSumV/F")
         output.Branch(f"eDepSumY", self.EDepSumY, f"eDepSumY/F")
+        output.Branch(f"eDepMaxPlane", self.EDepMaxPlane, f"eDepMaxPlane/F")
+        output.Branch(f"leadingEDepDwall",self.LeadingEDepDwall,f"leadingEDepDwall/F")
+        output.Branch('recovtx_to_nuvtx',self.recovtxtonuvtx,'recovtx_to_nuvtx/F')
+        output.Branch('recovtx_to_photonedep',self.recovtxtophotonedep,'recovtx_to_photonedep/F')
         #output.Branch(f"EDepSumMax", self.EDepSumMax, f"EDepSumMax/F")
   
     def requiredInputs(self):
@@ -65,7 +76,10 @@ class truePhotonDataProducer(ProducerBaseClass):
         self.EDepSumU[0] = 0.0
         self.EDepSumV[0] = 0.0
         self.EDepSumY[0] = 0.0
-        #self.EDepSumMax[0] = 0.0
+        self.EDepMaxPlane[0] = 0.0
+        self.LeadingEDepDwall[0] = -999.0
+        self.recovtxtonuvtx[0] = 9999.0
+        self.recovtxtophotonedep[0] = 9999.0
 
     
     def processEvent(self, data, params):        
@@ -80,7 +94,8 @@ class truePhotonDataProducer(ProducerBaseClass):
                 "energy":self.truePhotonEnergies[0], 
                 "posX":self.truePhotonPositionX[0], 
                 "posY":self.truePhotonPositionY[0], 
-                "posZ": self.truePhotonPositionZ[0]
+                "posZ": self.truePhotonPositionZ[0],
+                "LeadingPhoton":self.trueLeadingPhotonEnergy[0],
                 }
             return truePhotonDataDict
 
@@ -92,27 +107,42 @@ class truePhotonDataProducer(ProducerBaseClass):
         self.setDefaultValues()
         photonEList = []
 
+        maxEdep = 0.0
+
+        truevtx_pos = np.array([ntuple.trueVtxX,ntuple.trueVtxY,ntuple.trueVtxZ])
+        min_edep2vtx_dist = 9999.0
+
+        recovtx_pos = None
+        if ntuple.foundVertex==1:
+            recovtx_pos = np.array( [ntuple.vtxX,ntuple.vtxY,ntuple.vtxZ] )
+            tru2vtx_dist = np.sqrt( np.power( (truevtx_pos-recovtx_pos), 2 ).sum() )
+            self.recovtxtonuvtx[0] = tru2vtx_dist
+
+
         for i in range(ntuple.nTrueSimParts):
             #Make sure reco thinks we have a photon
             if ntuple.trueSimPartPDG[i] != 22:
                 continue
 
             #See if the photon exceeds the energy threshold
-            pixelList = [ntuple.trueSimPartPixelSumUplane[i], ntuple.trueSimPartPixelSumVplane[i], ntuple.trueSimPartPixelSumYplane[i]]
-            self.EDepSumU[0] = ntuple.trueSimPartPixelSumUplane[i]
-            self.EDepSumV[0] = ntuple.trueSimPartPixelSumVplane[i]
-            self.EDepSumY[0] = ntuple.trueSimPartPixelSumYplane[i]            
-            self.MaxPlaneList[numPhotons] = np.max(pixelList) * 0.0126
-
+            pixelList = [ntuple.trueSimPartPixelSumUplane[i]*0.0126, 
+                        ntuple.trueSimPartPixelSumVplane[i]*0.0126, 
+                        ntuple.trueSimPartPixelSumYplane[i]*0.0126]
 
             nplanes = 0
             for pixsum in pixelList:
-                if pixsum*0.0126>5.0:
+                if pixsum>5.0:
                     nplanes += 1
-                if nplanes<=2:
-                    continue
+                # this looks like a bug: this keeps nplanes==0 or nplanes==1 depending on U-plane value
+                #if nplanes<=2:
+                #    continue
 
-                
+            # I think we want to make sure photon deposits above threshold energy above 2 planes
+            if nplanes<=2:
+                continue
+
+            self.MaxPlaneList[numPhotons] = np.max(pixelList)
+
             #Now that we know it passes inspection, we store the photon's data in our arrays
             photonPX = ntuple.trueSimPartPx[i]
             photonPY = ntuple.trueSimPartPy[i]
@@ -124,8 +154,22 @@ class truePhotonDataProducer(ProducerBaseClass):
             self.truePhotonPositionX[numPhotons] = ntuple.trueSimPartEDepX[i]
             self.truePhotonPositionY[numPhotons] = ntuple.trueSimPartEDepY[i]
             self.truePhotonPositionZ[numPhotons] = ntuple.trueSimPartEDepZ[i]
-            #Track that we've found a detectable photon
 
+            if recovtx_pos is not None:
+                edep_pos = np.array([ntuple.trueSimPartEDepX[i],ntuple.trueSimPartEDepY[i],ntuple.trueSimPartEDepZ[i]])
+                edep2vtx_dist = np.sqrt( np.power( (edep_pos-recovtx_pos), 2 ).sum() )
+                if edep2vtx_dist < min_edep2vtx_dist:
+                    min_edep2vtx_dist = edep2vtx_dist
+
+            if self.MaxPlaneList[numPhotons]>maxEdep:
+                maxEdep = self.MaxPlaneList[numPhotons]
+                self.LeadingEDepDwall[0] = dwall(ntuple.trueSimPartEDepX[i],ntuple.trueSimPartEDepY[i],ntuple.trueSimPartEDepZ[i])
+                self.EDepSumU[0] = pixelList[0]
+                self.EDepSumV[0] = pixelList[1]
+                self.EDepSumY[0] = pixelList[2]
+                self.EDepMaxPlane[0] = self.MaxPlaneList[numPhotons]
+
+            #Track that we've found a detectable photon
             self.nTruePhotons[0] += 1
 
             #See if the photon falls into the fiducial
@@ -147,7 +191,10 @@ class truePhotonDataProducer(ProducerBaseClass):
                 numPhotons += 1
             else:
                 break
+        # end of true sim particle loop
 
+        if recovtx_pos is not None and self.nTruePhotons[0]>0:
+            self.recovtxtophotonedep[0] = min_edep2vtx_dist
  
         #Store the energy of the leading photon
         if numPhotons == 0:
@@ -157,7 +204,6 @@ class truePhotonDataProducer(ProducerBaseClass):
                 "posX":self.truePhotonPositionX[0], 
                 "posY":self.truePhotonPositionY[0], 
                 "posZ":self.truePhotonPositionZ[0],
-                #"EDepMax":self.EDepSumMax[0],
                 "LeadingPhoton":self.trueLeadingPhotonEnergy[0],
                 }
 

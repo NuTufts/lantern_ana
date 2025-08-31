@@ -6,24 +6,26 @@ import ROOT as rt
 
 """
 """
-targetpot = 1.32e21
-samples = ['numu_cc','data']
+targetpot = 1.3e+20 # run4 partial?
+#targetpot = 
+#targetpot = 4.4e19 # run 1 open data
+samples = ['numu_cc','data','numu_bg','extbnb']
 scaling = {"numu_cc":targetpot/7.881656209241413e+20,
-           "data":targetpot/5.843739138271457e+20,
-           #"data":targetpot/4.5221966264744385e+20,
-           "numu_bg":targetpot/4.5221966264744385e+20,
-           "nue":targetpot/1.0696499342682672e+22,
-           "extbnb":0.47809891*0.80,
-           #"data":1.0
+           "numu_bg":targetpot/7.881656209241413e+20,
+           "extbnb":23090946.0/94414115.0,
+           "dirt":targetpot/3.05893e+20,
+           "data":1.0
 }
+
 files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
-         #"numu_cc":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "data":"./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV_20250821_080225.root",
-         #"data":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250529_141918.root",
-         "extbnb":"./output_numu_run4b/run1_extbnb_mcc9_v29e_C1_20250821_074215.root",
+         "numu_bg":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
+         "extbnb":"./output_numu_run4b/run4b_extbnb_mcc9_v29e_C1_20250823_131257.root",
+         "dirt":"./output_numu_run4b/run4b_bnb_dirt_v10_04_07_09_20250823_133614.root",
+         #"data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_11_20250823_131949.root",
+         "data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_10_mix_makeups_20250824_142631.root",
          #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
 }
+
 tfiles = {}
 trees = {}
 
@@ -38,10 +40,10 @@ for sample in samples:
 out = rt.TFile("temp.root","recreate")
 
 vars = [('visible_energy', 30, 0, 3000, 'visible energy; MeV', 0),
-        ('muon_properties_angle',50,-1.01,1.01,'muon angle; cos#theta_{beam}', 0),
+        ('muon_properties_angle',16,-1.01,1.01,'muon angle; cos#theta_{beam}', 0),
         ('muon_properties_energy',50,0,2500.0,'muon kinetic energy (MeV)', 0),
-        ('muon_properties_pid_score',101,-2,0.01,'muon pid score', 0),
-        ('vertex_properties_score',40,0,1.0,'keypoint score', 0),
+        ('muon_properties_pid_score',101,-1.01,0.01,'muon pid score', 0),
+        ('vertex_properties_score',30,0.7,1.0,'keypoint score', 0),
         #('nuselvar_mumax_primary_score',40,0,1.0,'primary score', 1),
         #('nuselvar_mumax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
         #('nuselvar_mumax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
@@ -58,8 +60,9 @@ canvs = {}
 
 
 cut = "vertex_properties_found==1"
-cut += " && muon_properties_pid_score>-1.0"
+cut += " && muon_properties_pid_score>-0.9"
 cut += " && vertex_properties_infiducial==1"
+cut += " && muon_properties_energy>0.0"
 
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
@@ -74,9 +77,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
         samplecut = cut
         if sample in ['numu_cc']:
-            samplecut += " && (1==1)"
+            samplecut += " && (sigdef_numuccinc_is_target_numucc_inclusive_nofvcut==1 && sigdef_numuccinc_dwalltrue>=5.0)"
         elif sample in ['numu_bg']:
-            samplecut += " && (1==1)"
+            samplecut += " && (sigdef_numuccinc_is_target_numucc_inclusive_nofvcut==0 || sigdef_numuccinc_dwalltrue<5.0)"
 
         trees[sample].Draw(f"{var}>>{hname}",f"({samplecut})*eventweight_weight")
         hists[(var,sample)].Scale( scaling[sample] )
@@ -84,8 +87,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     
     hists[(var,"numu_cc")].SetFillColor(rt.kRed-3)
     hists[(var,"numu_cc")].SetFillStyle(3003)
-    #hists[(var,"numu_bg")].SetFillColor(rt.kBlue-3)
-    #hists[(var,"numu_bg")].SetFillStyle(3003)
+    if (var,'numu_bg') in hists:
+        hists[(var,"numu_bg")].SetFillColor(rt.kBlue-3)
+        hists[(var,"numu_bg")].SetFillStyle(3003)
     if (var,'extbnb') in hists:
         hists[(var,"extbnb")].SetFillColor(rt.kGray)
         hists[(var,"extbnb")].SetFillStyle(3144)
@@ -95,10 +99,13 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
     hstack_name = f"hs_{var}"
     hstack = rt.THStack(hstack_name,"")
+    hstack.Add( hists[(var,"numu_cc")])
+    
     if (var,'extbnb') in hists:
         hstack.Add( hists[(var,"extbnb")])
-    #hstack.Add( hists[(var,"numu_bg")])
-    hstack.Add( hists[(var,"numu_cc")])
+    if (var,'numu_bg') in hists:
+        hstack.Add( hists[(var,"numu_bg")])
+        
     hists[(hstack_name,sample)] = hstack
 
     hstack.Draw("hist")
