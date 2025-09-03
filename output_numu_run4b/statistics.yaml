@@ -1,0 +1,69 @@
+analysis_statistics:
+  run3b_bnb_nu_overlay_500k_CV:
+    cut_stats: {}
+    failed: 0
+    passed: 1000
+    processing_time: 1.111769437789917
+    total: 1000
+  run4b_bnb_nu_overlay_surprise:
+    cut_stats: {}
+    failed: 0
+    passed: 1000
+    processing_time: 1.4365532398223877
+    total: 1000
+producer_statistics:
+  average_time_per_event: 0.0008614472150802612
+  execution_order:
+  - sigdef_numuccinc
+  - trueNu
+  - eventweight
+  - visible_energy
+  - muon_properties
+  - vertex_properties
+  - truth_mode
+  producer_metrics:
+    eventweight:
+      average_time: 5.559206008911133e-06
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.011118412017822266
+    muon_properties:
+      average_time: 8.450829982757569e-05
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.16901659965515137
+    sigdef_numuccinc:
+      average_time: 0.0003104536533355713
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.6209073066711426
+    trueNu:
+      average_time: 4.915237426757812e-06
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.009830474853515625
+    truth_mode:
+      average_time: 0.00031828248500823976
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.6365649700164795
+    vertex_properties:
+      average_time: 7.206177711486817e-05
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.14412355422973633
+    visible_energy:
+      average_time: 6.56665563583374e-05
+      calls: 2000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.1313331127166748
+  total_events: 2000
+  total_processing_time: 1.7228944301605225
+  total_producers: 7
