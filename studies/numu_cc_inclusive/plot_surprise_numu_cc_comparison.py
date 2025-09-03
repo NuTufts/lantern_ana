@@ -16,13 +16,12 @@ scaling = {"numu_cc":targetpot/7.881656209241413e+20,
            "dirt":targetpot/3.05893e+20,
            "data":1.0
 }
-
-files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
-         "numu_bg":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_065946.root",
-         "extbnb":"./output_numu_run4b/run4b_extbnb_mcc9_v29e_C1_20250823_131257.root",
-         "dirt":"./output_numu_run4b/run4b_bnb_dirt_v10_04_07_09_20250823_133614.root",
-         #"data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_11_20250823_131949.root",
-         "data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_10_mix_makeups_20250824_142631.root",
+files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
+         #"numu_cc":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
+         "data":"./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV.root",
+         #"data":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
+         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
+         "extbnb":"./output_numu_run4b/run1_extbnb_mcc9_v29e_C1.root",
          #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
 }
 
@@ -37,7 +36,8 @@ for sample in samples:
     nentries = trees[sample].GetEntries()
     print(f"sample={sample} has {nentries} entries")
 
-out = rt.TFile("temp.root","recreate")
+# out = rt.TFile("temp.root","recreate")
+out = rt.TFile("suprise_numu.root","recreate")
 
 vars = [('visible_energy', 30, 0, 3000, 'visible energy; MeV', 0),
         ('muon_properties_angle',16,-1.01,1.01,'muon angle; cos#theta_{beam}', 0),
@@ -133,9 +133,13 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].Draw("E1same")
 
     canvs[var].Update()
+    # canvas.Write()
+    out.Write() 
 
-    print("[enter] to continue")
+    # print("[enter] to continue")
     #input()
 
-print("[enter] to close")
-input()
+out.Close() 
+
+# print("[enter] to close")
+# input()

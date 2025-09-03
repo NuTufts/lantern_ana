@@ -4,7 +4,7 @@
 output_dir: "./output_numu_v3dev"
 
 # Maximum events to process (set to -1 for all events)
-max_events: -1
+max_events: 1000
 
 # Filter out failed events from output tree
 filter_events: True
@@ -18,6 +18,8 @@ datasets:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
     - /home/twongjirad/working/data/ntuples/
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
+    - /exp/uboone/data/users/imani/nutples/
+    - /exp/uboone/data/users/imani/nutples/v3dev_reco_retune/
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
