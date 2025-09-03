@@ -37,7 +37,8 @@ for sample in samples:
     nentries = trees[sample].GetEntries()
     print(f"sample={sample} has {nentries} entries")
 
-out = rt.TFile("temp.root","recreate")
+# out = rt.TFile("temp.root","recreate")
+out = rt.TFile("suprise_numu.root","recreate")
 
 vars = [
     ('visible_energy', 30, 0, 3000, 'visible energy; MeV', 0, False),
@@ -161,10 +162,13 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
         hdataratio.GetYaxis().SetTitle("data/MC ratio")
 
     canvs[var].Update()
-    canvs[var].SaveAs(f"{plot_folder}/c{var}.png")
+    # canvas.Write()
+    out.Write() 
 
-    print("[enter] to continue")
+    # print("[enter] to continue")
     #input()
 
-print("[enter] to close")
-input()
+out.Close() 
+
+# print("[enter] to close")
+# input()
