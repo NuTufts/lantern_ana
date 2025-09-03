@@ -1,0 +1,232 @@
+2025-08-21 11:47:53,416 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 11:47:53,416 - LanternAna - INFO - Discovering components...
+2025-08-21 11:48:39,518 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 11:48:39,518 - LanternAna - INFO - Discovering components...
+2025-08-21 11:48:42,720 - LanternAna - INFO - Found 13 cuts
+2025-08-21 11:48:42,721 - LanternAna - INFO - Found 30 producers
+2025-08-21 11:48:42,721 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 11:48:42,721 - LanternAna - INFO - Found 1 tags
+2025-08-21 11:48:42,723 - LanternAna - INFO - Configuring components...
+2025-08-21 11:48:42,752 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 11:48:42,752 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:03:24,217 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:03:24,217 - LanternAna - INFO - Discovering components...
+2025-08-21 12:03:27,681 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:03:27,681 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:03:27,681 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:03:27,682 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:03:27,684 - LanternAna - INFO - Configuring components...
+2025-08-21 12:03:27,709 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:03:27,709 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:03:44,331 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:03:44,331 - LanternAna - INFO - Discovering components...
+2025-08-21 12:03:47,436 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:03:47,436 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:03:47,436 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:03:47,436 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:03:47,438 - LanternAna - INFO - Configuring components...
+2025-08-21 12:03:47,463 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:03:47,463 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:11:03,183 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:11:03,183 - LanternAna - INFO - Discovering components...
+2025-08-21 12:11:06,709 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:11:06,709 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:11:06,709 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:11:06,710 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:11:06,711 - LanternAna - INFO - Configuring components...
+2025-08-21 12:11:06,739 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:11:06,739 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:14:19,172 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:14:19,172 - LanternAna - INFO - Discovering components...
+2025-08-21 12:14:22,733 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:14:22,733 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:14:22,733 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:14:22,733 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:14:22,735 - LanternAna - INFO - Configuring components...
+2025-08-21 12:14:22,761 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:14:22,762 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:33:10,296 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:33:10,296 - LanternAna - INFO - Discovering components...
+2025-08-21 12:33:15,114 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:33:15,114 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:33:15,114 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:33:15,114 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:33:15,115 - LanternAna - INFO - Configuring components...
+2025-08-21 12:33:15,142 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:33:15,142 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:33:17,029 - LanternAna - INFO - Loaded dataset 'run1_bnb_nu_overlay_mcc9_v28_wctagger' with 150015 entries
+2025-08-21 12:33:17,029 - LanternAna - INFO -   MC dataset with 4.675690535431973e+20 POT
+2025-08-21 12:33:17,183 - LanternAna - INFO - Loaded dataset 'run3b_bnb_nu_overlay_500k_CV' with 190064 entries
+2025-08-21 12:33:17,183 - LanternAna - INFO -   MC dataset with 5.843739138271457e+20 POT
+2025-08-21 12:33:17,306 - LanternAna - INFO - Loaded dataset 'run4b_bnb_nu_overlay_surprise' with 635859 entries
+2025-08-21 12:33:17,306 - LanternAna - INFO -   MC dataset with 7.881656209241413e+20 POT
+2025-08-21 12:33:17,372 - LanternAna - INFO - Loaded dataset 'run1_bnb5e19' with 176153 entries
+2025-08-21 12:33:17,565 - LanternAna - INFO - Loaded dataset 'run1_extbnb_mcc9_v29e_C1' with 433446 entries
+2025-08-21 12:33:17,565 - LanternAna - INFO - Processing dataset with enhanced architecture: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:33:17,592 - LanternAna - INFO - Processing 100 events with producer-first architecture...
+2025-08-21 12:33:17,626 - LanternAna - INFO - Progress: 5.0% (5/100), Est. time remaining: 0.6s
+2025-08-21 12:33:17,632 - LanternAna - INFO - Progress: 10.0% (10/100), Est. time remaining: 0.4s
+2025-08-21 12:33:17,637 - LanternAna - INFO - Progress: 15.0% (15/100), Est. time remaining: 0.3s
+2025-08-21 12:33:17,644 - LanternAna - INFO - Progress: 20.0% (20/100), Est. time remaining: 0.2s
+2025-08-21 12:33:17,650 - LanternAna - INFO - Progress: 25.0% (25/100), Est. time remaining: 0.2s
+2025-08-21 12:33:17,656 - LanternAna - INFO - Progress: 30.0% (30/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,661 - LanternAna - INFO - Progress: 35.0% (35/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,665 - LanternAna - INFO - Progress: 40.0% (40/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,670 - LanternAna - INFO - Progress: 45.0% (45/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,674 - LanternAna - INFO - Progress: 50.0% (50/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,679 - LanternAna - INFO - Progress: 55.0% (55/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,686 - LanternAna - INFO - Progress: 60.0% (60/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,690 - LanternAna - INFO - Progress: 65.0% (65/100), Est. time remaining: 0.1s
+2025-08-21 12:33:17,697 - LanternAna - INFO - Progress: 70.0% (70/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,701 - LanternAna - INFO - Progress: 75.0% (75/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,706 - LanternAna - INFO - Progress: 80.0% (80/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,710 - LanternAna - INFO - Progress: 85.0% (85/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,715 - LanternAna - INFO - Progress: 90.0% (90/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,719 - LanternAna - INFO - Progress: 95.0% (95/100), Est. time remaining: 0.0s
+2025-08-21 12:33:17,774 - LanternAna - INFO - Dataset run3b_bnb_nu_overlay_500k_CV processed in 0.1s
+2025-08-21 12:33:17,774 - LanternAna - INFO - Results written to ./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV_20250821_123317.root
+2025-08-21 12:33:17,775 - LanternAna - INFO - ==================================================
+2025-08-21 12:33:17,775 - LanternAna - INFO - Enhanced Analysis Statistics
+2025-08-21 12:33:17,776 - LanternAna - INFO - ==================================================
+2025-08-21 12:33:17,776 - LanternAna - INFO - Dataset: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:33:17,776 - LanternAna - INFO -   Total events: 100
+2025-08-21 12:33:17,777 - LanternAna - INFO -   Passed events: 100 (100.0%)
+2025-08-21 12:33:17,777 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-08-21 12:33:17,778 - LanternAna - INFO -   Processing time: 0.1s
+2025-08-21 12:33:17,778 - LanternAna - INFO -   Cut statistics:
+2025-08-21 12:33:17,778 - LanternAna - INFO - ==================================================
+2025-08-21 12:33:17,778 - LanternAna - INFO - analysis complete!
+2025-08-21 12:33:17,783 - LanternAna - INFO - Statistics saved to: ./output_numu_run4b/statistics.yaml
+2025-08-21 12:34:16,342 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:34:16,342 - LanternAna - INFO - Discovering components...
+2025-08-21 12:34:19,431 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:34:19,431 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:34:19,431 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:34:19,431 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:34:19,433 - LanternAna - INFO - Configuring components...
+2025-08-21 12:34:19,461 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:34:19,461 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:34:20,570 - LanternAna - INFO - Loaded dataset 'run1_bnb_nu_overlay_mcc9_v28_wctagger' with 150015 entries
+2025-08-21 12:34:20,570 - LanternAna - INFO -   MC dataset with 4.675690535431973e+20 POT
+2025-08-21 12:34:20,722 - LanternAna - INFO - Loaded dataset 'run3b_bnb_nu_overlay_500k_CV' with 190064 entries
+2025-08-21 12:34:20,722 - LanternAna - INFO -   MC dataset with 5.843739138271457e+20 POT
+2025-08-21 12:34:20,846 - LanternAna - INFO - Loaded dataset 'run4b_bnb_nu_overlay_surprise' with 635859 entries
+2025-08-21 12:34:20,846 - LanternAna - INFO -   MC dataset with 7.881656209241413e+20 POT
+2025-08-21 12:34:20,910 - LanternAna - INFO - Loaded dataset 'run1_bnb5e19' with 176153 entries
+2025-08-21 12:34:21,099 - LanternAna - INFO - Loaded dataset 'run1_extbnb_mcc9_v29e_C1' with 433446 entries
+2025-08-21 12:34:21,099 - LanternAna - INFO - Processing dataset with enhanced architecture: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:34:21,125 - LanternAna - INFO - Processing 1000 events with producer-first architecture...
+2025-08-21 12:34:21,200 - LanternAna - INFO - Progress: 5.0% (50/1000), Est. time remaining: 1.4s
+2025-08-21 12:34:21,249 - LanternAna - INFO - Progress: 10.0% (100/1000), Est. time remaining: 1.1s
+2025-08-21 12:34:21,454 - LanternAna - INFO - Progress: 15.0% (150/1000), Est. time remaining: 1.9s
+2025-08-21 12:34:21,499 - LanternAna - INFO - Progress: 20.0% (200/1000), Est. time remaining: 1.5s
+2025-08-21 12:34:21,545 - LanternAna - INFO - Progress: 25.0% (250/1000), Est. time remaining: 1.3s
+2025-08-21 12:34:21,592 - LanternAna - INFO - Progress: 30.0% (300/1000), Est. time remaining: 1.1s
+2025-08-21 12:34:21,638 - LanternAna - INFO - Progress: 35.0% (350/1000), Est. time remaining: 1.0s
+2025-08-21 12:34:21,687 - LanternAna - INFO - Progress: 40.0% (400/1000), Est. time remaining: 0.8s
+2025-08-21 12:34:21,738 - LanternAna - INFO - Progress: 45.0% (450/1000), Est. time remaining: 0.7s
+2025-08-21 12:34:21,787 - LanternAna - INFO - Progress: 50.0% (500/1000), Est. time remaining: 0.7s
+2025-08-21 12:34:21,840 - LanternAna - INFO - Progress: 55.0% (550/1000), Est. time remaining: 0.6s
+2025-08-21 12:34:21,891 - LanternAna - INFO - Progress: 60.0% (600/1000), Est. time remaining: 0.5s
+2025-08-21 12:34:21,933 - LanternAna - INFO - Progress: 65.0% (650/1000), Est. time remaining: 0.4s
+2025-08-21 12:34:21,981 - LanternAna - INFO - Progress: 70.0% (700/1000), Est. time remaining: 0.4s
+2025-08-21 12:34:22,037 - LanternAna - INFO - Progress: 75.0% (750/1000), Est. time remaining: 0.3s
+2025-08-21 12:34:22,086 - LanternAna - INFO - Progress: 80.0% (800/1000), Est. time remaining: 0.2s
+2025-08-21 12:34:22,135 - LanternAna - INFO - Progress: 85.0% (850/1000), Est. time remaining: 0.2s
+2025-08-21 12:34:22,179 - LanternAna - INFO - Progress: 90.0% (900/1000), Est. time remaining: 0.1s
+2025-08-21 12:34:22,227 - LanternAna - INFO - Progress: 95.0% (950/1000), Est. time remaining: 0.1s
+2025-08-21 12:34:22,323 - LanternAna - INFO - Dataset run3b_bnb_nu_overlay_500k_CV processed in 1.1s
+2025-08-21 12:34:22,324 - LanternAna - INFO - Results written to ./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV_20250821_123421.root
+2025-08-21 12:34:22,324 - LanternAna - INFO - ==================================================
+2025-08-21 12:34:22,324 - LanternAna - INFO - Enhanced Analysis Statistics
+2025-08-21 12:34:22,324 - LanternAna - INFO - ==================================================
+2025-08-21 12:34:22,325 - LanternAna - INFO - Dataset: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:34:22,325 - LanternAna - INFO -   Total events: 1000
+2025-08-21 12:34:22,325 - LanternAna - INFO -   Passed events: 1000 (100.0%)
+2025-08-21 12:34:22,326 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-08-21 12:34:22,326 - LanternAna - INFO -   Processing time: 1.1s
+2025-08-21 12:34:22,326 - LanternAna - INFO -   Cut statistics:
+2025-08-21 12:34:22,327 - LanternAna - INFO - ==================================================
+2025-08-21 12:34:22,327 - LanternAna - INFO - analysis complete!
+2025-08-21 12:34:22,331 - LanternAna - INFO - Statistics saved to: ./output_numu_run4b/statistics.yaml
+2025-08-21 12:40:04,678 - LanternAna - INFO - Loading configuration from studies/numu_cc_inclusive/surprise_numu_analysis_comparison.yaml
+2025-08-21 12:40:04,678 - LanternAna - INFO - Discovering components...
+2025-08-21 12:40:07,940 - LanternAna - INFO - Found 13 cuts
+2025-08-21 12:40:07,940 - LanternAna - INFO - Found 30 producers
+2025-08-21 12:40:07,940 - LanternAna - INFO - Found 1 dataset types
+2025-08-21 12:40:07,940 - LanternAna - INFO - Found 1 tags
+2025-08-21 12:40:07,942 - LanternAna - INFO - Configuring components...
+2025-08-21 12:40:07,965 - LanternAna - INFO - Starting enhanced analysis run...
+2025-08-21 12:40:07,965 - LanternAna - INFO - Loading datasets...
+2025-08-21 12:40:09,100 - LanternAna - INFO - Loaded dataset 'run1_bnb_nu_overlay_mcc9_v28_wctagger' with 150015 entries
+2025-08-21 12:40:09,100 - LanternAna - INFO -   MC dataset with 4.675690535431973e+20 POT
+2025-08-21 12:40:09,242 - LanternAna - INFO - Loaded dataset 'run3b_bnb_nu_overlay_500k_CV' with 190064 entries
+2025-08-21 12:40:09,243 - LanternAna - INFO -   MC dataset with 5.843739138271457e+20 POT
+2025-08-21 12:40:09,368 - LanternAna - INFO - Loaded dataset 'run4b_bnb_nu_overlay_surprise' with 635859 entries
+2025-08-21 12:40:09,368 - LanternAna - INFO -   MC dataset with 7.881656209241413e+20 POT
+2025-08-21 12:40:09,433 - LanternAna - INFO - Loaded dataset 'run1_bnb5e19' with 176153 entries
+2025-08-21 12:40:09,627 - LanternAna - INFO - Loaded dataset 'run1_extbnb_mcc9_v29e_C1' with 433446 entries
+2025-08-21 12:40:09,627 - LanternAna - INFO - Processing dataset with enhanced architecture: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:40:09,652 - LanternAna - INFO - Processing 1000 events with producer-first architecture...
+2025-08-21 12:40:09,729 - LanternAna - INFO - Progress: 5.0% (50/1000), Est. time remaining: 1.5s
+2025-08-21 12:40:09,779 - LanternAna - INFO - Progress: 10.0% (100/1000), Est. time remaining: 1.1s
+2025-08-21 12:40:09,943 - LanternAna - INFO - Progress: 15.0% (150/1000), Est. time remaining: 1.6s
+2025-08-21 12:40:09,990 - LanternAna - INFO - Progress: 20.0% (200/1000), Est. time remaining: 1.3s
+2025-08-21 12:40:10,036 - LanternAna - INFO - Progress: 25.0% (250/1000), Est. time remaining: 1.2s
+2025-08-21 12:40:10,083 - LanternAna - INFO - Progress: 30.0% (300/1000), Est. time remaining: 1.0s
+2025-08-21 12:40:10,129 - LanternAna - INFO - Progress: 35.0% (350/1000), Est. time remaining: 0.9s
+2025-08-21 12:40:10,176 - LanternAna - INFO - Progress: 40.0% (400/1000), Est. time remaining: 0.8s
+2025-08-21 12:40:10,238 - LanternAna - INFO - Progress: 45.0% (450/1000), Est. time remaining: 0.7s
+2025-08-21 12:40:10,288 - LanternAna - INFO - Progress: 50.0% (500/1000), Est. time remaining: 0.6s
+2025-08-21 12:40:10,341 - LanternAna - INFO - Progress: 55.0% (550/1000), Est. time remaining: 0.6s
+2025-08-21 12:40:10,393 - LanternAna - INFO - Progress: 60.0% (600/1000), Est. time remaining: 0.5s
+2025-08-21 12:40:10,435 - LanternAna - INFO - Progress: 65.0% (650/1000), Est. time remaining: 0.4s
+2025-08-21 12:40:10,483 - LanternAna - INFO - Progress: 70.0% (700/1000), Est. time remaining: 0.4s
+2025-08-21 12:40:10,536 - LanternAna - INFO - Progress: 75.0% (750/1000), Est. time remaining: 0.3s
+2025-08-21 12:40:10,582 - LanternAna - INFO - Progress: 80.0% (800/1000), Est. time remaining: 0.2s
+2025-08-21 12:40:10,625 - LanternAna - INFO - Progress: 85.0% (850/1000), Est. time remaining: 0.2s
+2025-08-21 12:40:10,669 - LanternAna - INFO - Progress: 90.0% (900/1000), Est. time remaining: 0.1s
+2025-08-21 12:40:10,719 - LanternAna - INFO - Progress: 95.0% (950/1000), Est. time remaining: 0.1s
+2025-08-21 12:40:10,808 - LanternAna - INFO - Dataset run3b_bnb_nu_overlay_500k_CV processed in 1.1s
+2025-08-21 12:40:10,809 - LanternAna - INFO - Results written to ./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV_20250821_124009.root
+2025-08-21 12:40:10,809 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_bnb_nu_overlay_surprise
+2025-08-21 12:40:10,811 - LanternAna - INFO - Processing 1000 events with producer-first architecture...
+2025-08-21 12:40:11,447 - LanternAna - INFO - Progress: 5.0% (50/1000), Est. time remaining: 12.1s
+2025-08-21 12:40:11,490 - LanternAna - INFO - Progress: 10.0% (100/1000), Est. time remaining: 6.1s
+2025-08-21 12:40:11,532 - LanternAna - INFO - Progress: 15.0% (150/1000), Est. time remaining: 4.1s
+2025-08-21 12:40:11,568 - LanternAna - INFO - Progress: 20.0% (200/1000), Est. time remaining: 3.0s
+2025-08-21 12:40:11,608 - LanternAna - INFO - Progress: 25.0% (250/1000), Est. time remaining: 2.4s
+2025-08-21 12:40:11,648 - LanternAna - INFO - Progress: 30.0% (300/1000), Est. time remaining: 2.0s
+2025-08-21 12:40:11,695 - LanternAna - INFO - Progress: 35.0% (350/1000), Est. time remaining: 1.6s
+2025-08-21 12:40:11,734 - LanternAna - INFO - Progress: 40.0% (400/1000), Est. time remaining: 1.4s
+2025-08-21 12:40:11,785 - LanternAna - INFO - Progress: 45.0% (450/1000), Est. time remaining: 1.2s
+2025-08-21 12:40:11,837 - LanternAna - INFO - Progress: 50.0% (500/1000), Est. time remaining: 1.0s
+2025-08-21 12:40:11,881 - LanternAna - INFO - Progress: 55.0% (550/1000), Est. time remaining: 0.9s
+2025-08-21 12:40:11,927 - LanternAna - INFO - Progress: 60.0% (600/1000), Est. time remaining: 0.7s
+2025-08-21 12:40:11,961 - LanternAna - INFO - Progress: 65.0% (650/1000), Est. time remaining: 0.6s
+2025-08-21 12:40:12,005 - LanternAna - INFO - Progress: 70.0% (700/1000), Est. time remaining: 0.5s
+2025-08-21 12:40:12,042 - LanternAna - INFO - Progress: 75.0% (750/1000), Est. time remaining: 0.4s
+2025-08-21 12:40:12,080 - LanternAna - INFO - Progress: 80.0% (800/1000), Est. time remaining: 0.3s
+2025-08-21 12:40:12,123 - LanternAna - INFO - Progress: 85.0% (850/1000), Est. time remaining: 0.2s
+2025-08-21 12:40:12,161 - LanternAna - INFO - Progress: 90.0% (900/1000), Est. time remaining: 0.1s
+2025-08-21 12:40:12,199 - LanternAna - INFO - Progress: 95.0% (950/1000), Est. time remaining: 0.1s
+2025-08-21 12:40:12,257 - LanternAna - INFO - Dataset run4b_bnb_nu_overlay_surprise processed in 1.4s
+2025-08-21 12:40:12,257 - LanternAna - INFO - Results written to ./output_numu_run4b/run4b_bnb_nu_overlay_surprise_20250821_124010.root
+2025-08-21 12:40:12,257 - LanternAna - INFO - ==================================================
+2025-08-21 12:40:12,257 - LanternAna - INFO - Enhanced Analysis Statistics
+2025-08-21 12:40:12,257 - LanternAna - INFO - ==================================================
+2025-08-21 12:40:12,257 - LanternAna - INFO - Dataset: run3b_bnb_nu_overlay_500k_CV
+2025-08-21 12:40:12,257 - LanternAna - INFO -   Total events: 1000
+2025-08-21 12:40:12,257 - LanternAna - INFO -   Passed events: 1000 (100.0%)
+2025-08-21 12:40:12,257 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-08-21 12:40:12,257 - LanternAna - INFO -   Processing time: 1.1s
+2025-08-21 12:40:12,257 - LanternAna - INFO -   Cut statistics:
+2025-08-21 12:40:12,258 - LanternAna - INFO - Dataset: run4b_bnb_nu_overlay_surprise
+2025-08-21 12:40:12,258 - LanternAna - INFO -   Total events: 1000
+2025-08-21 12:40:12,258 - LanternAna - INFO -   Passed events: 1000 (100.0%)
+2025-08-21 12:40:12,258 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-08-21 12:40:12,258 - LanternAna - INFO -   Processing time: 1.4s
+2025-08-21 12:40:12,258 - LanternAna - INFO -   Cut statistics:
+2025-08-21 12:40:12,258 - LanternAna - INFO - ==================================================
+2025-08-21 12:40:12,259 - LanternAna - INFO - analysis complete!
+2025-08-21 12:40:12,264 - LanternAna - INFO - Statistics saved to: ./output_numu_run4b/statistics.yaml

@@ -1,0 +1,107 @@
+analysis_statistics:
+  run1_bnb5e19:
+    cut_stats:
+      reco_numu_CCinc:
+        fail: 1000
+        pass: 0
+      true_numu_CCinc:
+        fail: 0
+        pass: 1000
+    failed: 0
+    passed: 1000
+    processing_time: 0.26937150955200195
+    total: 1000
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    cut_stats:
+      reco_numu_CCinc:
+        fail: 1000
+        pass: 0
+      true_numu_CCinc:
+        fail: 355
+        pass: 645
+    failed: 355
+    passed: 645
+    processing_time: 1.0929086208343506
+    total: 1000
+  run1_extbnb_mcc9_v29e_C1:
+    cut_stats:
+      reco_numu_CCinc:
+        fail: 1000
+        pass: 0
+      true_numu_CCinc:
+        fail: 0
+        pass: 1000
+    failed: 0
+    passed: 1000
+    processing_time: 0.2928640842437744
+    total: 1000
+producer_statistics:
+  average_time_per_event: 0.00030685027440388997
+  execution_order:
+  - trueNu
+  - eventweight
+  - visible_energy
+  - muon_properties
+  - vertex_properties
+  - truth_mode
+  - reco_numu_CCinc_prod
+  - true_numu_CCinc_prod
+  - nuselvar
+  producer_metrics:
+    eventweight:
+      average_time: 2.7944246927897135e-06
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.00838327407836914
+    muon_properties:
+      average_time: 4.1987101236979164e-05
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.1259613037109375
+    nuselvar:
+      average_time: 6.647189458211263e-06
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.01994156837463379
+    reco_numu_CCinc_prod:
+      average_time: 1.4083385467529297e-06
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.004225015640258789
+    trueNu:
+      average_time: 4.2452017466227215e-06
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.012735605239868164
+    true_numu_CCinc_prod:
+      average_time: 8.957386016845703e-07
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.002687215805053711
+    truth_mode:
+      average_time: 0.00011212452252705892
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.33637356758117676
+    vertex_properties:
+      average_time: 8.395481109619141e-05
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.2518644332885742
+    visible_energy:
+      average_time: 5.279294649759928e-05
+      calls: 3000
+      error_rate: 0.0
+      errors: 0
+      total_time: 0.15837883949279785
+  total_events: 3000
+  total_processing_time: 0.9205508232116699
+  total_producers: 9
