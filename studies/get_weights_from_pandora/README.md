@@ -20,6 +20,7 @@ root -x Strip_xsecweight.C
 
 The pandora tree also has the xsec and flux weights from the N throws of the systematic uncertainty parameter priors.
 
+<<<<<<< HEAD
 Branches in the Pandora tree, 'nuselection/NuSelectionFilter':
 
 The event index branches:
@@ -200,4 +201,6 @@ Data in map for Entry[0]
   xsr_scc_Fv3_SCC: nweights=10
 ```
 
+=======
+>>>>>>> add folder for scripts to use pandora selection tree to get central value weights
 TODO: extract these for use by the lantern ana framework.
