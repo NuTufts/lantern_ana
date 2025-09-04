@@ -13,17 +13,17 @@ rt.gStyle.SetPadTopMargin(0.05)
 
 """
 """
-targetpot = 1.3e+20
+targetpot = 4.4e19
 true_vertex_dwallcut = 5.0
-output_png_prefix = "run4b_cutbycut"
-plot_folder = "output_cutbycut_plots_run4b"
+output_png_prefix = "run1_cutbycut"
+plot_folder = "output_cutbycut_plots_run1"
 os.system(f"mkdir -p {plot_folder}")
 
 samples = ['nue_sig','nue_bg','numu','extbnb','data']
 
-scaling = {"numu":targetpot/7.881656209241413e+20,
-           "nue_sig":targetpot/1.1785765118473412e+23,
-           "nue_bg":targetpot/1.1785765118473412e+23,
+scaling = {"numu":targetpot/4.675690535431973e+20,
+           "nue_sig":targetpot/9.662529168587103e+22,
+           "nue_bg":targetpot/9.662529168587103e+22,
            "extbnb":23090946.0/94414115.0,
            "data":1.0}
 files = {
@@ -32,6 +32,14 @@ files = {
     "nue_bg":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nue_overlay_surprise_20250904_004759.root",
     "extbnb":"./output_nue_run4b_surprise/run4b_v10_04_07_09_extbnb_20250901_104613.root",
     "data":"./output_nue_run4b_surprise/run4b_beamon_20250901_104738.root"
+}
+
+files = {
+    "numu":"./output_nue_run1_mmr/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250902_054731.root",
+ "nue_sig":"./output_nue_run1_mmr/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250902_052529.root",
+  "nue_bg":"./output_nue_run1_mmr/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250902_052529.root",
+  "extbnb":"./output_nue_run1_mmr/run1_extbnb_mcc9_v29e_C1_20250902_052842.root",
+    "data":"./output_nue_run1_mmr/run1_bnb5e19_20250902_052912.root"
 }
 
 cut_stages = ['fvvertex','cosmicfrac','num_muons','primary_electron','max_muscore','electron_confidence']
