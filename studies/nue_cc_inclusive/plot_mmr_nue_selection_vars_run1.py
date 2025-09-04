@@ -17,18 +17,18 @@ Adding to dataset[EventTree] to Tree[EventTree]: /home/twongjirad/working/larbys
 
 """
 """
-targetpot = 1.3e+20
+targetpot = 4.4e19
 samples = ['nue','numu','extbnb','data']
 #samples = ['nue','data']
-scaling = {"numu":targetpot/7.881656209241413e+20,
-           "nue":targetpot/1.1785765118473412e+23,
-           "extbnb":23090946.0/94414115.0,
+scaling = {"numu":targetpot/4.675690535431973e+20,
+           "nue":targetpot/9.662529168587103e+22,
+           "extbnb":(176153.0)/(433446.0),
            "data":1.0}
 files = {
-    "numu":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250904_003901.root",
-    "nue":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nue_overlay_surprise_20250904_004759.root",
-    "extbnb":"./output_nue_run4b_surprise/run4b_v10_04_07_09_extbnb_20250901_104613.root",
-    "data":"./output_nue_run4b_surprise/run4b_beamon_20250901_104738.root"
+    "numu":"./output_nue_run1_mmr/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250902_054731.root",
+     "nue":"./output_nue_run1_mmr/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250902_052529.root",
+  "extbnb":"./output_nue_run1_mmr/run1_extbnb_mcc9_v29e_C1_20250902_052842.root",
+    "data":"./output_nue_run1_mmr/run1_bnb5e19_20250902_052912.root"
 }
 
 tfiles = {}
