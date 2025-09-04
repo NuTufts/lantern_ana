@@ -78,7 +78,8 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hname = f'h{var}_{sample}'
         hists[(var,sample)] = rt.TH1D( hname, "", nbins, xmin, xmax )
         print("fill ",hname)
-        trees[sample].Draw(f"{var}>>{hname}",f"({cut})*eventweight_weight")
+        #trees[sample].Draw(f"{var}>>{hname}",f"({cut})*eventweight_weight")
+        trees[sample].Draw(f"{var}>>{hname}",f"({cut})") # for debug: do not use GENIE tune
         hists[(var,sample)].Scale( scaling[sample] )
         print(f"{var}-{sample}: ",hists[(var,sample)].Integral())
     
