@@ -17,6 +17,7 @@ class eventWeightProducer(ProducerBaseClass):
     def __init__(self, name, config):
         super().__init__(name, config)
         self.eventweight = array('f', [1.0])
+        self.use_friendtree = config.get('use_friendtree',False)
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -40,10 +41,13 @@ class eventWeightProducer(ProducerBaseClass):
         ntuple = data["gen2ntuple"]
         
         # Reset output variable
-        self.eventweight[0] = ntuple.xsecWeight
+        if not self.use_friendtree:
+            self.eventweight[0] = ntuple.xsecWeight
+        else:
+            self.eventweight[0] = ntuple.weighttree_xsecweight
 
         #Remove events with infinite event weights
-        if ntuple.xsecWeight > 100000000000000:
-            self.eventweight[0] = 1
+        if self.eventweight[0] > 100000000000000:
+            self.eventweight[0] = 1.0
         
         return {"weight":self.eventweight[0]}
