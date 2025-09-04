@@ -15,6 +15,7 @@ rt.gStyle.SetPadTopMargin(0.05)
 """
 targetpot = 1.3e+20
 <<<<<<< HEAD
+<<<<<<< HEAD
 true_vertex_dwallcut = 5.0
 output_png_prefix = "run4b_cutbycut"
 plot_folder = "output_cutbycut_plots_run4b"
@@ -23,6 +24,12 @@ os.system(f"mkdir -p {plot_folder}")
 true_vertex_dwallcut = 0.0
 output_png_prefix = "run4b_cutbycut"
 >>>>>>> add nue cutbycut plots.
+=======
+true_vertex_dwallcut = 5.0
+output_png_prefix = "run4b_cutbycut"
+plot_folder = "output_cutbycut_plots_run4b"
+os.system(f"mkdir -p {plot_folder}")
+>>>>>>> fixed purity plot error for nue cutbycut plots
 
 samples = ['nue_sig','nue_bg','numu','extbnb','data']
 
@@ -234,12 +241,18 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismcvar in vars:
         for ibin in range(1,hvar_pur_denom.GetXaxis().GetNbins()+1):
             bintot = 0.0
 <<<<<<< HEAD
+<<<<<<< HEAD
             for sample in ['nue_sig','nue_bg','numu','extbnb']:
                 if ismcvar and sample=='extbnb':
                     continue
 =======
             for sample in ['nue_sig','nue_bg','extbnb']:
 >>>>>>> add nue cutbycut plots.
+=======
+            for sample in ['nue_sig','nue_bg','numu','extbnb']:
+                if ismcvar and sample=='extbnb':
+                    continue
+>>>>>>> fixed purity plot error for nue cutbycut plots
                 bintot += hists[(x_cutvar,sample)].GetBinContent(ibin)
             hvar_pur_denom.SetBinContent(ibin,bintot)
         print(hvar_pur_denom_name,": ",hvar_pur_denom.Integral())
@@ -252,10 +265,14 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismcvar in vars:
 
         canvs[x_cutvar].Update()
 <<<<<<< HEAD
+<<<<<<< HEAD
         canvs[x_cutvar].SaveAs(f'{plot_folder}/plot_v2me06_{output_png_prefix}_{cname}.png')
 =======
         canvs[x_cutvar].SaveAs(f'output_mmr/plot_v2me06_{output_png_prefix}_{cname}.png')
 >>>>>>> add nue cutbycut plots.
+=======
+        canvs[x_cutvar].SaveAs(f'{plot_folder}/plot_v2me06_{output_png_prefix}_{cname}.png')
+>>>>>>> fixed purity plot error for nue cutbycut plots
 
     print("[enter] to continue")
     #input()
