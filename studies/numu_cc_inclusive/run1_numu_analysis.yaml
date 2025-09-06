@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "./output_numu_run4b_weights"
+output_dir: "./output_numu_run1"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -17,49 +17,37 @@ datasets:
   folders:
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
     - /home/twongjirad/working/data/ntuples/
-    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
-    - /pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/
-    - /mnt/ddrive/data/
-  run4b_v10_04_07_09_BNB_nu_overlay_surprise:
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
     ismc: true
     process: true
-    friendtrees:
-      weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise.root    
     filepaths:
-     - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
-  run4b_v10_04_07_09_BNB_nue_overlay_surprise:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  run1_extbnb_mcc9_v29e_C1:
     type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
-    ismc: true
-    process: true
-    friendtrees:
-      weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise.root
-    filepaths:
-     - MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
-  run4b_v10_04_07_09_extbnb:
-    type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
+    tree: EventTree
     ismc: false
     process: false
     filepaths:
-    - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
-  run4b_beamon:
+    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+  run1_bnb5e19:
     type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
+    tree: EventTree
     ismc: false
     process: false
     filepaths:
-    - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
 
 # Cut configuration
 cuts: {}
-#cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
 
 # Producer configuration
 producers:
@@ -72,7 +60,7 @@ producers:
   eventweight:
     type: eventWeightProducer
     config:
-      use_friendtree: True
+      use_friendtree: False
   visible_energy:
     type: VisibleEnergyProducer
     config: {}

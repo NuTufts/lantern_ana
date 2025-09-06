@@ -6,24 +6,22 @@ import ROOT as rt
 
 """
 """
-targetpot = 1.3e+20 # run4 partial?
-plot_folder="./output_plots_numu_run4b/"
+targetpot = 4.4e19
+plot_folder="./output_plots_numu_run1/"
 os.system(f"mkdir -p {plot_folder}")
 
 samples = ['numu_cc','data','numu_bg','extbnb']
-scaling = {"numu_cc":targetpot/7.881656209241413e+20,
-           "numu_bg":targetpot/7.881656209241413e+20,
-           "extbnb":23090946.0/94414115.0,
-           "dirt":targetpot/3.05893e+20,
+scaling = {"numu_cc":targetpot/4.675690535431973e+20,
+           "numu_bg":targetpot/4.675690535431973e+20,
+           "extbnb":0.47809891*0.80,
            "data":1.0
 }
 
 files = {
-    "numu_cc":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
-    "numu_bg":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
-     "extbnb":"./output_numu_run4b_weights/run4b_v10_04_07_09_extbnb_20250905_172804.root",
-       "dirt":"./output_numu_run4b_weights/",
-       "data":"./output_numu_run4b_weights/run4b_beamon_20250905_172855.root",
+    "numu_cc":"./output_numu_run1/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root",
+    "numu_bg":"./output_numu_run1/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root",
+     "extbnb":"./output_numu_run1/run1_extbnb_mcc9_v29e_C1_20250906_043533.root",
+       "data":"./output_numu_run1/run1_bnb5e19_20250906_043555.root",
 }
 
 tfiles = {}
@@ -124,7 +122,7 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
     else:
         datamax = 0
 
-    if predmax>datamax:
+    if predmax>datamax or ismc:
         if setlogy==1:
             hstack.GetYaxis().SetRangeUser(0.1,predmax*5)
         hstack.SetTitle(htitle)
@@ -136,7 +134,7 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")
 
-    if (var,'data') in hists:
+    if not ismc and (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
     
     if not ismc:
