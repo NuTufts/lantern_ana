@@ -6,31 +6,22 @@ import ROOT as rt
 
 """
 """
-targetpot = 1.3e+20 # run4 partial?
-plot_folder="./output_plots_numu_run4b/"
+targetpot = 4.4e19
+plot_folder="./output_plots_numu_run1/"
 os.system(f"mkdir -p {plot_folder}")
 
 samples = ['numu_cc','data','numu_bg','extbnb']
-scaling = {"numu_cc":targetpot/7.881656209241413e+20,
-           "numu_bg":targetpot/7.881656209241413e+20,
-           "extbnb":23090946.0/94414115.0,
-           "dirt":targetpot/3.05893e+20,
+scaling = {"numu_cc":targetpot/4.675690535431973e+20,
+           "numu_bg":targetpot/4.675690535431973e+20,
+           "extbnb":0.47809891*0.80,
            "data":1.0
-}
-files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
-         #"numu_cc":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "data":"./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV.root",
-         #"data":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
-         "extbnb":"./output_numu_run4b/run1_extbnb_mcc9_v29e_C1.root",
-         #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
 }
 
 files = {
-         "numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
-         "data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_10_mix_makeups.root",
-         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
-         "extbnb":"./output_numu_v3dev/run1_extbnb_mcc9_v29e_C1.root",
+    "numu_cc":"./output_numu_run1/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root",
+    "numu_bg":"./output_numu_run1/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root",
+     "extbnb":"./output_numu_run1/run1_extbnb_mcc9_v29e_C1_20250906_043533.root",
+       "data":"./output_numu_run1/run1_bnb5e19_20250906_043555.root",
 }
 
 tfiles = {}
@@ -44,8 +35,7 @@ for sample in samples:
     nentries = trees[sample].GetEntries()
     print(f"sample={sample} has {nentries} entries")
 
-# out = rt.TFile("temp.root","recreate")
-out = rt.TFile("suprise_numu.root","recreate")
+out = rt.TFile("temp.root","recreate")
 
 vars = [
     ('visible_energy', 30, 0, 3000, 'visible energy; MeV', 0, False),
@@ -132,7 +122,7 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
     else:
         datamax = 0
 
-    if predmax>datamax:
+    if predmax>datamax or ismc:
         if setlogy==1:
             hstack.GetYaxis().SetRangeUser(0.1,predmax*5)
         hstack.SetTitle(htitle)
@@ -144,7 +134,7 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")
 
-    if (var,'data') in hists:
+    if not ismc and (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
     
     if not ismc:
@@ -169,13 +159,10 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
         hdataratio.GetYaxis().SetTitle("data/MC ratio")
 
     canvs[var].Update()
-    # canvas.Write()
-    out.Write() 
+    canvs[var].SaveAs(f"{plot_folder}/c{var}.png")
 
-    # print("[enter] to continue")
+    print("[enter] to continue")
     #input()
 
-out.Close() 
-
-# print("[enter] to close")
-# input()
+print("[enter] to close")
+input()
