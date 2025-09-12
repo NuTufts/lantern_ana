@@ -3,9 +3,12 @@ import ROOT as rt
 
 
 targetpot = 1.32e21
+boost = 1.0
+plot_folder = "./output_plots_only1detphoton_backgrounds/"
+os.system(f"mkdir -p {plot_folder}")
 samples = ['bnbnu_1gXp_sig_goodvtx','bnbnu_1gXp_sig_badvtx','bnbnu_0g_bg','bnbnu_Mg_bg']
 scaling = {
-    "bnbnu_1gXp_sig_goodvtx":targetpot/4.675690535431973e+20,
+    "bnbnu_1gXp_sig_goodvtx":boost*targetpot/4.675690535431973e+20,
     "bnbnu_1gXp_sig_badvtx":targetpot/4.675690535431973e+20,
     "bnbnu_0g_bg":targetpot/4.675690535431973e+20,
     "bnbnu_Mg_bg":targetpot/4.675690535431973e+20,
@@ -13,11 +16,10 @@ scaling = {
 
 good_vtx_threshold = 3.0
 
-
 # What files are we drawing on?
 #  Deriving from ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_nuvtxphotonsel_vtest.root
 #  using 1gXp_vertex_ana.yaml
-lantern_ana_file="bnbnumu_20250830_224122.root"
+lantern_ana_file="bnbnumu_20250905_161147.root"
 files = {
     "bnbnu_1gXp_sig_goodvtx": "./output_1g1X_vertexstudies/"+lantern_ana_file,
     "bnbnu_1gXp_sig_badvtx": "./output_1g1X_vertexstudies/"+lantern_ana_file,
@@ -46,10 +48,19 @@ vars = [
     ('true_vertex_properties_dwall',50,-100.0,150.0,'Only 1 detectable Photon;true neutrino vertex dwall (cm)',0), 
     ('leadingEDepDwall',50,-100.0,150.0,'Only 1 detectable Photon;Photon Energy Deposit True Location dwall (cm)',0),
     ('leadingPhotonE',100,0,1000,'Only 1 detectable Photon;leading photon energy (MeV)',0),
-    ('photon_purity',100,0,1.0,'Only 1 detectable Photon;reco photon purity score',0),
-    ('photon_completeness',100,0,1.0,'Only 1 detectable Photon;reco photon completeness score',0),
-    ('vertex_properties_frac_intime_unreco_pixels',100,0,1.0,';frac_intime_unreco_pixels',1),
-    ('vertex_properties_frac_outoftime_pixels',100,0,1.0,';frac_outoftime_pixels',1),
+    ('recophoton_photon_purity',100,0,1.0,'Only 1 detectable Photon;reco photon purity score',0),
+    ('recophoton_photon_completeness',100,0,1.0,'Only 1 detectable Photon;reco photon completeness score',0),
+    ('recophoton_nphotons',10,0,10.0,';num of reco. primary photon prongs',0),
+    ('recophoton_photonFromCharged',100,0,20.0,'Only 1 detectable Photon;photon from charged score',0),
+
+    ('notrackphoton_photon_purity',100,0,1.0,'Only 1 detectable Photon;reco photon purity score',0),
+    ('notrackphoton_photon_completeness',100,0,1.0,'Only 1 detectable Photon;reco photon completeness score',0),
+    ('notrackphoton_nphotons',10,0,10.0,'Only 1 detectable Photon;num of reco. primary photon prongs',0),
+    ('notrackphoton_photonFromCharged',100,0,20.0,'Only 1 detectable Photon;reco photon completeness score',0),
+    ('notrackphoton_recoPhScore',101,0,1.01,'reco photon score',0),
+
+    ('vertex_properties_frac_intime_unreco_pixels',100,0,1.01,';frac_intime_unreco_pixels',1),
+    ('vertex_properties_frac_outoftime_pixels',101,0,1.01,';frac_outoftime_pixels',1),
     ('vertex_properties_cosmicfrac',100,0,1.0,';cosmicfrac',1),
     ('vertex_properties_sinkhorn_div',100,0,100.0,';sinkhorn_div',1),
     ('vertex_properties_observedPEtotal',100,0,10.0e3,';observedPEtotal',1),
@@ -63,17 +74,21 @@ vars = [
     ('eDepMaxPlane',100,0,1000.0,';truth leadingEnergy Deposited - max plane edep (MeV)',0),
     ('nTrueProtons',10,0,10.0,';number of true protons over 60 MeV threshold',0),
     ('nTruePions',10,0,10.0,';number of true protons over 30 MeV threshold',0),
-    ('nTrueMuons',10,0,10.0,';number of true muons over 100 MeV threshold',0),
+    ('nTrueMuons',10,0,10.0,';number of True muons over 100 MeV threshold',0),
+    ('nMuons',10,0,10.0,';number of Reco muons over 100 MeV threshold',0),
     ('nTrueElectrons',10,0,10.0,';number of true electrons over 10 MeV threshold',0),
-    #('recovtx_to_photonedep',150,0,150,'reco vertex distance to photon edep (cm)',0),
-    #('recovtx_to_nuvtx',150,0,150,'reco vertex distance to true Nu vertex (cm)',0),
+    ('recovtx_to_photonedep',150,0,150,'reco vertex distance to photon edep (cm)',1),
+    ('recovtx_to_nuvtx',150,0,150,'reco vertex distance to true Nu vertex (cm)',1),
     ('dist2vtx',500,0,500,'Only 1 detectable Photon;closest to dist to either edep or nu vertex (cm)',1)
 ]
 
 var_formula = {
     'dist2vtx':"TMath::Min(recovtx_to_photonedep,recovtx_to_nuvtx)",
-    'photon_purity':"recoPur[0]",
-    'photon_completeness':"recoComp[0]"
+    'recophoton_photon_purity':"recophoton_recoPur[0]",
+    'recophoton_photon_completeness':"recophoton_recoComp[0]",
+    'notrackphoton_photon_purity':"notrackphoton_recoPur[0]",
+    'notrackphoton_photon_completeness':"notrackphoton_recoComp[0]",
+    'notrackphoton_recoPhScore':'TMath::Exp(notrackphoton_recoPhScore)'
 }
 
 hists = {}
@@ -106,25 +121,28 @@ sample_legend = {
 #signaldef += " && nOverThreshold==0"
 
 #Cut based on basic vertex properties
-selection_cut = "vertex_properties_found==1"
-selection_cut += " && vertex_properties_dwall>0.0"
-selection_cut += " && leadingPhotonE>30.0"
-selection_cut += " && vertex_properties_fracerrPE>-0.9"
-selection_cut += " && vertex_properties_fracerrPE<0.2"
+selection_cut = "vertex_properties_found==1 && vertex_properties_dwall>0.0"
+selection_cut += " && notrackphoton_leadingPhotonE>30.0"
 selection_cut += " && vertex_properties_sinkhorn_div<30.0"
-#selection_cut += " && vertex_properties_frac_intime_unreco_pixels<0.98"
-selection_cut += " && vertex_properties_frac_intime_unreco_pixels>0.0"
-selection_cut += " && recoComp[0]>0.5"
-selection_cut += " && vertex_properties_frac_outoftime_pixels>0.8"
-selection_cut += " && nphotons==1"
-#selection_cut += " && nProtons==0"
-#selection_cut += " && nPions==0"
-#selection_cut += " && nElectrons==0"
-#selection_cut += " && nMuons==0"
-selection_cut += " && TMath::IsNaN(vertex_properties_score)==0"
+selection_cut += " && vertex_properties_fracerrPE<0.0"
+
+selection_cut += " && vertex_properties_frac_intime_unreco_pixels>0.02"
+selection_cut += " && vertex_properties_observedPEtotal<9000.0"
+#selection_cut += " && notrackphoton_recoComp[0]>0.5"
+#selection_cut += " && notrackphoton_nphotons==1"
+
+selection_cut += " && vertex_properties_frac_outoftime_pixels>0.8" # I don't understand this one
+selection_cut += " && vertex_properties_fracerrPE>-0.9"
+selection_cut += " && vertex_properties_frac_intime_unreco_pixels<0.98"
+# 
+
+# selection_cut += " && TMath::IsNaN(vertex_properties_score)==0"
 
 #Now we actually go through and store the data
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
+
+    print("="*80)
+    print("VARIABLE: ",var)
 
     cname = f"c{var}"
     canvs[var] = rt.TCanvas(cname,f"v3dev: {var}",1000,500)
@@ -209,7 +227,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
     canvs[var].Update()
     canvs[var].Write()
-    canvs[var].SaveAs(f"{var}.png")
+    canvs[var].SaveAs(f"{plot_folder}/{var}.png")
 
 
 out.Write()
