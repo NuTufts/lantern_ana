@@ -36,6 +36,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
             'vtxKPtype':array('i', [0]),
             'mc_dist2true': array('f', [10000.0])
         }
+        self.WARN_NO_EXTRA_VTXINFO = False
         
     def prepareStorage(self, output):
         """Set up branches in the output ROOT TTree."""
@@ -100,12 +101,19 @@ class VertexPropertiesProducer(ProducerBaseClass):
             self.vertex_vars['frac_outoftime_pixels'][0] = max_outoftime
             self.vertex_vars['frac_intime_unreco_pixels'][0] = max_intime_unreco
 
-            # self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
-            # self.vertex_vars['sinkhorn_div'][0] = ntuple.sinkhorn_div
-            # self.vertex_vars['predictedPEtotal'][0] = ntuple.predictedPEtotal
-            # self.vertex_vars['observedPEtotal'][0] = ntuple.observedPEtotal
-            self.vertex_vars['vtxKPscore'][0] = ntuple.vtxKPscore
-            self.vertex_vars['vtxKPtype'][0] = ntuple.vtxKPtype
+            if ntuple.GetBranch("fracerrPE"):
+                # Has new flashmatch variables in the tree
+                self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
+                self.vertex_vars['sinkhorn_div'][0] = ntuple.sinkhorn_div
+                self.vertex_vars['predictedPEtotal'][0] = ntuple.predictedPEtotal
+                self.vertex_vars['observedPEtotal'][0] = ntuple.observedPEtotal
+                self.vertex_vars['vtxKPscore'][0] = ntuple.vtxKPscore
+                self.vertex_vars['vtxKPtype'][0] = ntuple.vtxKPtype
+            else:
+                if not self.WARN_NO_EXTRA_VTXINFO:
+                    print("WARNING NO EXTRA recoVertexProperties BRANCHES (e.g. fracerrPE)")
+                    self.WARN_NO_EXTRA_VTXINFO = True
+
             
             # MC truth distance if available
             if ismc:
