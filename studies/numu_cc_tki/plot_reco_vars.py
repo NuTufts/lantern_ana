@@ -16,10 +16,10 @@ scaling = {
 }
 
 files = {
-    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250818_143644.root",
-    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250818_143644.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250818_144650.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250818_144836.root"
+    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250912_122816.root",
+    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250912_122816.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250912_095602.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20250912_095707.root"
 }
 
 tfiles = {}
@@ -41,9 +41,19 @@ vars = [
     ('numuCC1piNpReco_pionKE',      25, 0.0, 500.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
     ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
     ('numuCC1piNpReco_delPTT', 50, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNpReco_pN', 50, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNpReco_delAlphaT', 50, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT)', 0)
+    ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNpReco_delAlphaT', 20, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT)', 0)
 ]
+
+truth_var = {
+    'numuCC1piNpReco_muKE':'numuCC1piNp_muonKE',
+    'numuCC1piNpReco_maxprotonKE':'numuCC1piNp_protonKE',
+    'numuCC1piNpReco_pionKE':'numuCC1piNp_pionKE',
+    'numuCC1piNpReco_hadronicM':'numuCC1piNp_hadronicM', # needs to be fixed
+    'numuCC1piNpReco_delPTT':'numuCC1piNp_delPTT',
+    'numuCC1piNpReco_pN':'numuCC1piNp_pN',
+    'numuCC1piNpReco_delAlphaT':'numuCC1piNp_delAlphaT'
+}
 
 hists = {}
 canvs = {}
@@ -57,12 +67,21 @@ cut = "numuCC1piNpReco_is_target_1mu1piNproton==1"
 
 for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
+    print("="*100)
+
     cname = f"c{var}"
-    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1800,600)
-    canvs[var].Divide(2,1)
+    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",2400,600)
+    canvs[var].Divide(3,1)
     canvs[var].Draw()
 
     canvs[var].cd(1)
+
+    # signal denominator, for efficiency
+    hname_effdenom = f'h{var}_effdenom'
+    truthvar = truth_var[var]
+    hists[(var,'effdenom')] = rt.TH1D( hname_effdenom, htitle, nbins, xmin, xmax )
+    trees['numu_sig'].Draw(f"{truthvar}>>{hname_effdenom}",f"({signalcut})*eventweight_weight")
+    hists[(var,'effdenom')].Scale(scaling['numu_sig'])
 
     for sample in samples:
 
@@ -78,6 +97,12 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
 
         trees[sample].Draw(f"{var}>>{hname}",f"({samplecut})*eventweight_weight")
         hists[(var,sample)].Scale( scaling[sample] )
+
+        if sample=='numu_sig':
+            hname_effnum = f'h{var}_effnum'
+            hists[(var,'effnum')] = rt.TH1D(hname_effnum,htitle,nbins,xmin,xmax)
+            trees[sample].Draw(f"{truthvar}>>{hname_effnum}",f"({samplecut})*eventweight_weight")
+            hists[(var,'effnum')].Scale( scaling[sample] )
         
         print(f"{var}-{sample}: ",hists[(var,sample)].Integral()," scale-factor=",scaling[sample])
 
@@ -131,6 +156,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].Draw("E1same")
 
     canvs[var].cd(2)
+    canvs[var].cd(2).SetGridx(1)
+    canvs[var].cd(2).SetGridy(1)
+    canvs[var].cd(2)
 
     # make purity plot
     hpur_name = f"h{var}_purity"
@@ -138,6 +166,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     hpurity = hists[(var,"numu_sig")].Clone( hpur_name )
     hsum.Add( hists[(var,"numu_bg")] )
     hsum.Add( hists[(var,"extbnb")] )
+    sigtot = hpurity.Integral()
+    sumtot = hsum.Integral()
+    overall_purity = sigtot/sumtot
     hpurity.Divide( hsum )
     for ibin in range(hpurity.GetXaxis().GetNbins()):
         x = hpurity.GetBinContent(ibin+1) # efficiency
@@ -152,17 +183,33 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     hpurity.Draw("histE1")
     hpurity.GetYaxis().SetRangeUser(0.0,1.0)
     hists[(var,'purity')] = hpurity
+    print(f"Overall Purity: {overall_purity:.2f}")
+
+    canvs[var].cd(3)
+    canvs[var].cd(3).SetGridx(1)
+    canvs[var].cd(3).SetGridy(1)
+    canvs[var].cd(3)
+    effnumer_tot = hists[(var,'effnum')].Integral()
+    effdenom_tot = hists[((var,'effdenom'))].Integral()
+    overall_eff = effnumer_tot/effdenom_tot
+    hists[(var,'effnum')].Divide( hists[(var,'effdenom')])
+    hists[(var,'effnum')].Draw("hist")
+    hists[(var,'effnum')].GetYaxis().SetRangeUser(0,1.0)
+    #hists[(var,'effdenom')].Draw("hist") #  for debug
+    
+    print(f"overall eff: {overall_eff:.2f}")
+    canvs[var].Update()
 
     # save plots as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/reco_{var}_082125_tki.pdf")
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_082125_tki.png")
     
 
-    #canvs[var].Update()
+    
 
     #print("[enter] to continue")
     #input()
 
-#print("[enter] to close")
-#input()
+print("[enter] to close")
+input()

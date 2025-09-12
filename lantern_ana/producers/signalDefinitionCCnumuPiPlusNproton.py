@@ -27,6 +27,11 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         self.particle_count_params = config.get('part_count_params',self.get_default_particle_thresholds())
         self.fv_params  = config.get('fv_params',{'width':10.0,'apply_scc':False,'ismc':True})
         self.fv_params['usetruevtx'] = True
+
+        # mass values
+        self.mp  = 938.27209
+        self.mpi = 139.57039
+        self.mmu = 105.66
         
         # Output variables 
         self._vars = {
@@ -40,7 +45,8 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             'pionKE':array('f',[0.0]), 
             'delPTT':array('f',[0.0]),
             'pN':array('f',[0.0]),
-            'delAlphaT':array('f',[0.0])
+            'delAlphaT':array('f',[0.0]),
+            'hadronicM':array('f',[0.0])
         }
 
     def get_default_particle_thresholds(self):
@@ -210,6 +216,8 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
             self._vars['delAlphaT'][0] = math.degrees(delAlphaT)
 
+            self._vars['hadronicM'][0] = self._calc_hadronic_invariant_mass( piMomFromDir, pMomFromDir, muMomFromDir )
+
 
         return self._get_results()
 
@@ -220,3 +228,19 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         for var_name, var_array in self._vars.items():
             results[var_name] = var_array[0]
         return results
+
+    def _calc_hadronic_invariant_mass( self, p_pion, p_proton, p_muon ):
+
+        # make the 4-mom of the proton and pion using the KE and 3-momentum dir
+        E_p  = np.sqrt( (p_proton*p_proton).sum() + self.mp*self.mp ) 
+        E_pi = np.sqrt( (p_pion*p_pion).sum() + self.mpi*self.mpi ) 
+        E_mu = np.sqrt( (p_muon*p_muon).sum() + self.mmu*self.mmu ) 
+
+        mom4 = np.zeros(4)
+        mom4[0] = E_p + E_pi + E_mu
+        for i in range(3):
+            mom4[i+1] = p_proton[i]+p_pion[i]+p_muon[i]
+        gii = np.array((1.0,-1.0,-1.0,-1.0))
+        W2 = (mom4*mom4*gii).sum()
+
+        return np.sqrt(W2)
