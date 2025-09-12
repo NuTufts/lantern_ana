@@ -38,6 +38,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
             'recoEnuMeV':array('f',[0.0])
         }
         self.WARN_NO_EXTRA_VTXINFO = False
+        self.WARN_NO_EXTRA_VTXINFO = False
         
     def prepareStorage(self, output):
         """Set up branches in the output ROOT TTree."""
@@ -108,7 +109,6 @@ class VertexPropertiesProducer(ProducerBaseClass):
             self.vertex_vars['frac_outoftime_pixels'][0] = max_outoftime
             self.vertex_vars['frac_intime_unreco_pixels'][0] = max_intime_unreco
 
-<<<<<<< HEAD
             if ntuple.GetBranch("fracerrPE"):
                 # Has new flashmatch variables in the tree
                 self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
@@ -122,14 +122,6 @@ class VertexPropertiesProducer(ProducerBaseClass):
                     print("WARNING NO EXTRA recoVertexProperties BRANCHES (e.g. fracerrPE)")
                     self.WARN_NO_EXTRA_VTXINFO = True
 
-=======
-            # self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
-            # self.vertex_vars['sinkhorn_div'][0] = ntuple.sinkhorn_div
-            # self.vertex_vars['predictedPEtotal'][0] = ntuple.predictedPEtotal
-            # self.vertex_vars['observedPEtotal'][0] = ntuple.observedPEtotal
-            self.vertex_vars['vtxKPscore'][0] = ntuple.vtxKPscore
-            self.vertex_vars['vtxKPtype'][0] = ntuple.vtxKPtype
->>>>>>> Post osc save
             
             # MC truth distance if available
             if ismc:
