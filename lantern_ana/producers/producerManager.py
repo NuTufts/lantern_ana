@@ -401,6 +401,9 @@ class ProducerManager:
                 except Exception as e2:
                     self.logger.error(f"Failed to set default values for '{name}': {e2}")
                     results[name] = {}
+
+                # stop on Error
+                sys.exit(1)
         
         # Cache the producer outputs
         self.last_outputs = {name: results[name] for name in self.execution_order}

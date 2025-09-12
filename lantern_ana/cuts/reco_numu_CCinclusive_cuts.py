@@ -8,6 +8,35 @@ from math import exp,sqrt
 @register_cut
 def reco_numu_CCinc(ntuple, params):
     """
+    Matthew Rosenberg's numu inclusive cc selection.
+    Uses producer outputs instead of calculating quantities directly.
+    """
+    
+    # Extract producer data
+    producer_data = params.get('producer_data', {})
+    vertex_data = producer_data.get('vertex_properties', {})
+    electron_data = producer_data.get('recoElectron', {})
+    muon_data = producer_data.get('recoMuonTrack', {})
+    
+    # Check vertex requirements (from producer data)
+    foundVertex = vertex_data.get('found', 0)
+    vtxIsFiducial = vertex_data.get('infiducial', 0)
+    pass_vertex = foundVertex == 1 and vtxIsFiducial == 1
+    
+    if not pass_vertex:
+        return False
+
+    muon_energy = muon_data.get('energy',-1)
+    if muon_energy>0:
+        return True
+
+
+    return False
+    
+
+@register_cut
+def reco_numu_CCinc_deprecated(ntuple, params):
+    """
     Signal definition for candidated reconstructed numu CC inclusive events
     
     Parameters:
@@ -137,3 +166,4 @@ def reco_numu_CCinc(ntuple, params):
     cutdata['nMuTracks/I']      = nMuTracks
     
     return pass_event, cutdata
+

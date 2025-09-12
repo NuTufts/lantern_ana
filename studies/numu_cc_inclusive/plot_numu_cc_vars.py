@@ -31,22 +31,22 @@ for sample in samples:
 
 out = rt.TFile("temp.root","recreate")
 
-vars = [('visible_energy', 50, 0, 5000, 'visible energy; MeV', 0),
-        ('muon_properties_angle',50,-1.01,1.01,'muon angle; cos#theta_{beam}', 0),
-        ('muon_properties_energy',50,0,2500.0,'muon kinetic energy (MeV)', 0),
-        ('muon_properties_pid_score',101,-2,0.01,'muon pid score', 0),
-        ('vertex_properties_score',40,0,1.0,'keypoint score', 0),
-        ('nuselvar_mumax_primary_score',40,0,1.0,'primary score', 1),
-        ('nuselvar_mumax_fromneutral_score',40,0,1.0,'from neutral parent score', 1),
-        ('nuselvar_mumax_fromcharged_score',40,0,1.0,'from charged parent score', 1),
-        ('nuselvar_mumax_mu_normedscore',40,0,1.0,'muon score (normalized)', 1),
-        ('visible_energy',15,0,3000,'visible energy; MeV', 0),
-        ('nuselvar_nMuTracks',20,0,20,'number of mu-like track-prongs',1),
-        ('nuselvar_max_muscore',300,-2,1,'max mu-like score',1),
-        ('nuselvar_vtx_cosmicfrac',50,0,1.01,'fraction of pixels near vertex',1),
-        ('trueNu_Enu',50,0,5,'true neutrino energy; GeV',0),
-        ('nuselvar_frac_outoftime_pixels',50,0,1.01,'fraction of recod pixels that are out of time',1),
-        ('nuselvar_frac_intime_unreco_pixels',50,0,1.01,'fraction of intime pixels covered by recod interaction',1),
+vars = [
+    ('muon_properties_angle',50,-1.01,1.01,'muon angle; cos#theta_{beam}', 0, False),
+    ('muon_properties_energy',50,0,2500.0,'muon kinetic energy (MeV)', 0, False),
+    ('muon_properties_pid_score',101,-2,0.01,'muon pid score', 0, False),
+    ('vertex_properties_score',40,0,1.0,'keypoint score', 0, False),
+    ('nuselvar_mumax_primary_score',40,0,1.0,'primary score', 1, False),
+    ('nuselvar_mumax_fromneutral_score',40,0,1.0,'from neutral parent score', 1, False),
+    ('nuselvar_mumax_fromcharged_score',40,0,1.0,'from charged parent score', 1, False),
+    ('nuselvar_mumax_mu_normedscore',40,0,1.0,'muon score (normalized)', 1, False),
+    ('visible_energy',15,0,3000,'visible energy; MeV', 0, False),
+    ('nuselvar_nMuTracks',20,0,20,'number of mu-like track-prongs',1, False),
+    ('nuselvar_max_muscore',300,-2,1,'max mu-like score',1, False),
+    ('nuselvar_vtx_cosmicfrac',50,0,1.01,'fraction of pixels near vertex',1, False),
+    ('trueNu_Enu',50,0,5,'true neutrino energy; GeV',0,True),
+    ('nuselvar_frac_outoftime_pixels',50,0,1.01,'fraction of recod pixels that are out of time',1,False),
+    ('nuselvar_frac_intime_unreco_pixels',50,0,1.01,'fraction of intime pixels covered by recod interaction',1,False),
 ]
 hists = {}
 canvs = {}
@@ -66,7 +66,7 @@ cut += " && (vertex_properties_score>0.75)"
 #cut += " && (vertex_properties_score>0.8)"
 
 
-for var, nbins, xmin, xmax, htitle, setlogy in vars:
+for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
 
     cname = f"c{var}"
     canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",1000,800)

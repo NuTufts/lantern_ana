@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output"
+output_dir: "./output_1g1X_vertexstudies"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1 #Running all the data!
@@ -22,7 +22,8 @@ datasets:
     - /cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
     - /cluster/tufts/wongjiradlabnu/twongj01/gen2/gen2ntuple/
-
+    - /mnt/ddrive/data/lantern_ana_ntuples/
+    - /home/twongjirad/working/data/ntuples/
   
   #MC simulated data
   bnbnumu:
@@ -32,32 +33,11 @@ datasets:
     process: true
     filepaths:
     #- ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
-    - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_nuvtxphotonsel_vtest.root #Upgraded Montecarlo
+     - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_nuvtxphotonsel_vtest.root #Upgraded Montecarlo
+    # - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+    #- nuvtxphotonsel.root
     #friendtrees:
     #  FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
-
-  #Cosmic data
-  extbnb:
-    type: RootDataset
-    tree: EventTree
-    ismc: false
-    process: true
-    filepaths:
-    - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root #off-beam data
-    friendtrees:
-      FlashPredictionTree: flashprediction_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
-
-   
-  #Beam data
-  beamData:
-    type: RootDataset
-    tree: EventTree
-    ismc: false
-    process: true
-    filepaths:
-    - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root #Beam data
-    friendtrees:
-      FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 
 
 # Producer configuration (producers run first)
@@ -88,16 +68,18 @@ producers:
     config: {}
 
   # Stores the number of photons over-threshold. Cuts based on fiducial boundaries - change width at the end to adjust
-  photon_data:
+  recophoton:
     type: recoPhotonDataProducer
     config: 
       #maxnphotons: 5
       fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
 
-  # Tallies detectable particles that fit our requirements
-  detectable_particle_data:
-    type: recoDetectableParticleCountsProducer
-    config: {}
+  notrackphoton:
+    type: recoPhotonDataProducer
+    config: 
+      #maxnphotons: 5
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
+      include_tracks: False
 
   # Gives us the number of true photons that fit our requirements for MC events
   true_photon_data:
@@ -109,26 +91,31 @@ producers:
     type: trueDetectableParticleCountsProducer
     config: {}
 
+  # Tallies detectable particles that fit our requirements
+  detectable_particle_data:
+    type: recoDetectableParticleCountsProducer
+    config: {}
+
   # Flash prediction producer. Uses data from flashmatching - a little bit unreliable as things stand
   #flashpred:
   #  type: FlashPredictionProducer
   #  config: {}
 
-  # Groups the events into sidebands, filters out backgrounds. Effectively applies cuts within the producer.
-  # Sideband variables are set to 1 if the event qualifies, otherwise 0.
-  event_categorizer:
-    type: oneGxPEventCategorizingProducer
-    config: 
-      flashPred: False
-      #fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0}
+  # # Groups the events into sidebands, filters out backgrounds. Effectively applies cuts within the producer.
+  # # Sideband variables are set to 1 if the event qualifies, otherwise 0.
+  # event_categorizer:
+  #   type: oneGxPEventCategorizingProducer
+  #   config: 
+  #     flashPred: False
+  #     #fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0}
 
-  # Stores the event, run, and subrun of each event. Useful for getting info on specific events
-  run_subrun_producer:
-    type: runSubrunProducer
-    config: {}
+  # # Stores the event, run, and subrun of each event. Useful for getting info on specific events
+  # run_subrun_producer:
+  #   type: runSubrunProducer
+  #   config: {}
 
-  # Finds true photons with matched reco photons and stores both energies, 
-  # allowing for direct comparison of reco vs. true for a given shower
-  photon_energy_producer:
-    type: truePhotonEnergyProducer
-    config: {}
+  # # Finds true photons with matched reco photons and stores both energies, 
+  # # allowing for direct comparison of reco vs. true for a given shower
+  # photon_energy_producer:
+  #   type: truePhotonEnergyProducer
+  #   config: {}

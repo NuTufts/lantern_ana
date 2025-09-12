@@ -37,7 +37,8 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
         output.Branch(f"nTruePions", self.truePionsOverThreshold, f"nTruePions/I")
         output.Branch(f"nTrueMuons", self.trueMuonsOverThreshold, f"nTrueMuons/I")
         output.Branch(f"nTrueElectrons", self.trueElectronsOverThreshold, f"nTrueElectrons/I")
-
+        output.Branch(f"nTrueMuonsBarelyOver",  self.trueMuonsBarelyOverThreshold[0], "nTrueMuonsBarelyOver/I")
+        output.Branch(f"nTruePionsBarelyOver",  self.truePionsBarelyOverThreshold[0], "nTruePionsBarelyOver/I")
     
     def requiredInputs(self):
         """Specify required inputs."""
@@ -61,14 +62,21 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for protons
             if ntuple.trueSimPartPDG[i] == 2212:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999
                 if kineticMeV >= 60:
                     self.trueProtonsOverThreshold[0] += 1
 
             #Check for pions
             elif abs(ntuple.trueSimPartPDG[i]) == 211:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999
+
                 if kineticMeV >= 30:
                     self.truePionsOverThreshold[0] += 1
 
@@ -78,7 +86,11 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for muons
             elif ntuple.trueSimPartPDG[i] == 13:
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999                
+                
                 if kineticMeV >= 100:                    
                     self.trueMuonsOverThreshold[0] += 1
 
@@ -88,11 +100,21 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
             #Check for electrons
             elif ntuple.trueSimPartPDG[i] == 11: 
                 momentumVector = np.square(ntuple.trueSimPartPx[i]) + np.square(ntuple.trueSimPartPy[i]) + np.square(ntuple.trueSimPartPz[i])
-                kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                if (np.square(ntuple.trueSimPartE[i])) - momentumVector > 0:
+                    kineticMeV = ntuple.trueSimPartE[i] - np.sqrt((np.square(ntuple.trueSimPartE[i])) - momentumVector)
+                else:
+                    kineticMeV = -999                
+                    
                 if kineticMeV >= 10:                    
                     self.trueElectronsOverThreshold[0] += 1
 
         #Store the data as an array:
-        trueDetectableParticleDict = {"protons": self.trueProtonsOverThreshold[0], "pions": self.truePionsOverThreshold[0], "muons": self.trueMuonsOverThreshold[0], "electrons": self.trueElectronsOverThreshold[0], "justOverMuons": self.trueMuonsBarelyOverThreshold[0], "justOverPions": self.truePionsBarelyOverThreshold[0]}
+        trueDetectableParticleDict = {"protons": self.trueProtonsOverThreshold[0], 
+            "pions": self.truePionsOverThreshold[0], 
+            "muons": self.trueMuonsOverThreshold[0], 
+            "electrons": self.trueElectronsOverThreshold[0], 
+            "justOverMuons": self.trueMuonsBarelyOverThreshold[0], 
+            "justOverPions": self.truePionsBarelyOverThreshold[0]
+            }
 
         return trueDetectableParticleDict
