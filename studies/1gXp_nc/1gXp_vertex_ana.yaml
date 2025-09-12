@@ -68,16 +68,18 @@ producers:
     config: {}
 
   # Stores the number of photons over-threshold. Cuts based on fiducial boundaries - change width at the end to adjust
-  photon_data:
+  recophoton:
     type: recoPhotonDataProducer
     config: 
       #maxnphotons: 5
       fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
 
-  # # Tallies detectable particles that fit our requirements
-  # detectable_particle_data:
-  #   type: recoDetectableParticleCountsProducer
-  #   config: {}
+  notrackphoton:
+    type: recoPhotonDataProducer
+    config: 
+      #maxnphotons: 5
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
+      include_tracks: False
 
   # Gives us the number of true photons that fit our requirements for MC events
   true_photon_data:
@@ -87,6 +89,11 @@ producers:
   # Gives us the counts of true particles that exceed our energy thresholds for MC events
   true_detectable_particle_data:
     type: trueDetectableParticleCountsProducer
+    config: {}
+
+  # Tallies detectable particles that fit our requirements
+  detectable_particle_data:
+    type: recoDetectableParticleCountsProducer
     config: {}
 
   # Flash prediction producer. Uses data from flashmatching - a little bit unreliable as things stand
