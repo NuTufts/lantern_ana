@@ -33,14 +33,14 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
     - ntuple_mcc9_v29e_dl_run1_C1_extbnb_v3dev_reco_retune.root
   run1_bnb5e19:
     type: RootDataset
     tree: EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
     - ntuple_mcc9_v28_wctagger_bnb5e19_v3dev_reco_retune.root
 

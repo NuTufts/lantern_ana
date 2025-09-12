@@ -55,9 +55,14 @@ vars = [
 >>>>>>> add rest of tki vars to plotting scripts
 =======
     ('numuCC1piNpReco_delPTT', 50, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
+<<<<<<< HEAD
     ('numuCC1piNpReco_pN', 50, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT)', 0),
     ('numuCC1piNpReco_delAlphaT', 50, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT)', 0)
 >>>>>>> fix reco TKI
+=======
+    ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNpReco_delAlphaT', 20, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT)', 0)
+>>>>>>> add true hadronic mass variable to TKI sigdef producer. add eff. calc to plots
 ]
 
 truth_var = {
@@ -85,7 +90,11 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     print("="*100)
 
     cname = f"c{var}"
+<<<<<<< HEAD
     canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",2100,700)
+=======
+    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",2400,600)
+>>>>>>> add true hadronic mass variable to TKI sigdef producer. add eff. calc to plots
     canvs[var].Divide(3,1)
     canvs[var].Draw()
 
@@ -199,6 +208,9 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     canvs[var].cd(2).SetGridx(1)
     canvs[var].cd(2).SetGridy(1)
     canvs[var].cd(2)
+    canvs[var].cd(2).SetGridx(1)
+    canvs[var].cd(2).SetGridy(1)
+    canvs[var].cd(2)
 
     # make purity plot
     hpur_name = f"h{var}_purity"
@@ -240,6 +252,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     canvs[var].cd(3).SetGridx(1)
     canvs[var].cd(3).SetGridy(1)
     canvs[var].cd(3)
+<<<<<<< HEAD
     heff = hists[(var,'effnum')]
     if len(htitle_split)<=1:
         heff.SetTitle("Efficiency")
@@ -250,6 +263,8 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         xaxis_title = htitle_split[1]        
         yaxis_title = htitle_split[2]
         heff.SetTitle( f"Efficiency;{xaxis_title};{yaxis_title}" )        
+=======
+>>>>>>> add true hadronic mass variable to TKI sigdef producer. add eff. calc to plots
     effnumer_tot = hists[(var,'effnum')].Integral()
     effdenom_tot = hists[((var,'effdenom'))].Integral()
     overall_eff = effnumer_tot/effdenom_tot
@@ -265,10 +280,14 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
 <<<<<<< HEAD
+<<<<<<< HEAD
     canvs[var].SaveAs(f"{outdir}/reco_{var}_fixingDelAlphaT.png")
 =======
     canvs[var].SaveAs(f"{outdir}/reco_{var}_082125_tki.pdf")
 >>>>>>> fix reco TKI
+=======
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_082125_tki.png")
+>>>>>>> add true hadronic mass variable to TKI sigdef producer. add eff. calc to plots
     
 
     
@@ -276,5 +295,5 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     #print("[enter] to continue")
     #input()
 
-#print("[enter] to close")
-#input()
+print("[enter] to close")
+input()
