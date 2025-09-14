@@ -1,0 +1,4 @@
+*.so
+*.rootmap
+*.pcm
+mapDict.cxx
