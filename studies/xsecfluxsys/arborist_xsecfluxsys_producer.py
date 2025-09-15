@@ -21,17 +21,38 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
     def __init__(self, name: str, config: Dict[str, Any]):
         super().__init__(name, config)
         """
-        Initialize Tree containing event weights from xsec and flux model parameter variations
+        Initialize producer, whose goal is to estimate the variance of the model expectation for observable bins
+          based on variations of the xsec and flux model parameters.
+        Also want co-variances between these bins.
+
+        Example of bin_config block:
+        
+        bin_config: 
+          visible_energy: # bins of visible energy of the neutrino interaction
+            formula: visible_energy
+            numbins: 30
+            minvalue: 0.0
+            maxvalue: 3000.0
+            apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+            criteria: ['pass_numu_cc_inclusive']
+
+        We are saving the observed value of some set of bins
+        For each bin,
+          1. we save Sum[w] and Sum[w^2], where w is the weight for each event falling within a bin.
+          2. we also save the number of entries, N, falling within a bin
+          3. use Sum[w], Sum[w^2], N to calculate the mean and variance in each bin
+        We also want correlations amongst all bins
+          1. so we need to save  Sum[w_i*w_j] as well
+        what do we need for a bin definition?
+          1. observable to bin
+          2. bin bounds
+          3. criteria to be filled within the bin
+          4. sample that contributes to the bin
         
         Args:
             name: A unique identifier for this dataset
             config: Dictionary containing configuration parameters:
-                - tree: Name of the TTree to read, default: eventweight_tree
-                - filepaths: List of ROOT file paths
-                - ismc: Whether this is a Monte Carlo dataset, {default: False}
-                - nspills: Number of spills this data set represents (optional) {default: None}
-                - pot: POT for this data set (optional) {default: None}
-                - friendtrees: A dict with keys being name of the friend tree and value being the file
+             - todo: document parameters
         """
         super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
@@ -44,6 +65,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self._params_to_include = config.get('par_variations_to_include',[])
         if len(self._params_to_include)==0:
             raise ValueError("Parameter list for reweight variations to include is empty.")
+        self._bin_config_list = config.get('bin_config')
+        self.outfile = rt.TFile("temp_covar.root",'recreate')
 
     def _build_sample_entry_index(self,samplename):
         """
@@ -94,20 +117,50 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         return
 
     def prepareStorage(self, output: Any) -> None:
-        """Set up what to save in the output ROOT TTree. Here, we're saving histograms and covariance matrices """
+        """
+        Set up what to save in the output ROOT TTree. Here, we're saving histograms and covariances.
 
-        # We are saving the observed value of some set of bins
-        # For each bin,
-        #   1. we save Sum[w] and Sum[w^2], where w is the weight for each event falling within a bin.
-        #   2. we also save the number of entries, N, falling within a bin
-        #   3. use Sum[w], Sum[w^2], N to calculate the mean and variance in each bin
-        # We also want correlations amongst all bins
-        #   1. so we need to save  Sum[w_i*w_j] as well
-        # what do we need for a bin definition?
-        #   1. observable to bin
-        #   2. bin bounds
-        #   3. criteria to be filled within the bin
-        #   4. sample that contributes to the bin
+        # TODO
+        #  - for each entry in the config list bin_config, define a histogram for each variable. 
+        #  - we define a TH1D to store the information. Mostly to use the find bin function
+        #  - make a copy of a histogram for seach sample
+        #  - for each (var,sample) histogram, we make 3 copies: one for sum[w], sum[w^2], N
+        #  - need a global index for each histogram, this way we can build a covariance matrix
+        """
+        ibin_global = 0
+
+        hlist_cv = []
+        hlist_w = []
+        hlist_w2 = []
+        hlist_n = []
+
+        self.variable_list = []
+        self.var_bin_info_dict = {}
+
+        self.outfile.cd()
+
+        for varname in self._bin_config_list:
+            vardict = self._bin_config_list[varname]
+            var_bin_info = {
+                'formula':vardict['formula'],
+                'samples':vardict['apply_to_datasets'],
+                'criteria':vardict['criteria'],
+                'sample_hists':{},
+                'ibin_start':ibin_global
+            }
+
+            nbins = vardict['numbins']
+            for sample in vardict['apply_to_datasets']:
+                hname = f"h{varname}_{sample}"
+                for x in ['cv','w','w2','N']:
+                    h = rt.TH1D(hname+f"_{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
+                var_bin_info['sample_hists'][sample] = h
+
+            ibin_global += nbins
+            self.variable_list.append( varname )
+            self.var_bininfo[varname] = var_bin_info
+
+        print("Number of total bins defined: ",ibin_global)
         
         return
 
@@ -182,6 +235,14 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                         print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
 
         print(f"  first 10 universe event weights: ",universe_weight[:10])
+
+        # fill bins
+        varvalues = {}
+        for varname in self.variable_list:
+            varinfo = self.var_bin_info_dict['varname']
+            varformula = varinfo['formula']
+            eval(f'varvalues[varname] = ntuple.{varformula}')
+        print(varvalues)
             
     #if len(values) > 0:
     #    print(f"  First few values: {list(values[:min(3, len(values))])}")

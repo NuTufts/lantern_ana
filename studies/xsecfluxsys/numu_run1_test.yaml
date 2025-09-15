@@ -76,6 +76,17 @@ producers:
         - reinteractions_piminus_Geant4
         - reinteractions_piplus_Geant4
         - reinteractions_proton_Geant4
+      cut_formulas:
+        pass_numu_cc_inclusive: "vertex_properties_found==1 and muon_properties_pid_score>-0.9 and vertex_properties_infiducial==1 amd muon_properties_energy>0.0"
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: ['pass_numu_cc_inclusive']
 
 
 # Cut configuration
