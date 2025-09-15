@@ -20,6 +20,7 @@ datasets:
   folders:
     - /home/twongjirad/working/data/ntuples/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
   # run1_bnb_nu_overlay_mcc9_v28_wctagger:
   #   type: RootDataset
   #   tree: EventTree
@@ -27,13 +28,15 @@ datasets:
   #   process: true
   #   filepaths:
   #    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
-  run1_bnb_nu_overlay_mcc9_v28_wctagger_selected:
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
-    tree: analysis_tree
+    tree: EventTree
     ismc: true
     process: true
     filepaths:
-     - ../numu_cc_inclusive/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+    friendtrees:
+      analysis_tree: run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root
 
 
 # Producer configuration (producers run first)

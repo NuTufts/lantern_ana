@@ -94,7 +94,21 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         return
 
     def prepareStorage(self, output: Any) -> None:
-        """Set up branches in the output ROOT TTree."""
+        """Set up what to save in the output ROOT TTree. Here, we're saving histograms and covariance matrices """
+
+        # We are saving the observed value of some set of bins
+        # For each bin,
+        #   1. we save Sum[w] and Sum[w^2], where w is the weight for each event falling within a bin.
+        #   2. we also save the number of entries, N, falling within a bin
+        #   3. use Sum[w], Sum[w^2], N to calculate the mean and variance in each bin
+        # We also want correlations amongst all bins
+        #   1. so we need to save  Sum[w_i*w_j] as well
+        # what do we need for a bin definition?
+        #   1. observable to bin
+        #   2. bin bounds
+        #   3. criteria to be filled within the bin
+        #   4. sample that contributes to the bin
+        
         return
 
     def requiredInputs(self) -> List[str]:
@@ -123,6 +137,23 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         ismc = params.get('ismc', False)
         datasetname = params.get('dataset_name')
 
+        # decide if this event is something we are going to fill
+        # for debug:
+        """
+        cut = "vertex_properties_found==1"
+        cut += " && muon_properties_pid_score>-0.9"
+        cut += " && vertex_properties_infiducial==1"
+        cut += " && muon_properties_energy>0.0"
+        """
+        passes = False
+        if ntuple.vertex_properties_found==1 and ntuple.muon_properties_pid_score>-0.9 and ntuple.vertex_properties_infiducial==1 and ntuple.muon_properties_energy>0.0:
+            passes = True
+            
+        print("event passes test numucc inclusive")
+        
+        if passes==False:
+            return {}
+
         if datasetname not in self._sample_rse_to_entryindex:
             self._build_sample_entry_index( datasetname )
             self._load_sample_weight_tree( datasetname )
@@ -141,11 +172,11 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # loop over all weights in the sys_weights branch. 
         # take product of specified parameters to get final event weight
         # would be faster with here I bet
-        universe_weight = np.arrays('f',[1.0]*1000)
+        universe_weight = np.ones(1000)
         for key, values in self._current_sample_tchain.sys_weights:
             if key in self._params_to_include:
                 for i in range(len(values)):
-                    if i<1000 and is not np.isnan(values[i]) and is np.isfinite(values[i]):
+                    if i<1000 and np.isnan(values[i])==False and np.isfinite(values[i])==True:
                         universe_weight[i] *= values[i]
                     else:
                         print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
