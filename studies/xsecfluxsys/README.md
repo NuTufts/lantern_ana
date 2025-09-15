@@ -183,3 +183,101 @@ Code matt used to parse the tree using sbnfit (deprecated):
 /exp/uboone/app/users/mmr/dlgen2_systematics
 ```
 
+## Inspection of Run 1-3 weight file map
+
+```
+[ tmw@uboonegpvm04 xsecfluxsys ]$ python3 dump_eventweight_structure.py /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun12_withExtraGENIE_bnb_nu_run1_noNaNs.root
+Num Entries: 1084394
+Number of elements in dictionary:  28
+Key: All_UBGenie
+  Number of values: 600
+Key: AxFFCCQEshape_UBGenie
+  Number of values: 2
+Key: DecayAngMEC_UBGenie
+  Number of values: 2
+Key: NormCCCOH_UBGenie
+  Number of values: 2
+Key: NormNCCOH_UBGenie
+  Number of values: 2
+Key: RPA_CCQE_UBGenie
+  Number of values: 2
+Key: ThetaDelta2NRad_UBGenie
+  Number of values: 2
+Key: Theta_Delta2Npi_UBGenie
+  Number of values: 2
+Key: VecFFCCQEshape_UBGenie
+  Number of values: 2
+Key: XSecShape_CCMEC_UBGenie
+  Number of values: 2
+Key: expskin_FluxUnisim
+  Number of values: 1000
+Key: horncurrent_FluxUnisim
+  Number of values: 1000
+Key: kminus_PrimaryHadronNormalization
+  Number of values: 1000
+Key: kplus_PrimaryHadronFeynmanScaling
+  Number of values: 1000
+Key: kzero_PrimaryHadronSanfordWang
+  Number of values: 1000
+Key: nucleoninexsec_FluxUnisim
+  Number of values: 1000
+Key: nucleonqexsec_FluxUnisim
+  Number of values: 1000
+Key: nucleontotxsec_FluxUnisim
+  Number of values: 1000
+Key: piminus_PrimaryHadronSWCentralSplineVariation
+  Number of values: 1000
+Key: pioninexsec_FluxUnisim
+  Number of values: 1000
+Key: pionqexsec_FluxUnisim
+  Number of values: 1000
+Key: piontotxsec_FluxUnisim
+  Number of values: 1000
+Key: piplus_PrimaryHadronSWCentralSplineVariation
+  Number of values: 1000
+Key: reinteractions_piminus_Geant4
+  Number of values: 1000
+Key: reinteractions_piplus_Geant4
+  Number of values: 1000
+Key: reinteractions_proton_Geant4
+  Number of values: 1000
+Key: xsr_scc_Fa3_SCC
+  Number of values: 1000
+Key: xsr_scc_Fv3_SCC
+  Number of values: 1000
+done
+```
+
+From Matt's XML file for SBNfit: what systematics are used:
+```
+<variation_list>
+  <whitelist>expskin_FluxUnisim</whitelist>
+  <whitelist>horncurrent_FluxUnisim</whitelist>
+  <whitelist>kminus_PrimaryHadronNormalization</whitelist>
+  <whitelist>kplus_PrimaryHadronFeynmanScaling</whitelist>
+  <whitelist>kzero_PrimaryHadronSanfordWang</whitelist>
+  <whitelist>nucleoninexsec_FluxUnisim</whitelist>
+  <whitelist>nucleonqexsec_FluxUnisim</whitelist>
+  <whitelist>nucleontotxsec_FluxUnisim</whitelist>
+  <whitelist>piminus_PrimaryHadronSWCentralSplineVariation</whitelist>
+  <whitelist>pioninexsec_FluxUnisim</whitelist>
+  <whitelist>pionqexsec_FluxUnisim</whitelist>
+  <whitelist>piontotxsec_FluxUnisim</whitelist>
+  <whitelist>piplus_PrimaryHadronSWCentralSplineVariation</whitelist>
+  <whitelist>All_UBGenie</whitelist>
+  <whitelist>XSecShape_CCMEC_UBGenie</whitelist>
+  <whitelist>RPA_CCQE_UBGenie</whitelist>
+  <whitelist>AxFFCCQEshape_UBGenie</whitelist>
+  <whitelist>VecFFCCQEshape_UBGenie</whitelist>
+  <whitelist>DecayAngMEC_UBGenie</whitelist>
+  <whitelist>xsr_scc_Fa3_SCC</whitelist>
+  <whitelist>xsr_scc_Fv3_SCC</whitelist>
+  <whitelist>NormCCCOH_UBGenie</whitelist>
+  <whitelist>NormNCCOH_UBGenie</whitelist>
+  <whitelist>ThetaDelta2NRad_UBGenie</whitelist>
+  <whitelist>Theta_Delta2Npi_UBGenie</whitelist>
+  <whitelist>reinteractions_piminus_Geant4</whitelist>
+  <whitelist>reinteractions_piplus_Geant4</whitelist>
+  <whitelist>reinteractions_proton_Geant4</whitelist>
+</variation_list>
+```

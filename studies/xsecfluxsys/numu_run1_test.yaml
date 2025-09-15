@@ -20,22 +20,60 @@ datasets:
   folders:
     - /home/twongjirad/working/data/ntuples/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+  # run1_bnb_nu_overlay_mcc9_v28_wctagger:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger_selected:
     type: RootDataset
-    tree: EventTree
+    tree: analysis_tree
     ismc: true
     process: true
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+     - ../numu_cc_inclusive/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root
 
 
 # Producer configuration (producers run first)
 producers:
+  
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
       rootfilepaths:
         run1_bnb_nu_overlay_mcc9_v28_wctagger: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie # what is this?
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+
 
 # Cut configuration
 cuts: 
