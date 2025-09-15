@@ -195,6 +195,22 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """Specify required inputs."""
         return ["gen2ntuple"]
 
+    def _load_sample_weight_tree(self, datasetname ):
+        if self._current_sample_tchain is not None:
+            if datasetname != self._current_sample_name:
+                self._current_sample_tchain.Close()
+            else:
+                return # already loaded
+
+        self._current_sample_tchain = rt.TChain( self._tree_name )
+        if datasetname not in self._sample_filepaths:
+            raise ValueError(f"Could not find sample name, '{datasetname}' in file path dictionary parameter")
+
+        self._current_sample_tchain.Add(self._sample_filepaths[datasetname])
+        nentries = self._current_sample_tchain.GetEntries()
+        print("Loaded weight tree for dataset: ",datasetname)
+
+
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """
         First pass: determine if event passes selection and record bin assignments.
