@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Optional, Type
 from array import array
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
+import numpy as np
 
 try:
     import ROOT as rt
@@ -40,6 +41,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self._sample_rse_to_entryindex = {} # will hold entry dictionary for a given sample
         self._current_sample_name = "none"
         self._current_sample_tchain = None
+        self._params_to_include = config.get('par_variations_to_include',[])
+        if len(self._params_to_include)==0:
+            raise ValueError("Parameter list for reweight variations to include is empty.")
 
     def _build_sample_entry_index(self,samplename):
         """
@@ -134,8 +138,22 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # now calculate event weights
         weight = 1.0
 
-        # would me much better off with uproot here
-        
+        # loop over all weights in the sys_weights branch. 
+        # take product of specified parameters to get final event weight
+        # would be faster with here I bet
+        universe_weight = np.arrays('f',[1.0]*1000)
+        for key, values in self._current_sample_tchain.sys_weights:
+            if key in self._params_to_include:
+                for i in range(len(values)):
+                    if i<1000 and is not np.isnan(values[i]) and is np.isfinite(values[i]):
+                        universe_weight[i] *= values[i]
+                    else:
+                        print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
+
+        print(f"  first 10 universe event weights: ",universe_weight[:10])
+            
+    #if len(values) > 0:
+    #    print(f"  First few values: {list(values[:min(3, len(values))])}")
 
         
 
