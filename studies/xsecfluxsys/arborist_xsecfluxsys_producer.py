@@ -73,12 +73,19 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self._tree = None
         self._num_entries = 0
         self._current_sample_name = "none"
+<<<<<<< HEAD
         self._params_to_include = config.get('par_variations_to_include',[])
         if len(self._params_to_include)==0:
             raise ValueError("Parameter list for reweight variations to include is empty.")
         self._bin_config_list = config.get('bin_config')
         self.outfile_path = config.get('output_filename','temp_covar.root')
         self.outfile = rt.TFile(self.outfile_path,'recreate')
+=======
+        self._current_sample_tchain = None
+        self._params_to_include = config.get('par_variations_to_include',[])
+        if len(self._params_to_include)==0:
+            raise ValueError("Parameter list for reweight variations to include is empty.")
+>>>>>>> save code
 
         # name of the run, subrun, event branches in the analysis_tree
         self.run_branch    = config.get('run','run')
@@ -250,8 +257,27 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         subrun = eval(f'ntuple.{self.subrun_branch}')
         event  = eval(f'ntuple.{self.event_branch}')
 
+<<<<<<< HEAD
         # Get central event weight
         evweight = ntuple.eventweight_weight
+=======
+        # loop over all weights in the sys_weights branch. 
+        # take product of specified parameters to get final event weight
+        # would be faster with here I bet
+        universe_weight = np.arrays('f',[1.0]*1000)
+        for key, values in self._current_sample_tchain.sys_weights:
+            if key in self._params_to_include:
+                for i in range(len(values)):
+                    if i<1000 and is not np.isnan(values[i]) and is np.isfinite(values[i]):
+                        universe_weight[i] *= values[i]
+                    else:
+                        print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
+
+        print(f"  first 10 universe event weights: ",universe_weight[:10])
+            
+    #if len(values) > 0:
+    #    print(f"  First few values: {list(values[:min(3, len(values))])}")
+>>>>>>> save code
 
         # Compute bin indices for all variables
         bin_indices = []
