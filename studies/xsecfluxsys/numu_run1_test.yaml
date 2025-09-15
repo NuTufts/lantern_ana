@@ -1,0 +1,45 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "./output_numu_run1_sys_test/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: 10
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+
+
+# Producer configuration (producers run first)
+producers:
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    rootfilepath: "/cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root"
+
+# Cut configuration
+cuts: 
+  remove_true_nue_cc:
+    applyto:
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+
+cut_logic: "(not {remove_true_nue_cc})"
+
