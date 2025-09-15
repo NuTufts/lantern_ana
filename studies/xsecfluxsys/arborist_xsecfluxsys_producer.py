@@ -34,43 +34,54 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """
         super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
-        self._filepaths  = config.get('rootfilepaths',{})
+        self._sample_filepaths  = config.get('rootfilepaths',{})
         self._tree = None
         self._num_entries = 0
-        self._rse_to_entryindex = {}
+        self._sample_rse_to_entryindex = {} # will hold entry dictionary for a given sample
+        self._current_sample_name = "none"
+        self._current_sample_tchain = None
 
-        # Open file and make (run,subrun,event) --> index dictionary
+    def _build_sample_entry_index(self,samplename):
+        """
+        Open file and make (run,subrun,event) --> index dictionary
+        """
+
+        if samplename in self._sample_filepaths:
+            weightfilepath = self._sample_filepaths[samplename]
+        else:
+            raise ValueError(f"Could not find sample name, '{samplename}' in file path dictionary parameter")
+
         try:
-            rfile = rt.TFile( self._filepath )
+            # open file
+            rfile = rt.TFile( weightfilepath )
+            # get ttree
             ttree = rfile.Get(self._tree_name)
+            # disable all but run, subrun, event branches to speed up read through file
             ttree.SetBranchStatus("*", 0)
             ttree.SetBranchStatus("run", 1)
             ttree.SetBranchStatus("subrun", 1)
             ttree.SetBranchStatus("event", 1)            
             nentries = ttree.GetEntries()
-            print(f'Loaded weight tree with {nentries} entries')
+            print(f'Loaded "{samplename}" weight tree with {nentries} entries')
         except:
-            print(f'Weight file path: {self._filepath}',flush=True)
-            raise RuntimeError("could not open file")
+            raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
 
         tstart = time.time()
-        self.rsedict = {}
+        rsedict = {}
+        # TODO: use a tqdm loop here?
         for iientry in range(nentries):
-            if (iientry%100000==0):
-                print("  building index. entry ",iientry)
+            #if (iientry%100000==0):
+            #    print("  building index. entry ",iientry)
             ttree.GetEntry(iientry)
             rse = (ttree.run,ttree.subrun,ttree.subrun)
-            self.rsedict[rse] = iientry
+            rsedict[rse] = iientry
 
         dt_index = time.time()-tstart
         print(f'Time to make index: {dt_index:.2f}')
+        self._sample_rse_to_entryindex[samplename] = rse
 
-    def _build_sample_entry_index(self,samplename):
-        pass
+        rfile.Close()
 
-    def get_default_particle_thresholds(self):
-        """Get default particle energy thresholds."""
-        return
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -84,10 +95,47 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """Specify required inputs."""
         return ["gen2ntuple"]
 
+    def _load_sample_weight_tree(self, datasetname ):
+        if self._current_sample_tchain is not None:
+            if datasetname != self._current_sample_name:
+                self._current_sample_tchain.Close()
+            else:
+                return # already loaded
+
+        self._current_sample_tchain = rt.TChain( self._tree_name )
+        if datasetname not in self._sample_filepaths:
+            raise ValueError(f"Could not find sample name, '{datasetname}' in file path dictionary parameter")
+
+        self._current_sample_tchain.Add(self._sample_filepaths[datasetname])
+        nentries = self._current_sample_tchain.GetEntries()
+        print("Loaded weight tree for dataset: ",datasetname)
+
+
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """Determine if event is signal nue CC inclusive."""
         ntuple = data["gen2ntuple"]
         ismc = params.get('ismc', False)
+        datasetname = params.get('dataset_name')
+
+        if datasetname not in self._sample_rse_to_entryindex:
+            self._build_sample_entry_index( datasetname )
+            self._load_sample_weight_tree( datasetname )
+
+        rse = (ntuple.run, ntuple.subrun, ntuple.event)
+        entryindex = self._sample_rse_to_entryindex[datasetname].get(rse,-1)
+        if entryindex<0:
+            raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
+        
+        self._current_sample_tchain.GetEntry(entryindex)
+
+        # now calculate event weights
+        weight = 1.0
+
+        # would me much better off with uproot here
+        
+
+        
+
 
         return {}
         
