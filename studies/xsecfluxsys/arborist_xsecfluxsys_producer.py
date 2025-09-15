@@ -73,12 +73,14 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             #if (iientry%100000==0):
             #    print("  building index. entry ",iientry)
             ttree.GetEntry(iientry)
-            rse = (ttree.run,ttree.subrun,ttree.subrun)
+            rse = (ttree.run,ttree.subrun,ttree.event)
             rsedict[rse] = iientry
+            if iientry%100000==0:
+                print("  building index. entry ",iientry," rse=",rse)
 
         dt_index = time.time()-tstart
         print(f'Time to make index: {dt_index:.2f}')
-        self._sample_rse_to_entryindex[samplename] = rse
+        self._sample_rse_to_entryindex[samplename] = rsedict
 
         rfile.Close()
 
@@ -122,8 +124,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             self._load_sample_weight_tree( datasetname )
 
         rse = (ntuple.run, ntuple.subrun, ntuple.event)
-        entryindex = self._sample_rse_to_entryindex[datasetname].get(rse,-1)
-        if entryindex<0:
+        if rse in self._sample_rse_to_entryindex[datasetname]:
+            entryindex = self._sample_rse_to_entryindex[datasetname][rse]
+        else:
             raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
         
         self._current_sample_tchain.GetEntry(entryindex)
