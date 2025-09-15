@@ -33,7 +33,8 @@ datasets:
 producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
-    rootfilepath: "/cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root"
+    config:
+      rootfilepath: "/cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root"
 
 # Cut configuration
 cuts: 

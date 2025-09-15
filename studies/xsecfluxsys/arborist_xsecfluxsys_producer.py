@@ -1,4 +1,4 @@
-import os,sys
+import os,sys,time
 from typing import Dict, Any, List, Optional, Type
 from array import array
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
@@ -34,10 +34,39 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """
         super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
-        self._filepath  = config.get('rootfilepath')
+        self._filepaths  = config.get('rootfilepaths',{})
         self._tree = None
         self._num_entries = 0
         self._rse_to_entryindex = {}
+
+        # Open file and make (run,subrun,event) --> index dictionary
+        try:
+            rfile = rt.TFile( self._filepath )
+            ttree = rfile.Get(self._tree_name)
+            ttree.SetBranchStatus("*", 0)
+            ttree.SetBranchStatus("run", 1)
+            ttree.SetBranchStatus("subrun", 1)
+            ttree.SetBranchStatus("event", 1)            
+            nentries = ttree.GetEntries()
+            print(f'Loaded weight tree with {nentries} entries')
+        except:
+            print(f'Weight file path: {self._filepath}',flush=True)
+            raise RuntimeError("could not open file")
+
+        tstart = time.time()
+        self.rsedict = {}
+        for iientry in range(nentries):
+            if (iientry%100000==0):
+                print("  building index. entry ",iientry)
+            ttree.GetEntry(iientry)
+            rse = (ttree.run,ttree.subrun,ttree.subrun)
+            self.rsedict[rse] = iientry
+
+        dt_index = time.time()-tstart
+        print(f'Time to make index: {dt_index:.2f}')
+
+    def _build_sample_entry_index(self,samplename):
+        pass
 
     def get_default_particle_thresholds(self):
         """Get default particle energy thresholds."""
