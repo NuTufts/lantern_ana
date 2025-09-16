@@ -289,10 +289,14 @@ class eventIndexProducer(ProducerBaseClass):
         # Return a dictionary so other producers can access your results
         return self.output_vars
 
+<<<<<<< HEAD
     def finalize(self):
         """ Nothing to do after event loop. """
         return
         
+=======
+
+>>>>>>> add a c++ function to calculate weights in order to save time. added event index producer
 # ==========================================
 # EXAMPLE USAGE IN YAML CONFIG
 # ==========================================
