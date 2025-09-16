@@ -240,10 +240,12 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         if rse in self._sample_rse_to_entryindex[datasetname]:
             entryindex = self._sample_rse_to_entryindex[datasetname][rse]
         else:
-            print('Could not find RSE={rse} in RSE->index dictionary')
+            print(f'Could not find RSE={rse} in RSE->index dictionary')
             self.missing_entries += 1
             if not self.allow_missing_weights:
                 raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
+            else:
+                return {}
         
         self._current_sample_tchain.GetEntry(entryindex)
 
