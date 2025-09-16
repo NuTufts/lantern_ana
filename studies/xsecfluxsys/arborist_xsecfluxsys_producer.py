@@ -220,46 +220,28 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 <<<<<<< HEAD
                 'numbins':vardict['numbins'],
                 'sample_hists':{},
-                'ibin_start':ibin_global,
-                'bintype':bintype
-            }
-
-            nbins = vardict['numbins']
-
-            for sample in vardict['apply_to_datasets']:
-                hname = f"h{varname}_{sample}"
-                var_bin_info['sample_hists'][sample] = {}
-                for x in ['cv','N']:
-                    hvar_name = hname+f"_{x}"
-                    if var_bin_info['bintype']=='uniform':
-                        h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
-                    elif var_bin_info['bintype']=='binedges':
-                        bin_array = array('f',binedges)
-                        nbins = len(binedges)-1
-                        h = rt.TH1D(hvar_name,"",nbins, bin_array)
-                    var_bin_info['sample_hists'][sample][x] = h
-=======
-=======
-                'numbins':vardict['numbins'],
->>>>>>> add a c++ function to calculate weights in order to save time. added event index producer
-                'sample_hists':{},
-                'sample_array':{},
+                'sample_array':{}, # we save an array (nbins,nvariations) for each (sample,par) combination. So many!
                 'ibin_start':ibin_global
             }
 
             nbins = vardict['numbins']
             for sample in vardict['apply_to_datasets']:
+                # we save a histogram to
+                # 1. help us look up the bin position for this observable
+                # 2. store the central value and the number of entries per bin
                 hname = f"h{varname}_{sample}"
                 var_bin_info['sample_hists'][sample] = {}
-                for x in ['cv','w','w2','N']:
+                for x in ['cv','N']:
                     h = rt.TH1D(hname+f"_{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
 <<<<<<< HEAD
                 var_bin_info['sample_hists'][sample] = h
 >>>>>>> save for testing on tufts
 =======
                     var_bin_info['sample_hists'][sample][x] = h
-                var_bin_info['sample_array'][sample] = np.zeros( (nbins+2,self.nvariations) )
->>>>>>> add a c++ function to calculate weights in order to save time. added event index producer
+                # we make a dictionary with a slot for an array
+                # we create the actual array later once we know the number of variations of each parameter
+                for par in self._params_to_include:
+                    var_bin_info['sample_array'][(sample,par)] = None
 
             ibin_global += nbins
             self.variable_list.append( varname )
@@ -462,13 +444,18 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         
 =======
         # now calculate event weights from the N parameter variations (sometimes referred to as 'universes')      
->>>>>>> added generic cut definition
-        universe_weight = self.weight_calc.calc( 1000, self._params_to_include_v, self._current_sample_tchain.sys_weights )
+        #universe_weight = self.weight_calc.calc( 1000, self._params_to_include_v, self._current_sample_tchain.sys_weights )
         #print("sample variation weights: ",universe_weight[0]," ",universe_weight[1]," ",universe_weight[2])
 
         # fill bins
         varvalues = {}
         for varname in self.variable_list:
+
+            if datasetname not in varinfo['sample_hists']:
+                continue
+
+
+            # get the observable variable value
             varinfo = self.var_bininfo[varname]
             varformula = varinfo['formula']
 <<<<<<< HEAD
@@ -673,16 +660,34 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             x = eval(f'ntuple.{varformula}')            
             varvalues[varname] = x
 
-            if datasetname in varinfo['sample_hists']:
-                hists = varinfo['sample_hists'][datasetname]
-                hists['cv'].Fill(x,evweight)
-                hists['N'].Fill(x)
-                ibin = hists['cv'].GetXaxis().FindBin( x )
-                for i in range(1000):
-                    if universe_weight[i]<self.maxvalidweight:
-                        varinfo['sample_array'][datasetname][ibin,i] += universe_weight[i]*evweight
+            # get the histogram
+            hists = varinfo['sample_hists'][datasetname]
+
+            # fill the central value (CV) and N (unweighted) histogram
+            hists['cv'].Fill(x,evweight)
+            hists['N'].Fill(x)
+
+            # find the bin
+            ibin = hists['cv'].GetXaxis().FindBin( x )
+
+            # Iterate over the map elements
+            for parname, values in self._current_sample_tchain.sys_weights:
+                if parname not in self._params_to_include:
+                    continue
+
+                sample_par = (datasetname,parname)
+                arr = varinfo['sample_array'][sample_par]
+                nvariations = values.size()
+                if arr is None:
+                    varinfo['sample_array'][sample_par] = np.zeros( (varinfo['numbins']+2,nvariations) )
+                    arr = varinfo['sample_array'][sample_par]
+
+                for i in range(nvariations):
+                    if values[i]<self.maxvalidweight:
+                        arr[ibin,i] += values[i]
                     else:
                         self.num_badweights_per_universe[i] += 1
+
                 
         return {}
 
@@ -695,12 +700,17 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             for sample,hists in varinfo['sample_hists'].items():
                 hists['cv'].Write()
                 hists['N'].Write()
-                for ibin in range(0,varinfo['numbins']+2):
-                    xmean   = varinfo['sample_array'][sample][ibin,:].mean()
-                    xstddev = varinfo['sample_array'][sample][ibin,:].std()
-                    hists['w'].SetBinContent(ibin,xmean)
-                    hists['w'].SetBinError(ibin,xstddev)
-                hists['w'].Write()
+            for (sample,par),arr in varinfo['sample_array'].items():
+                hname = "h{varname}__{sample}__{par}"
+                print("Fill variation hist: ",hname)
+                xmin = varinfo['sample_hists'][sample].GetXaxis().GetXmin()
+                xmax = varinfo['sample_hists'][sample].GetXaxis().GetXmax()
+                hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )
+                for i in range(arr.shape[0]):
+                    for j in range(arr.shape[1]):
+                        hout.SetBinContent( i, j+1, arr[i,j] )
+                hout.Write()
+
         hbaduniverses = rt.TH1D("hnum_bad_universe_weights","Number of weights per universe;universe number",self.nvariations,0,self.nvariations)
         for i,nbad in enumerate(self.num_badweights_per_universe):
             hbaduniverses.SetBinContent(i+1,nbad)
