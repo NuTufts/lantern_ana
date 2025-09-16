@@ -29,14 +29,14 @@ datasets:
     type: RootDataset
     tree: lantern/EventTree
     ismc: false
-    process: false
+    process: true
     filepaths:
      - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
   run4b_bnb_beamdata_v10_04_07_10_mix_makeups:
     type: RootDataset
     tree: lantern/EventTree
     ismc: false
-    process: true
+    process: false
     filepaths:
      - MCC9.10_Run4b_v10_04_07_10_BNB_beam_on_surprise_mix_makeups.root
 #     - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
@@ -44,7 +44,7 @@ datasets:
     type: RootDataset
     tree: lantern/EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - MCC9.10_Run4b_v10_04_07_09_BNB_dirt_surpise_reco2_hist.root
 
