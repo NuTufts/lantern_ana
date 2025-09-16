@@ -341,10 +341,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 hists['cv'].Write()
                 hists['N'].Write()
             for (sample,par),arr in varinfo['sample_array'].items():
-                hname = "h{varname}__{sample}__{par}"
-                print("Fill variation hist: ",hname)
-                xmin = varinfo['sample_hists'][sample].GetXaxis().GetXmin()
-                xmax = varinfo['sample_hists'][sample].GetXaxis().GetXmax()
+                hname = f"h{varname}__{sample}__{par}"
+                print("Fill variation hist: ",hname,": shape=",arr.shape)
+                xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
+                xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()
                 hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )
                 for i in range(arr.shape[0]):
                     for j in range(arr.shape[1]):
