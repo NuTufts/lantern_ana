@@ -88,6 +88,13 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self.allow_missing_weights = config.get('allow_missing_weights',True)
         self.missing_entries = 0
 
+        # save selection criteria
+        self.cut_formulas = config.get('cut_formulas',{})
+        self.event_selection_critera = config.get('event_selection_critera',[])
+
+        # keep track of number of bad weights
+        self.num_badweights_per_universe = [0]*self.nvariations
+
     def _build_sample_entry_index(self,samplename):
         """
         Open file and make (run,subrun,event) --> index dictionary
@@ -214,17 +221,17 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         ismc = params.get('ismc', False)
         datasetname = params.get('dataset_name')
 
-        # decide if this event is something we are going to fill
-        # for debug:
-        """
-        cut = "vertex_properties_found==1"
-        cut += " && muon_properties_pid_score>-0.9"
-        cut += " && vertex_properties_infiducial==1"
-        cut += " && muon_properties_energy>0.0"
-        """
-        passes = False
-        if ntuple.vertex_properties_found==1 and ntuple.muon_properties_pid_score>-0.9 and ntuple.vertex_properties_infiducial==1 and ntuple.muon_properties_energy>0.0:
-            passes = True
+        # evaluate all the selection formulas
+        # in order to decide if this event is something we are going to fill
+        select_results = {}
+        for cutname,cutformula in self.cut_formulas.items():
+            select_results[cutname] = eval(cutformula)
+        
+        passes = True
+        for cutname in self.event_selection_critera:
+            if select_results[cutname]==False:
+                passes = False
+                break
             
         if passes==False:
             return {}
@@ -250,20 +257,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # get event weight
         evweight = ntuple.eventweight_weight
 
-        # now calculate event weights
-        # loop over all weights in the sys_weights branch. 
-        # take product of specified parameters to get final event weight
-        # would be faster with here I bet
-        #universe_weight = np.ones(1000)
-        #for key, values in self._current_sample_tchain.sys_weights:
-        #    if key in self._params_to_include:
-        #        for i in range(len(values)):
-        #            if i<1000 and np.isnan(values[i])==False and np.isfinite(values[i])==True:
-        #                universe_weight[i] *= values[i]
-        #            else:
-        #                print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
-        #print(f"  first 10 universe event weights: ",universe_weight[:10])
-        
+        # now calculate event weights from the N parameter variations (sometimes referred to as 'universes')      
         universe_weight = self.weight_calc.calc( 1000, self._params_to_include_v, self._current_sample_tchain.sys_weights )
         #print("sample variation weights: ",universe_weight[0]," ",universe_weight[1]," ",universe_weight[2])
 
@@ -283,6 +277,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 for i in range(1000):
                     if universe_weight[i]<self.maxvalidweight:
                         varinfo['sample_array'][datasetname][ibin,i] += universe_weight[i]*evweight
+                    else:
+                        self.num_badweights_per_universe[i] += 1
                 
         return {}
 
@@ -301,6 +297,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                     hists['w'].SetBinContent(ibin,xmean)
                     hists['w'].SetBinError(ibin,xstddev)
                 hists['w'].Write()
+        hbaduniverses = rt.TH1D("hnum_bad_universe_weights","Number of weights per universe;universe number",self.nvariations,0,self.nvariations)
+        for i,nbad in enumerate(self.num_badweights_per_universe):
+            hbaduniverses.SetBinContent(i+1,nbad)
+        hbaduniverses.Write()
         self.outfile.Close()
         
         
