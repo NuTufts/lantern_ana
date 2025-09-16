@@ -64,8 +64,13 @@ producers:
         - piontotxsec_FluxUnisim
         - kminus_PrimaryHadronNormalization
         - kplus_PrimaryHadronFeynmanScaling
+<<<<<<< HEAD
         - kzero_PrimaryHadronSanfordWang
         - piminus_PrimaryHadronSWCentralSplineVariation
+=======
+        - kzero_PrimaryHadronSanfordWang	
+        - piminus_PrimaryHadronSWCentralSplineVariation	
+>>>>>>> added generic cut definition
         - piplus_PrimaryHadronSWCentralSplineVariation
         - All_UBGenie # what is this?
         - XSecShape_CCMEC_UBGenie
@@ -84,7 +89,11 @@ producers:
         - reinteractions_proton_Geant4
       cut_formulas:
         pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
+<<<<<<< HEAD
         pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy}>0.0"
+=======
+        pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy>0.0}"
+>>>>>>> added generic cut definition
       event_selection_critera: ['pass_vertex','pass_muon']
       bin_config: 
         visible_energy:
