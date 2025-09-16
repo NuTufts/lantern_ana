@@ -4,7 +4,7 @@
 output_dir: "./output_numu_run1_sys_test/"
 
 # Maximum events to process (set to -1 for all events)
-max_events: 1000
+max_events: -1
 
 # Filter out failed events from output tree
 filter_events: True
