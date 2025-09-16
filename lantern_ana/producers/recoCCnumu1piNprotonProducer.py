@@ -155,7 +155,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'delPTT':array('f',[0.0]),
           'pN':array('f',[0.0]),
           'delAlphaT':array('f',[0.0]),
-          'event_is_contained':array('i',[0.0]),
+          'event_is_contained':array('i',[0]),
           'is_target_1mu1piNproton':array('i',[0])
         }
         self._counts = {
