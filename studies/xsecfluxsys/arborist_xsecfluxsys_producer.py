@@ -451,12 +451,13 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         varvalues = {}
         for varname in self.variable_list:
 
-            if datasetname not in varinfo['sample_hists']:
-                continue
-
-
-            # get the observable variable value
             varinfo = self.var_bininfo[varname]
+
+            # does the current dataset (aka sample) apply to this variable? 
+            if datasetname not in varinfo['sample_hists']:
+                continue # if not, we continue
+
+            # sample does apply to this variable, so we get the observable variable value
             varformula = varinfo['formula']
 <<<<<<< HEAD
             eval(f'varvalues[varname] = ntuple.{varformula}')
