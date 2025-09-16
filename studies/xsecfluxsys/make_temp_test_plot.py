@@ -41,13 +41,29 @@ for k,h in hists.items():
     except:
         continue
 
+# transfer the fractional error from the variations histogram, 'w', to the cv histogram
+for ibin in range(1,hists['cv'].GetXaxis().GetNbins()+1):
+    w = hists['w'].GetBinContent(ibin)
+    werr = hists['w'].GetBinError(ibin)
+    if w>0.0:
+        ferr = werr/w
+    else:
+        ferr = 0.0
+    cv = hists['cv'].GetBinContent(ibin)
+    cv_err = cv*ferr
+    print(f"[ibin] CV: {cv} +/- {cv_err} | W: {w} +/- {werr} | fracerr={ferr}")
+    hists['cv'].SetBinError(ibin,cv_err)
+
 hists['cv'].SetLineColor(rt.kBlue-4)
+hists['cv'].SetFillColor(rt.kBlue-3)
+hists['cv'].SetFillStyle(3002)
 hists['N'].SetLineColor(rt.kGreen-4)
 hists['w'].SetLineColor(rt.kRed-2)
 hists['w'].SetLineColor(rt.kRed-2)
 
-hists['w'].Draw("histE1")
-hists['cv'].Draw('histsame')
+
+hists['cv'].Draw('E2')
+hists['w'].Draw("histE1same")
 #hists['N'].Draw("histsame")
 
 c.Update()
