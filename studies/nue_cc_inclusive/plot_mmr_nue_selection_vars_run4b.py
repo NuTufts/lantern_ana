@@ -25,10 +25,10 @@ scaling = {"numu":targetpot/7.881656209241413e+20,
            "extbnb":23090946.0/94414115.0,
            "data":1.0}
 files = {
-    "numu":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250904_003901.root",
-    "nue":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nue_overlay_surprise_20250904_004759.root",
-    "extbnb":"./output_nue_run4b_surprise/run4b_v10_04_07_09_extbnb_20250901_104613.root",
-    "data":"./output_nue_run4b_surprise/run4b_beamon_20250901_104738.root"
+    "numu":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nu_overlay_surprise.root",
+    "nue":"./output_nue_run4b_surprise/run4b_v10_04_07_09_BNB_nue_overlay_surprise.root",
+    "extbnb":"./output_nue_run4b_surprise/run4b_v10_04_07_09_extbnb.root",
+    "data":"./output_nue_run4b_surprise/run4b_beamon.root"
 }
 
 tfiles = {}
@@ -122,4 +122,4 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     #input()
 
 print("[enter] to close")
-input()
+# input()

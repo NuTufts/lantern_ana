@@ -26,6 +26,13 @@ files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
          #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
 }
 
+files = {
+         "numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
+         "data":"./output_numu_run4b/run4b_bnb_beamdata_v10_04_07_10_mix_makeups.root",
+         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
+         "extbnb":"./output_numu_v3dev/run1_extbnb_mcc9_v29e_C1.root",
+}
+
 tfiles = {}
 trees = {}
 
