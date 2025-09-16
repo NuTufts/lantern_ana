@@ -56,16 +56,16 @@ producers:
       par_variations_to_include:
         - expskin_FluxUnisim
         - horncurrent_FluxUnisim
-        - kminus_PrimaryHadronNormalization
-        - kplus_PrimaryHadronFeynmanScaling
-        - kzero_PrimaryHadronSanfordWang
         - nucleoninexsec_FluxUnisim
         - nucleonqexsec_FluxUnisim
         - nucleontotxsec_FluxUnisim
-        - piminus_PrimaryHadronSWCentralSplineVariation
         - pioninexsec_FluxUnisim
         - pionqexsec_FluxUnisim
         - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang	
+        - piminus_PrimaryHadronSWCentralSplineVariation	
         - piplus_PrimaryHadronSWCentralSplineVariation
         - All_UBGenie # what is this?
         - XSecShape_CCMEC_UBGenie
@@ -83,7 +83,9 @@ producers:
         - reinteractions_piplus_Geant4
         - reinteractions_proton_Geant4
       cut_formulas:
-        pass_numu_cc_inclusive: "vertex_properties_found==1 and muon_properties_pid_score>-0.9 and vertex_properties_infiducial==1 amd muon_properties_energy>0.0"
+        pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
+        pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy>0.0}"
+      event_selection_critera: ['pass_vertex','pass_muon']
       bin_config: 
         visible_energy:
           formula: visible_energy
@@ -92,7 +94,7 @@ producers:
           maxvalue: 3000.0
           # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
           apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
-          criteria: ['pass_numu_cc_inclusive']
+          criteria: []
 
 
 # Cut configuration
