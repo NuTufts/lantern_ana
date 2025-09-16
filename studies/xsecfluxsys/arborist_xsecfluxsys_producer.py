@@ -1,4 +1,5 @@
 import os,sys,time
+import re
 from typing import Dict, Any, List, Optional, Type
 from array import array
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
@@ -225,7 +226,22 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # in order to decide if this event is something we are going to fill
         select_results = {}
         for cutname,cutformula in self.cut_formulas.items():
-            select_results[cutname] = eval(cutformula)
+            # Extract placeholders from the formula (strings inside {})
+            placeholders = re.findall(r'\{([^}]+)\}', cutformula)
+
+            # Create clean expression and namespace
+            clean_expression = cutformula
+            namespace = {}
+
+            for placeholder in placeholders:
+                # Create a simple variable name from the placeholder
+                var_name = placeholder.replace('.', '_').replace('[', '_').replace(']', '')
+                clean_expression = clean_expression.replace(f"{{{placeholder}}}", var_name)
+                # Evaluate the placeholder to get the actual value
+                namespace[var_name] = eval(placeholder)
+
+            # Evaluate the clean expression with the namespace
+            select_results[cutname] = eval(clean_expression, namespace)
         
         passes = True
         for cutname in self.event_selection_critera:
