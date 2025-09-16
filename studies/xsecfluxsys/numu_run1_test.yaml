@@ -4,7 +4,7 @@
 output_dir: "./output_numu_run1_sys_test/"
 
 # Maximum events to process (set to -1 for all events)
-max_events: 10
+max_events: -1
 
 # Filter out failed events from output tree
 filter_events: True
@@ -21,22 +21,23 @@ datasets:
     - /home/twongjirad/working/data/ntuples/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
     - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
-  # run1_bnb_nu_overlay_mcc9_v28_wctagger:
-  #   type: RootDataset
-  #   tree: EventTree
-  #   ismc: true
-  #   process: true
-  #   filepaths:
-  #    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
-    tree: EventTree
+    tree: analysis_tree
     ismc: true
     process: true
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
-    friendtrees:
-      analysis_tree: run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger_20250916_010654.root
+  #run1_bnb_nu_overlay_mcc9_v28_wctagger:
+  #  type: RootDataset
+  #  tree: EventTree
+  #  ismc: true
+  #  process: true
+  #  filepaths:
+  #   - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  #  friendtrees:
+  #    analysis_tree: run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root
 
 
 # Producer configuration (producers run first)
@@ -45,6 +46,11 @@ producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
+      run: event_index_run
+      subrun: event_index_subrun
+      event: event_index_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
       rootfilepaths:
         run1_bnb_nu_overlay_mcc9_v28_wctagger: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
       par_variations_to_include:
@@ -90,10 +96,10 @@ producers:
 
 
 # Cut configuration
-cuts: 
-  remove_true_nue_cc:
-    applyto:
-     - run1_bnb_nu_overlay_mcc9_v28_wctagger
-
-cut_logic: "(not {remove_true_nue_cc})"
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
 

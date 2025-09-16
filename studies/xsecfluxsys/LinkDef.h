@@ -9,5 +9,6 @@
 #pragma link C++ class std::map<std::string, std::vector<double> >+;
 #pragma link C++ class std::pair<const std::string, std::vector<double> >+;
 #pragma link C++ typedef MapStringVecDouble;
+#pragma link C++ class CalcEventWeightVariations+;
 
 #endif

@@ -17,6 +17,7 @@ datasets:
   folders:
     - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
     - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
@@ -51,6 +52,9 @@ cuts: {}
 
 # Producer configuration
 producers:
+  eventindex:
+    type: eventIndexProducer
+    config: {}
   sigdef_numuccinc:
     type: signalDefNumuCCInclusive
     config: {}

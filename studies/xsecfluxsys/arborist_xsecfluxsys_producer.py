@@ -8,6 +8,8 @@ import numpy as np
 try:
     import ROOT as rt
     rt.gSystem.Load("libMapDict.so")
+    from ROOT import CalcEventWeightVariations
+    from ROOT import std
 except:
     print("Error loading ROOT and/or libMapDict.so")
     sys.exit(1)
@@ -57,6 +59,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
         self._sample_filepaths  = config.get('rootfilepaths',{})
+        self.nvariations = config.get('num_variations',1000)
         self._tree = None
         self._num_entries = 0
         self._sample_rse_to_entryindex = {} # will hold entry dictionary for a given sample
@@ -65,8 +68,25 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self._params_to_include = config.get('par_variations_to_include',[])
         if len(self._params_to_include)==0:
             raise ValueError("Parameter list for reweight variations to include is empty.")
+        self._params_to_include_v = std.vector("string")()
+        for parname in self._params_to_include:
+            self._params_to_include_v.push_back( parname )
         self._bin_config_list = config.get('bin_config')
+        self.weight_calc = CalcEventWeightVariations()
         self.outfile = rt.TFile("temp_covar.root",'recreate')
+
+        # name of the run, subrun, event branches
+        self.run_branch    = config.get('run','run')
+        self.subrun_branch = config.get('subrun','subrun')
+        self.event_branch  = config.get('event','event')
+
+        # cap weight value: sometimes a crazy large weight occurs
+        self.maxvalidweight = config.get('maxvalidweight',100)
+
+        # allow us to now have an event in the weight tree
+        # we set the event to one
+        self.allow_missing_weights = config.get('allow_missing_weights',True)
+        self.missing_entries = 0
 
     def _build_sample_entry_index(self,samplename):
         """
@@ -135,7 +155,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         hlist_n = []
 
         self.variable_list = []
-        self.var_bin_info_dict = {}
+        self.var_bininfo = {}
 
         self.outfile.cd()
 
@@ -145,16 +165,20 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'formula':vardict['formula'],
                 'samples':vardict['apply_to_datasets'],
                 'criteria':vardict['criteria'],
+                'numbins':vardict['numbins'],
                 'sample_hists':{},
+                'sample_array':{},
                 'ibin_start':ibin_global
             }
 
             nbins = vardict['numbins']
             for sample in vardict['apply_to_datasets']:
                 hname = f"h{varname}_{sample}"
+                var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','w','w2','N']:
                     h = rt.TH1D(hname+f"_{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
-                var_bin_info['sample_hists'][sample] = h
+                    var_bin_info['sample_hists'][sample][x] = h
+                var_bin_info['sample_array'][sample] = np.zeros( (nbins+2,self.nvariations) )
 
             ibin_global += nbins
             self.variable_list.append( varname )
@@ -202,8 +226,6 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         if ntuple.vertex_properties_found==1 and ntuple.muon_properties_pid_score>-0.9 and ntuple.vertex_properties_infiducial==1 and ntuple.muon_properties_energy>0.0:
             passes = True
             
-        print("event passes test numucc inclusive")
-        
         if passes==False:
             return {}
 
@@ -211,44 +233,74 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             self._build_sample_entry_index( datasetname )
             self._load_sample_weight_tree( datasetname )
 
-        rse = (ntuple.run, ntuple.subrun, ntuple.event)
+        run    = eval(f'ntuple.{self.run_branch}')
+        subrun = eval(f'ntuple.{self.subrun_branch}')
+        event  = eval(f'ntuple.{self.event_branch}')        
+        rse = (run,subrun,event)
         if rse in self._sample_rse_to_entryindex[datasetname]:
             entryindex = self._sample_rse_to_entryindex[datasetname][rse]
         else:
-            raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
+            print('Could not find RSE={rse} in RSE->index dictionary')
+            self.missing_entries += 1
+            if not self.allow_missing_weights:
+                raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
         
         self._current_sample_tchain.GetEntry(entryindex)
 
-        # now calculate event weights
-        weight = 1.0
+        # get event weight
+        evweight = ntuple.eventweight_weight
 
+        # now calculate event weights
         # loop over all weights in the sys_weights branch. 
         # take product of specified parameters to get final event weight
         # would be faster with here I bet
-        universe_weight = np.ones(1000)
-        for key, values in self._current_sample_tchain.sys_weights:
-            if key in self._params_to_include:
-                for i in range(len(values)):
-                    if i<1000 and np.isnan(values[i])==False and np.isfinite(values[i])==True:
-                        universe_weight[i] *= values[i]
-                    else:
-                        print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
-
-        print(f"  first 10 universe event weights: ",universe_weight[:10])
+        #universe_weight = np.ones(1000)
+        #for key, values in self._current_sample_tchain.sys_weights:
+        #    if key in self._params_to_include:
+        #        for i in range(len(values)):
+        #            if i<1000 and np.isnan(values[i])==False and np.isfinite(values[i])==True:
+        #                universe_weight[i] *= values[i]
+        #            else:
+        #                print(f"entry[{entryindex}] bad value{key}[{i}] = {values[i]}")
+        #print(f"  first 10 universe event weights: ",universe_weight[:10])
+        
+        universe_weight = self.weight_calc.calc( 1000, self._params_to_include_v, self._current_sample_tchain.sys_weights )
+        #print("sample variation weights: ",universe_weight[0]," ",universe_weight[1]," ",universe_weight[2])
 
         # fill bins
         varvalues = {}
         for varname in self.variable_list:
-            varinfo = self.var_bin_info_dict['varname']
+            varinfo = self.var_bininfo[varname]
             varformula = varinfo['formula']
-            eval(f'varvalues[varname] = ntuple.{varformula}')
-        print(varvalues)
-            
-    #if len(values) > 0:
-    #    print(f"  First few values: {list(values[:min(3, len(values))])}")
+            x = eval(f'ntuple.{varformula}')            
+            varvalues[varname] = x
 
-        
-
-
+            if datasetname in varinfo['sample_hists']:
+                hists = varinfo['sample_hists'][datasetname]
+                hists['cv'].Fill(x,evweight)
+                hists['N'].Fill(x)
+                ibin = hists['cv'].GetXaxis().FindBin( x )
+                for i in range(1000):
+                    if universe_weight[i]<self.maxvalidweight:
+                        varinfo['sample_array'][datasetname][ibin,i] += universe_weight[i]*evweight
+                
         return {}
+
+    def finalize(self):
+        print("write arborist histograms")
+        print(" number of entries missing a weight value: ",self.missing_entries)
+        self.outfile.cd()
+        for varname in self.var_bininfo:
+            varinfo = self.var_bininfo[varname]
+            for sample,hists in varinfo['sample_hists'].items():
+                hists['cv'].Write()
+                hists['N'].Write()
+                for ibin in range(0,varinfo['numbins']+2):
+                    xmean   = varinfo['sample_array'][sample][ibin,:].mean()
+                    xstddev = varinfo['sample_array'][sample][ibin,:].std()
+                    hists['w'].SetBinContent(ibin,xmean)
+                    hists['w'].SetBinError(ibin,xstddev)
+                hists['w'].Write()
+        self.outfile.Close()
+        
         
