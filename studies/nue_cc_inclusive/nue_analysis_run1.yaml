@@ -1,0 +1,116 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_nue_run1_mmr/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /home/twongjirad/working/data/ntuples/
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  run1_extbnb_mcc9_v29e_C1:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+  run1_bnb5e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
+
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  # vertex properties
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  # electron properties  
+  recoElectron:
+    type: RecoElectronPropertiesProducer
+    config:
+      electron_quality_cuts:
+        min_charge: 0.0
+        min_purity: 0.0
+        min_completeness: 0.0
+  
+  # muon track properties
+  recoMuonTrack:
+    type: RecoMuonTrackPropertiesProducer
+    config:
+      track_min_energy: 25.0
+
+  # nue signal definition
+  nueCCinc:
+    type: signalNueCCInclusive
+    config:
+      fv_params:
+        width: 0.0
+        apply_scc: false
+        usetruevtx: true
+
+  # Truth mode classification
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        eKE: 0.0
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: true
+        condense_ncmodes: true
+
+# Cut configuration
+cuts: 
+  remove_true_nue_cc:
+    applyto:
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+
+cut_logic: "(not {remove_true_nue_cc})"
+

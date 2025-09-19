@@ -1,0 +1,95 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_numu_run4b_weights"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: False
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
+    - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+    - /pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/
+    - /mnt/ddrive/data/
+  run4b_v10_04_07_09_BNB_nu_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    friendtrees:
+      weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise.root    
+    filepaths:
+     - MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root
+  run4b_v10_04_07_09_BNB_nue_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    friendtrees:
+      weight_tree: xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise.root
+    filepaths:
+     - MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
+  run4b_v10_04_07_09_extbnb:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: false
+    filepaths:
+    - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
+  run4b_beamon:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: false
+    filepaths:
+    - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+
+# Cut configuration
+cuts: {}
+#cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
+
+# Producer configuration
+producers:
+  sigdef_numuccinc:
+    type: signalDefNumuCCInclusive
+    config: {}
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config:
+      use_friendtree: True
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
