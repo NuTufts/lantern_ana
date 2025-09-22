@@ -4,7 +4,7 @@
 output_dir: "./output_tki_dev"
 
 # Maximum events to process (set to -1 for all events)
-max_events: -1
+max_events: -1 # -1 for all events
 
 # Filter out failed events from output tree
 filter_events: True
@@ -33,6 +33,7 @@ datasets:
     process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+     #- run1_nuwro_jul23.root # temporarily using nuwro here
   #  friendtrees:
   #    FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:
