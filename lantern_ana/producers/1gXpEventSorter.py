@@ -52,8 +52,28 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.twoGoneMu = array('i',[0])
         self.twoGxPi = array('i',[0])
 
+        #Background tags - explain why the event is background
+        self.overThresholdMuon = array('i',[0])
+        self.tooManyProtons = array('i',[0])
+        self.overThresholdElectron = array('i',[0])
+        self.overThresholdPion = array('i',[0])
+        self.noPhotons = array('i',[0])
+        self.tooManyPhotons = array('i',[0])
 
-    def setDefaultValues(self): #Not clear what to do here?
+        #Mixup tags - what sideband should the event have been in?
+        #self.notOneGnoX = array('i',[0])
+        #self.notOneGoneP = array('i',[0])
+        #self.notOneGtwoP = array('i',[0])
+        #self.notOneGoneMu = array('i',[0])
+        #self.notOneGxPi = array('i',[0])
+        #self.notTwoGnoX = array('i',[0])
+        #self.notTwoGoneP = array('i',[0])
+        #self.notTwoGtwoP = array('i',[0])
+        #self.notTwoGoneMu = array('i',[0])
+        #self.notTwoGxPi = array('i',[0])
+
+
+    def setDefaultValues(self):
         self.recoPhotonCount[0] = 0
         self.truePhotonCount[0] = 0
         self.recoProtonCount[0] = 0
@@ -91,7 +111,12 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.twoGoneMu[0] = 0
         self.twoGxPi[0] = 0
 
-
+        self.overThresholdMuon[0] = 0
+        self.tooManyProtons[0] = 0
+        self.overThresholdElectron[0] = 0
+        self.overThresholdPion[0] = 0
+        self.noPhotons[0] = 0
+        self.tooManyPhotons[0] = 0
 
     def prepareStorage(self, output):
         """Set up branch in the output ROOT TTree."""
@@ -110,6 +135,14 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         output.Branch("isBackground", self.isBackground, "isBackground/I")
         output.Branch("isWrongSideband", self.isWrongSideband, "isWrongSideband/I")
         output.Branch("isSignal", self.isSignal, "isSignal/I")
+
+        output.Branch("overThresholdMuon", self.overThresholdMuon, "overThresholdMuon/I")
+        output.Branch("tooManyProtons", self.tooManyProtons, "tooManyProtons/I")
+        output.Branch("overThresholdElectron", self.overThresholdElectron, "overThresholdElectron/I")
+        output.Branch("overThresholdPion", self.overThresholdPion, "overThresholdPion/I")
+        output.Branch("noPhotons", self.noPhotons, "noPhotons/I")
+        output.Branch("tooManyPhotons", self.tooManyPhotons, "tooManyPhotons/I")
+
 
     
     def requiredInputs(self):
@@ -151,12 +184,12 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         self.recoElectronCount[0] = recoParticleData["electrons"]
 
         #Now we filter out events reconstructed as background:
-        if (self.recoMuonCount[0] > self.recoJustOverMuons[0]
-                or self.recoJustOverMuons[0] > 1
-                or self.recoElectronCount[0] > 0
-                or self.recoPionCount[0] > self.recoJustOverPions[0]
-                or self.recoProtonCount[0] > 2
-                or self.recoPhotonCount[0] > 2
+        if (self.recoMuonCount[0] > self.recoJustOverMuons[0] 
+                or self.recoJustOverMuons[0] > 1 
+                or self.recoElectronCount[0] > 0 
+                or self.recoPionCount[0] > self.recoJustOverPions[0] 
+                or self.recoProtonCount[0] > 2 
+                or self.recoPhotonCount[0] > 2 
                 or self.recoPhotonCount[0] == 0):
 
             return {"outcome":0}
@@ -221,14 +254,29 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
         #Ignore files that aren't Montecarlo:
         ismc = params.get('ismc',False)
         if ismc:
-            if (self.trueMuonCount[0] > self.trueJustOverMuons[0]
-                    or self.trueJustOverMuons[0] > 1
-                    or self.trueElectronCount[0] > 0
-                    or self.truePionCount[0] > self.trueJustOverPions[0]
-                    or self.trueProtonCount[0] > 2
-                    or self.truePhotonCount[0] > 2
-                    or self.truePhotonCount[0] == 0):
+            if self.trueMuonCount[0] > self.trueJustOverMuons[0] or self.trueJustOverMuons[0] > 1:
                 self.isBackground[0] = 1
+                self.overThresholdMuon[0] = 1
+
+            elif self.trueElectronCount[0] > 0:
+                self.isBackground[0] = 1
+                self.overThresholdElectron[0] = 1
+
+            elif self.truePionCount[0] > self.trueJustOverPions[0]:
+                self.isBackground[0] = 1
+                self.overThresholdPion[0] = 1
+
+            elif self.trueProtonCount[0] > 2:
+                self.isBackground[0] = 1
+                self.tooManyProtons[0] = 1
+
+            elif self.truePhotonCount[0] > 2:
+                self.isBackground[0] = 1
+                self.tooManyPhotons[0] = 1
+
+            elif self.truePhotonCount[0] == 0:
+                self.isBackground[0] = 1
+                self.noPhotons[0] = 1
 
             #If it's not background, determine if we got all of our counts right:
             elif (self.truePhotonCount[0] != self.recoPhotonCount[0]
@@ -236,15 +284,15 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
                     or self.trueJustOverPions[0] != self.recoJustOverPions[0]
                     or self.trueJustOverMuons[0] != self.recoJustOverMuons[0]):
                 self.isWrongSideband[0] = 1
-                print("NEW EVENT FAILS SIDEBAND:")
-                if self.truePhotonCount[0] != self.recoPhotonCount[0]:
-                    print("Photon count incorrect:", self.truePhotonCount[0], "true vs", self.recoPhotonCount[0], "reco.")
-                if self.trueProtonCount[0] != self.recoProtonCount[0]:
-                    print("Proton count incorrect:", self.trueProtonCount[0], "true vs", self.recoProtonCount[0], "reco.")
-                if self.trueJustOverPions[0] != self.recoJustOverPions[0]:
-                    print("Pion count incorrect:", self.truePionCount[0], "true vs", self.recoPionCount[0], "reco.")
-                if self.trueJustOverMuons[0] != self.recoJustOverMuons[0]:
-                    print("Muon count incorrect:", self.trueMuonCount[0], "true vs", self.recoMuonCount[0], "reco.")
+                #print("NEW EVENT FAILS SIDEBAND:")
+                #if self.truePhotonCount[0] != self.recoPhotonCount[0]:
+                #    print("Photon count incorrect:", self.truePhotonCount[0], "true vs", self.recoPhotonCount[0], "reco.")
+                #if self.trueProtonCount[0] != self.recoProtonCount[0]:
+                #    print("Proton count incorrect:", self.trueProtonCount[0], "true vs", self.recoProtonCount[0], "reco.")
+                #if self.trueJustOverPions[0] != self.recoJustOverPions[0]:
+                #    print("Pion count incorrect:", self.truePionCount[0], "true vs", self.recoPionCount[0], "reco.")
+                #if self.trueJustOverMuons[0] != self.recoJustOverMuons[0]:
+                #    print("Muon count incorrect:", self.trueMuonCount[0], "true vs", self.recoMuonCount[0], "reco.")
 
 
             #If our counts are right and it's not background, it must be signal
@@ -252,3 +300,4 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
                 self.isSignal[0] = 1
 
         return {"Result":0}
+

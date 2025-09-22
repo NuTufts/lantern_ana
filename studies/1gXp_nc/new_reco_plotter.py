@@ -25,18 +25,32 @@ sidebandCuts = {'1g0X': "&& (oneGnoX == 1)",
     'twoGxPi': "&& (twoGxPi == 1)"
     }
 
-categories = ['Signal', 'WrongSideband', 'Background']
+categories = ['Signal', 
+    'WrongSideband', 
+    'Muon Background', 
+    'Electron Background', 
+    'Pion Background',
+    'Proton Background',
+    'No Photons',
+    '3+ Photons'
+    ]
+
 categoryCuts = {'Signal': "&& (isSignal == 1)",
-    'Background': "&& (isBackground == 1)",
-    'WrongSideband': "&& (isWrongSideband == 1)"
+    'WrongSideband': "&& (isWrongSideband == 1)",
+    'Muon Background': "&& (isBackground == 1) && (overThresholdMuon == 1)",
+    'Electron Background': "&& (isBackground == 1) && (overThresholdElectron == 1)",
+    'Pion Background': "&& (isBackground == 1) && (overThresholdPion == 1)",
+    'Proton Background': "&& (isBackground == 1) && (tooManyProtons == 1)",
+    'No Photons': "&& (isBackground == 1) && (noPhotons == 1)",
+    '3+ Photons': "&& (isBackground == 1) && (tooManyPhotons == 1)"
     }
 
 
 #What files are we drawing on?
 files = {
-    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250617_153237.root",
-    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250617_154125.root",
-    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250617_154325.root"
+    "Montecarlo": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/bnbnumu_20250620_131849.root",
+    "Off-Beam": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/extbnb_20250620_132727.root",
+    "Beam Data": "/cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana/output/beamData_20250620_132928.root"
 }
 
 
@@ -66,7 +80,7 @@ nBins = 60
 xMin = 0
 xMax = 700
 
-sidebands = [
+sidebandList = [
     ("oneGnoX",nBins, xMin, xMax,'1g0X Sample',"Reco", 0),
     ("oneGoneP",nBins, xMin, xMax,'1g1p Sample',"Reco", 0),
     ("oneGtwoP",nBins, xMin, xMax,'1g2p Sample',"Reco", 0),
@@ -101,7 +115,7 @@ cut += "&& (photonFromCharged > 5)"
 
 
 #Now we actually go through and store the data
-for sideband, nbins, xmin, xmax, htitle, dataType, protonNo in sidebands:
+for sideband, nbins, xmin, xmax, htitle, dataType, protonNo in sidebandList:
     #Define our canvas (what we draw everything on) and our legend
     cname = f"c{sideband}"
     canvs[sideband] = rt.TCanvas(cname,f"v3dev: {cname}",1000,800)

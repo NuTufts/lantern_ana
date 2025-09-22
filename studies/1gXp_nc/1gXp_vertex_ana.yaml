@@ -1,0 +1,121 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_1g1X_vertexstudies"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1 #Running all the data!
+#max_events: 10000 #Testing configuration
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/ndahle01/lantern_ana
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/gen2ntuple/
+    - /mnt/ddrive/data/lantern_ana_ntuples/
+    - /home/twongjirad/working/data/ntuples/
+  
+  #MC simulated data
+  bnbnumu:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+    #- ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root #Montecarlo
+     - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune_nuvtxphotonsel_vtest.root #Upgraded Montecarlo
+    # - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+    #- nuvtxphotonsel.root
+    #friendtrees:
+    #  FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
+
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+
+  # Applies weight to events for graphing 
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+
+  # Sums the reco energy of all tracks and particles in the event. Not used for anything here
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  # vertex properties, including some cuts for cosmics
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+
+  # true vertex properties, mainly position coordinates
+  true_vertex_properties:
+    type: TrueVertexPropertiesProducer
+    config: {}
+
+  # Stores the number of photons over-threshold. Cuts based on fiducial boundaries - change width at the end to adjust
+  recophoton:
+    type: recoPhotonDataProducer
+    config: 
+      #maxnphotons: 5
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
+
+  notrackphoton:
+    type: recoPhotonDataProducer
+    config: 
+      #maxnphotons: 5
+      fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0} #Currently refraining from fiducial cuts
+      include_tracks: False
+
+  # Gives us the number of true photons that fit our requirements for MC events
+  true_photon_data:
+    type: truePhotonDataProducer
+    config: {}
+
+  # Gives us the counts of true particles that exceed our energy thresholds for MC events
+  true_detectable_particle_data:
+    type: trueDetectableParticleCountsProducer
+    config: {}
+
+  # Tallies detectable particles that fit our requirements
+  detectable_particle_data:
+    type: recoDetectableParticleCountsProducer
+    config: {}
+
+  # Flash prediction producer. Uses data from flashmatching - a little bit unreliable as things stand
+  #flashpred:
+  #  type: FlashPredictionProducer
+  #  config: {}
+
+  # # Groups the events into sidebands, filters out backgrounds. Effectively applies cuts within the producer.
+  # # Sideband variables are set to 1 if the event qualifies, otherwise 0.
+  # event_categorizer:
+  #   type: oneGxPEventCategorizingProducer
+  #   config: 
+  #     flashPred: False
+  #     #fiducial: {"xMin":0, "xMax":256, "yMin":-116.5, "yMax":116.5, "zMin":0, "zMax":1036, "width":0}
+
+  # # Stores the event, run, and subrun of each event. Useful for getting info on specific events
+  # run_subrun_producer:
+  #   type: runSubrunProducer
+  #   config: {}
+
+  # # Finds true photons with matched reco photons and stores both energies, 
+  # # allowing for direct comparison of reco vs. true for a given shower
+  # photon_energy_producer:
+  #   type: truePhotonEnergyProducer
+  #   config: {}

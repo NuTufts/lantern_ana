@@ -28,8 +28,15 @@ class VertexPropertiesProducer(ProducerBaseClass):
             'dwall': array('f', [0.0]),
             'frac_outoftime_pixels': array('f', [0.0]),
             'frac_intime_unreco_pixels': array('f', [0.0]),
+            'fracerrPE':array('f', [0.0]),
+            'sinkhorn_div':array('f', [0.0]),
+            'predictedPEtotal':array('f', [0.0]),
+            'observedPEtotal':array('f', [0.0]),
+            'vtxKPscore':array('f', [0.0]),
+            'vtxKPtype':array('i', [0]),
             'mc_dist2true': array('f', [10000.0])
         }
+        self.WARN_NO_EXTRA_VTXINFO = False
         
     def prepareStorage(self, output):
         """Set up branches in the output ROOT TTree."""
@@ -85,14 +92,32 @@ class VertexPropertiesProducer(ProducerBaseClass):
                 try:
                     if hasattr(ntuple, "fracRecoOuttimePixels") and ntuple.fracRecoOuttimePixels[p] > max_outoftime:
                         max_outoftime = ntuple.fracRecoOuttimePixels[p]
+                    else:
+                        max_outoftime = -1.0
                     if hasattr(ntuple, "fracUnrecoIntimePixels") and ntuple.fracUnrecoIntimePixels[p] > max_intime_unreco:
                         max_intime_unreco = ntuple.fracUnrecoIntimePixels[p]
+                    else:
+                        max_intime_unreco = -1.0
                 except AttributeError: # set to -1 to indicate missing info
                     max_outoftime = -1.0
                     max_intime_unreco = -1.0
             
             self.vertex_vars['frac_outoftime_pixels'][0] = max_outoftime
             self.vertex_vars['frac_intime_unreco_pixels'][0] = max_intime_unreco
+
+            if ntuple.GetBranch("fracerrPE"):
+                # Has new flashmatch variables in the tree
+                self.vertex_vars['fracerrPE'][0] = ntuple.fracerrPE
+                self.vertex_vars['sinkhorn_div'][0] = ntuple.sinkhorn_div
+                self.vertex_vars['predictedPEtotal'][0] = ntuple.predictedPEtotal
+                self.vertex_vars['observedPEtotal'][0] = ntuple.observedPEtotal
+                self.vertex_vars['vtxKPscore'][0] = ntuple.vtxKPscore
+                self.vertex_vars['vtxKPtype'][0] = ntuple.vtxKPtype
+            else:
+                if not self.WARN_NO_EXTRA_VTXINFO:
+                    print("WARNING NO EXTRA recoVertexProperties BRANCHES (e.g. fracerrPE)")
+                    self.WARN_NO_EXTRA_VTXINFO = True
+
             
             # MC truth distance if available
             if ismc:
