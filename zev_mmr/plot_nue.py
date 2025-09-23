@@ -2,24 +2,70 @@ import os,sys
 import ROOT as rt
 import array
 
-targetpot = 4.4e19
 
-samples = ['nue','numu','extbnb','data']
 
-scaling = {"numu":targetpot/4.675690535431973e+20,
-		   "nue":targetpot/9.662529168587103e+22,
-		   "extbnb":(176153.0)/(433446.0),
-		   "data":1.0}
+"""
+POT:
+BNB nu overlay  7.88166e+20
+BNB dirt        3.05893e+20
+BNB nue overlay 1.17858e+23
+BNB ncpi0       5.01921e+21
+BNB beam-on     9.75e+19
 
-files = {"numu":"./zev_mmr/mmr_outputs/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
-		 "nue":"./zev_mmr/mmr_outputs/run1_bnb_nue_overlay_mcc9_v28_wctagger.root", 
-		 "extbnb":"./zev_mmr/mmr_outputs/run1_extbnb_mcc9_v29e_C1.root",
-		 "data":"./zev_mmr/mmr_outputs/run1_bnb5e19.root"}
+Triggers:
+BNB beam-on 23090946 
+BNB EXT     94414115
+"""
+## Run4 old??
+# targetpot = 9.75e+19
+# scaling = {"numu":targetpot/7.88166e+20,
+# 		   "nue":targetpot/1.17858e+23,
+# 		   "extbnb":(23090946)/(94414115),
+# 		   "data":1.0}
+
+run_num = 4
+
+## Run 1 
+if run_num == 1: 
+	targetpot = 4.4e19
+	scaling = {"numu":targetpot/4.675690535431973e+20,
+			"nue":targetpot/9.662529168587103e+22,
+			"extbnb":(176153.0)/(433446.0),
+			"data":1.0}
+	files = {"numu":"./zev_mmr/mmr_outputs/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
+			"nue":"./zev_mmr/mmr_outputs/run1_bnb_nue_overlay_mcc9_v28_wctagger.root", 
+			"extbnb":"./zev_mmr/mmr_outputs/run1_extbnb_mcc9_v29e_C1.root",
+			"data":"./zev_mmr/mmr_outputs/run1_bnb5e19.root"}
+	show_data = True 
+	plot_title = "Run 1"
+	# plot_title = "Run1: Inclusive CC #nu_{e} Selection"
+	out_name = "./zev_mmr/hists/nue_hists1.root"
+
+## Run 4b (Suprise Files) 
+if run_num == 4: 
+	targetpot = 1.45e+20 ## was 1.3e+20 , need rerun yaml?
+	scaling = {"numu":targetpot/7.881656209241413e+20,
+			"nue":targetpot/1.1785765118473412e+23,
+			# "extbnb":23090946.0/94414115.0,
+			"extbnb":34317881.0/96638186.0,
+			"data":1.0}
+	files = {"numu":"./zev_mmr/mmr_outputs/run4b_v10_04_07_09_BNB_nu_overlay_surprise.root",
+			"nue":"./zev_mmr/mmr_outputs/run4b_v10_04_07_09_BNB_nue_overlay_surprise.root", 
+			"extbnb":"./zev_mmr/mmr_outputs/run4b_v10_04_07_09_extbnb.root",
+			"data":"./zev_mmr/mmr_outputs/run4b_beamon.root"}
+	show_data = False 
+	plot_title = "Run 4b"
+	# plot_title = "Run4b: Inclusive CC #nu_{e} Selection"
+	out_name = "./zev_mmr/hists/nue_hists4.root"
+	
+
 
 rt.gStyle.SetOptStat(0)
 
 tfiles = {}
 trees = {}
+
+samples = ['nue','numu','extbnb','data']
 
 for sample in samples:
 	tfiles[sample] = rt.TFile( files[sample] )
@@ -27,7 +73,8 @@ for sample in samples:
 	nentries = trees[sample].GetEntries()
 	print(f"sample={sample} has {nentries} entries")
 
-out = rt.TFile("./zev_mmr/nue_hists.root","recreate")
+## Output file (must be set after loading samples)
+out = rt.TFile(out_name,"recreate")
 
 # NEW: Base cuts using NeutrinoSelectionProducer variables
 # These implement the 6 cuts for electron neutrino selection
@@ -47,7 +94,7 @@ print(f"Base cuts using NeutrinoSelectionProducer (νe CC Selection): {base_cut}
 categories = {
 	'cosmic': {
 		'samples': ['extbnb'],
-		'truth_cut': '',  # No truth cut for cosmic background
+		'truth_cut': f' ',  # No truth cut for cosmic background
 		'color': rt.kGray+2,  # Dark gray
 		'fill_style': 1001,   # Solid fill
 		'legend': 'Cosmic bkgd'
@@ -80,7 +127,7 @@ categories = {
 		'fill_style': 1001,   # Solid fill
 		'legend': 'CC #nu_{#mu}'
 	},
-	'data': {
+		'data': {
 		'samples': ['data'],
 		'truth_cut': '',  # No truth cut for data
 		'color': rt.kBlack,   # Black line
@@ -88,6 +135,9 @@ categories = {
 		'legend': 'Data'
 	}
 }
+
+if not show_data: 
+	del categories['data']
 
 # Function to create custom binning for neutrino energy (combines first two bins)
 def create_neutrino_energy_binning():
@@ -109,23 +159,25 @@ def create_variable_binning_hist(name, title, bin_edges):
 	hist.Sumw2()
 	return hist
 
+legend_POT_string = " Events Per "+str(targetpot)+" POT"
+
 # Define variables to plot - updated for electron neutrino analysis
 variables = {
 	'neutrino_energy': {
 		'var': 'nueIncCC_reco_nu_energy',
 		'custom_binning': True,
 		'bin_edges': create_neutrino_energy_binning(),
-		'title': 'Inclusive CC #nu_{e} Selected Events; Reconstructed Neutrino Energy (GeV); Events per 4.4e+19 POT',
+		'title': plot_title+'; Reconstructed Neutrino Energy (GeV); '+legend_POT_string,
 		'cut_suffix': '',  # No additional cut
 		'has_overflow': True,
-		'y_max': 13  # Set fixed y-axis maximum
+		'y_max': 30  # Set fixed y-axis maximum
 	},
 	'electron_momentum': {
 		'var': 'nueIncCC_reco_electron_momentum',
 		'nbins': 8,
 		'xmin': 0.0,
 		'xmax': 1.5,
-		'title': 'Inclusive CC #nu_{e} Selected Events; Reconstructed Electron Momentum (GeV/c); Events per 4.4e+19 POT',
+		'title': plot_title+'; Reconstructed Electron Momentum (GeV); '+legend_POT_string,
 		'cut_suffix': '&& (nueIncCC_reco_electron_momentum>0)',  # Valid momentum only
 		'custom_binning': False,
 		'has_overflow': True
@@ -134,7 +186,7 @@ variables = {
 		'var': 'nueIncCC_reco_electron_costheta',
 		'custom_binning': True,
 		'bin_edges': create_costheta_binning(),
-		'title': 'Inclusive CC #nu_{e} Selected Events; Reconstructed Electron cos(#theta); Events per 4.4e+19 POT',
+		'title': plot_title+'; Reconstructed Electron cos(#theta); '+legend_POT_string,
 		'cut_suffix': '&& (nueIncCC_reco_electron_costheta>-900)',  # Valid cos(theta) only
 		'has_underflow': True  # Special flag to indicate this variable has underflow bin
 	}
@@ -287,9 +339,9 @@ for var_name, var_info in variables.items():
 	h_uncertainty = None
 	if h_total_mc is not None:
 		h_uncertainty = h_total_mc.Clone(f"h_uncertainty_{var_name}")
-		h_uncertainty.SetFillColor(rt.kBlue)
+		h_uncertainty.SetFillColor(rt.kGray+1)
 		h_uncertainty.SetFillStyle(3002)  # Hatched pattern
-		h_uncertainty.SetLineColor(rt.kBlue)
+		h_uncertainty.SetLineColor(rt.kGray+1)
 		h_uncertainty.SetLineWidth(1)
 		h_uncertainty.SetMarkerSize(0)
 
@@ -298,10 +350,10 @@ for var_name, var_info in variables.items():
 	data_max = hists['data'].GetMaximum() if 'data' in hists else 0
 
 	# Set y-axis maximum - use fixed value for neutrino energy, calculated for others
-	if var_name == 'neutrino_energy' and 'y_max' in var_info:
-		y_max = var_info['y_max']
-	else:
-		y_max = max(stack_max, data_max) * 1.3
+	# if var_name == 'neutrino_energy' and 'y_max' in var_info:
+	# 	y_max = var_info['y_max']
+	# else:
+	y_max = max(stack_max, data_max) * 1.5
 
 	if stack_max > data_max:
 		hstack.SetTitle(var_info['title'])
@@ -351,19 +403,19 @@ for var_name, var_info in variables.items():
 			hists['data'].GetXaxis().CenterTitle()
 
 	# Add underflow text for cos theta plot
-	if var_name == 'electron_costheta' and var_info.get('has_underflow', False):
-		# Create text object for underflow label
-		underflow_text = rt.TText()
-		underflow_text.SetTextSize(0.03)
-		underflow_text.SetTextAlign(22)  # Center alignment
-		underflow_text.SetTextColor(rt.kBlack)
+	# if var_name == 'electron_costheta' and var_info.get('has_underflow', False):
+	# 	# Create text object for underflow label
+	# 	underflow_text = rt.TText()
+	# 	underflow_text.SetTextSize(0.03)
+	# 	underflow_text.SetTextAlign(22)  # Center alignment
+	# 	underflow_text.SetTextColor(rt.kBlack)
 		
-		# Position the text below the first bin
-		hist_for_axis = hstack if hstack.GetHists() else hists['data']
-		x_pos = hist_for_axis.GetXaxis().GetBinCenter(1)
-		y_pos = -0.08 * y_max  # Position below x-axis
+	# 	# Position the text below the first bin
+	# 	hist_for_axis = hstack if hstack.GetHists() else hists['data']
+	# 	x_pos = hist_for_axis.GetXaxis().GetBinCenter(1)
+	# 	y_pos = -0.08 * y_max  # Position below x-axis
 		
-		underflow_text.DrawText(x_pos, y_pos, "underflow")
+	# 	underflow_text.DrawText(x_pos, y_pos, "underflow")
 
 	# Create and configure legend
 	legend = rt.TLegend(0.65, 0.50, 0.89, 0.89)
@@ -418,5 +470,7 @@ for var_name, var_info in variables.items():
 		print(f"NC background: {nc_events/total_mc*100:.1f}%")
 
 	print(f"Plot saved for {var_name}")
+
+print("\nSaved to", out_name)
 
 out.Close()
