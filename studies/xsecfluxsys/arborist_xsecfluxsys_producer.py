@@ -341,10 +341,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 hists['cv'].Write()
                 hists['N'].Write()
             for (sample,par),arr in varinfo['sample_array'].items():
-
                 # save result of all variations for this parameter
-                hname = "h{varname}__{sample}__{par}__allvariations"
-                print("Fill variation hist: ",hname)
+                hname = f"h{varname}__{sample}__{par}"
+                print("Fill variation hist: ",hname,": shape=",arr.shape)
                 xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
                 xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()
                 hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )
@@ -352,18 +351,23 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                     for j in range(arr.shape[1]):
                         hout.SetBinContent( i, j+1, arr[i,j] )
 
-                hname_mean = "h{varname}__{sample}__{par}_mean"
+                hname_mean = f"h{varname}__{sample}__{par}_mean"
                 hmean = rt.TH1D( hname_mean, "", arr.shape[0]-2, xmin, xmax )
-                hname_var = "h{varname}__{sample}__{par}_variance"
+                hname_var = f"h{varname}__{sample}__{par}_variance"
                 hvar  = rt.TH1D( hname_var, "", arr.shape[0]-2, xmin, xmax )
                 for i in range(arr.shape[0]):
                     hmean.SetBinContent(i,arr[i,:].mean())
                     if arr.shape[1]>2:
                         hvar.SetBinContent(i,arr[i,:].var())
-                        hmean.SetBinError(i,arr[i,:].var())
+                        hmean.SetBinError(i,arr[i,:].std())
+                    elif arr.shape[1]==2:
+                        # for parameters with only 2 variations
+                        # use half the difference as the std
+                        xdiff = 0.5*np.abs(arr[i,1]-arr[i,0])
+                        hvar.SetBinContent(i,xdiff*xdiff)
+                        hmean.SetBinError(i,xdiff)
                     else:
-                        hvar.SetBinContent(i,0.5*np.abs(arr[i,1]-arr[i,0]))
-                        hmean.SetBinError(i,0.5*np.abs(arr[i,1]-arr[i,0]))
+                        continue
                 hmean.Write()
                 hvar.Write()
 

@@ -17,13 +17,13 @@ scaling = {"numu_cc":targetpot/7.881656209241413e+20,
            "dirt":targetpot/3.05893e+20,
            "data":1.0
 }
-files = {"numu_cc":"./output_numu_run4b/run4b_bnb_nu_overlay_surprise.root",
-         #"numu_cc":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "data":"./output_numu_run4b/run3b_bnb_nu_overlay_500k_CV.root",
-         #"data":"./output_numu_run4b/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250821_075426.root",
-         "numu_bg":"./output_numu_v3dev/run1_bnb_nu_overlay_mcc9_v28_wctagger.root",
-         "extbnb":"./output_numu_run4b/run1_extbnb_mcc9_v29e_C1.root",
-         #"data":"./output_numu_run4b/run1_bnb5e19_20250821_072411.root"
+
+files = {
+    "numu_cc":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
+    "numu_bg":"./output_numu_run4b_weights/run4b_v10_04_07_09_BNB_nu_overlay_surprise_20250906_040103.root",
+     "extbnb":"./output_numu_run4b_weights/run4b_v10_04_07_09_extbnb_20250905_172804.root",
+       "dirt":"./output_numu_run4b_weights/",
+       "data":"./output_numu_run4b_weights/run4b_beamon_20250905_172855.root",
 }
 
 files = {
@@ -169,8 +169,7 @@ for var, nbins, xmin, xmax, htitle, setlogy, ismc in vars:
         hdataratio.GetYaxis().SetTitle("data/MC ratio")
 
     canvs[var].Update()
-    # canvas.Write()
-    out.Write() 
+    canvs[var].SaveAs(f"{plot_folder}/c{var}.png")
 
     # print("[enter] to continue")
     #input()
