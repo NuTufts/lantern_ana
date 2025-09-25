@@ -22,7 +22,7 @@ datasets:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
     - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
     - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
-    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_tki/output_tki_dev/
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_dev
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: analysis_tree
