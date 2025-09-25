@@ -47,13 +47,13 @@ producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
-      run: event_index_run
-      subrun: event_index_subrun
-      event: event_index_event
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
       maxvalidweight: 10.0
       allow_missing_weights: True
       rootfilepaths:
-        run1_bnb_nu_overlay_mcc9_v28_wctagger: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
+        run1_bnb_nu_overlay_mcc9_v28_wctagger: /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
       par_variations_to_include:
         - expskin_FluxUnisim
         - horncurrent_FluxUnisim
