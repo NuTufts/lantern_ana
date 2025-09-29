@@ -29,7 +29,7 @@ datasets:
     ismc: true
     process: true
     filepaths:
-     - run1_bnb_nu_overlay_mcc9_v28_wctagger_20250916_101220.root
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger_20250929_135002.root
   #run1_bnb_nu_overlay_mcc9_v28_wctagger:
   #  type: RootDataset
   #  tree: EventTree
