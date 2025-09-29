@@ -58,6 +58,9 @@ cuts: {}
 
 # Producer configuration
 producers:
+  eventIndex: 
+    type: eventIndexProducer
+    config: {}
   trueNu:
     type: trueNuPropertiesProducer
     config: {}
