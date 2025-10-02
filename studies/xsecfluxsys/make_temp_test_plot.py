@@ -5,7 +5,7 @@ from math import sqrt
 rfile = rt.TFile("temp_covar.root")
 
 histmodes = ['cv','w','w2','N']
-variables = ['visible_energy']
+variables = ['delPTT','pN','delAlphaT']
 samples   = ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
 flux_params = [
     "expskin_FluxUnisim",
