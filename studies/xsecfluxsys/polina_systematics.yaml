@@ -87,12 +87,28 @@ producers:
         pass_selection: "{ntuple.numuCC1piNp_is_target_cc_numu_1pi_nproton}==1"
       event_selection_critera: ['pass_selection']
       bin_config: 
-        visible_energy:
-          formula: visible_energy
-          numbins: 30
-          minvalue: 0.0
-          maxvalue: 3000.0
+        delPTT:
+          formula: numuCC1piNpReco_delPTT
+          numbins: 50
+          minvalue: -1.0
+          maxvalue: 1.0
           # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: []
+        pN:
+          formula:  numuCC1piNpReco_pN
+          numbins: 50
+          minvalue: 0.0
+          maxvalue: 1.6
+          #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: []
+        delAlphaT:
+          formula:  numuCC1piNpReco_delAlphaT
+          numbins: 50
+          minvalue: 0.0
+          maxvalue: 180.0
+          #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
           apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
 
