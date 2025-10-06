@@ -569,3 +569,6 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
 
         return out
 
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return

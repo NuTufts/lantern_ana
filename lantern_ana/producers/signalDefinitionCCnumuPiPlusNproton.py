@@ -244,3 +244,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         W2 = (mom4*mom4*gii).sum()
 
         return np.sqrt(W2)
+
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return
