@@ -18,10 +18,10 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /home/twongjirad/working/data/ntuples/
-    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
-    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
+    #- /home/twongjirad/working/data/ntuples/
+    #- /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    #- /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
+    #- /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
     - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_dev
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
@@ -84,12 +84,12 @@ producers:
         - reinteractions_piplus_Geant4
         - reinteractions_proton_Geant4
       cut_formulas:
-        pass_selection: "{ntuple.numuCC1piNp_is_target_cc_numu_1pi_nproton}==1"
+        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
       event_selection_critera: ['pass_selection']
       bin_config: 
         delPTT:
           formula: numuCC1piNpReco_delPTT
-          numbins: 50
+          numbins: 25
           minvalue: -1.0
           maxvalue: 1.0
           # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
@@ -97,7 +97,7 @@ producers:
           criteria: []
         pN:
           formula:  numuCC1piNpReco_pN
-          numbins: 50
+          numbins: 25
           minvalue: 0.0
           maxvalue: 1.6
           #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
@@ -105,7 +105,7 @@ producers:
           criteria: []
         delAlphaT:
           formula:  numuCC1piNpReco_delAlphaT
-          numbins: 50
+          numbins: 10
           minvalue: 0.0
           maxvalue: 180.0
           #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
