@@ -56,3 +56,7 @@ class TruthModeProducer(ProducerBaseClass):
             self.truth_mode.assign("unknown")
         
         return {"mode":self.truth_mode}
+
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return

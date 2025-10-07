@@ -79,3 +79,7 @@ class TrueVertexPropertiesProducer(ProducerBaseClass):
         for var_name, var_array in self.vertex_vars.items():
             results[var_name] = var_array[0]
         return results
+        
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return

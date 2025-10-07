@@ -51,3 +51,7 @@ class eventWeightProducer(ProducerBaseClass):
             self.eventweight[0] = 1.0
         
         return {"weight":self.eventweight[0]}
+
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return
