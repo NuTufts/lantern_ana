@@ -159,12 +159,14 @@ class UBDetSysProducer(ProducerBaseClass):
         """
 
         self.outfile.cd()
-
         self.histograms = {} # keys are (histname,variation)
 
         for histname in self._bin_config_list:
             vardict = self._bin_config_list[histname]
             nbins = vardict['numbins']
+            hname_cv = f"h{histname}__CVCV"
+            hcv = rt.TH1D(hname_cv,"",nbins, vardict['minvalue'],vardict['maxvalue'])
+            self.histograms[(histname,'CVCV','cv')] = hcv
             for var in self.variation_names:
                 # we save a histogram to
                 # 1. help us look up the bin position for this observable
@@ -201,6 +203,9 @@ class UBDetSysProducer(ProducerBaseClass):
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """Determine if event is signal nue CC inclusive."""
         ntuple = data["gen2ntuple"]
+        datasetname = params.get('dataset_name')
+        if datasetname != self.cv_dataset:
+            return {}
         ismc = params.get('ismc', False)
         if ismc==False:
             return {}
@@ -269,6 +274,8 @@ class UBDetSysProducer(ProducerBaseClass):
 
             if cv_passes:
                 x_cv = self._process_variable_formula( ntuple, histdict['formula'] )
+                # fill the CV histogram
+                self.histograms[ (histname,'CVCV','cv') ].Fill( x_cv, eventweight )
             else:
                 x_cv = None 
 
