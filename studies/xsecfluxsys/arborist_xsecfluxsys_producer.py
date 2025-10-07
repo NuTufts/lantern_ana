@@ -47,8 +47,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         We also want correlations amongst all bins
           1. so we need to save  Sum[w_i*w_j] as well
         what do we need for a bin definition?
-          1. observable to bin
-          2. bin bounds
+          1. observable quantify to histogram
+          2. bin bounds: 
+             - either use binedges with N+1 values to specify N bins 
+             - or provide numbins, minvalue, and maxvalue to define uniform-spaced bins
           3. criteria to be filled within the bin
           4. sample that contributes to the bin
         
@@ -157,11 +159,6 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """
         ibin_global = 0
 
-        hlist_cv = []
-        hlist_w = []
-        hlist_w2 = []
-        hlist_n = []
-
         self.variable_list = []
         self.var_bininfo = {}
 
@@ -169,6 +166,17 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
         for varname in self._bin_config_list:
             vardict = self._bin_config_list[varname]
+
+            binedges = vardict.get('binedges',[])
+            if len(binedges)==0:
+                # specify uniform bins
+                bintype = 'uniform'
+            else:
+                # specify binedges
+                if len(binedges)==1:
+                    raise ValueError("When specifying bin edges, need 2 or more edges. Only 1 given.")
+                bintype = 'binedges'
+
             var_bin_info = {
                 'formula':vardict['formula'],
                 'samples':vardict['apply_to_datasets'],
@@ -176,8 +184,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'numbins':vardict['numbins'],
                 'sample_hists':{},
                 'sample_array':{}, # we save an array (nbins,nvariations) for each (sample,par) combination. So many!
-                'ibin_start':ibin_global
+                'ibin_start':ibin_global,
+                'bintype':bintype
             }
+
 
             nbins = vardict['numbins']
             for sample in vardict['apply_to_datasets']:
@@ -187,7 +197,15 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 hname = f"h{varname}_{sample}"
                 var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','N']:
-                    h = rt.TH1D(hname+f"_{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    hvar_name = hname+f"_{x}"
+
+                    if var_bin_info['bintype']=='uniform':
+                        h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    elif var_bin_info['bintype']=='binedges':
+                        bin_array = array('f',binedges)
+                        nbins = len(binedges)-1
+                        h = rt.TH1D(hvar_name,"",nbins, bin_array)
+
                     var_bin_info['sample_hists'][sample][x] = h
                 # we make a dictionary with a slot for an array
                 # we create the actual array later once we know the number of variations of each parameter

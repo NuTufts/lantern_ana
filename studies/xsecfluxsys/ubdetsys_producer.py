@@ -163,9 +163,20 @@ class UBDetSysProducer(ProducerBaseClass):
 
         for histname in self._bin_config_list:
             vardict = self._bin_config_list[histname]
-            nbins = vardict['numbins']
+
+            binedges = vardict.get('binedges',[])
             hname_cv = f"h{histname}__CVCV"
-            hcv = rt.TH1D(hname_cv,"",nbins, vardict['minvalue'],vardict['maxvalue'])
+            if len(binedges)==0:
+                # specify using numbins and min-max value
+                nbins = vardict['numbins']
+                hcv = rt.TH1D(hname_cv,"",nbins, vardict['minvalue'],vardict['maxvalue'])
+            else:
+                if len(binedges)==1:
+                    raise ValueError("When specifying bin edges, need 2 or more edges. Only 1 given.s")
+                bin_array = array('f',binedges)
+                nbins = len(binedges)-1
+                hcv = rt.TH1D(hname_cv,"",nbins, bin_array )
+
             self.histograms[(histname,'CVCV','cv')] = hcv
             for var in self.variation_names:
                 # we save a histogram to
@@ -173,7 +184,12 @@ class UBDetSysProducer(ProducerBaseClass):
                 # 2. store the central value and the number of entries per bin
                 hname = f"h{histname}__{var}"
                 for x in ['cv','var']:
-                    h = rt.TH1D(hname+f"__{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    if len(binedges)==0:
+                        h = rt.TH1D(hname+f"__{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    else:
+                        bin_array = array('f',binedges)
+                        nbins = len(binedges)-1
+                        h = rt.TH1D(hname+f"__{x}","",nbins, bin_array )
                     self.histograms[(histname,var,x)] = h
 
         print("Number of histograms defined: ",len(self.histograms))

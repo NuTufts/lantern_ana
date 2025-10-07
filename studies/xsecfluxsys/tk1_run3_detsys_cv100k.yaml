@@ -112,9 +112,7 @@ producers:
            - 'wiremodThetaYZ'
         numuCC1piNpReco_muKE:
           formula: numuCC1piNpReco_muKE
-          numbins: 30
-          minvalue: 0.0
-          maxvalue: 1500.0
+          binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
           applicable_variations:
            - 'LYAtt'
            - 'LYDown'
