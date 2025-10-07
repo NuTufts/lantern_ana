@@ -43,3 +43,7 @@ class trueNuPropertiesProducer(ProducerBaseClass):
         self.Enu[0] = ntuple.trueNuE
         
         return {"Enu":self.Enu[0]}
+    
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return

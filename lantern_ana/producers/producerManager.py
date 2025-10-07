@@ -413,6 +413,20 @@ class ProducerManager:
         self.logger.debug(f"Event {self.total_events_processed} completed in {total_event_time:.4f}s")
         
         return results
+
+    def finalize(self) -> None:
+        """
+        """
+        self.logger.info("Run finalize for producers ...")
+        
+        for name in self.execution_order:
+            try:
+                producer = self.producers[name]
+                producer.finalize()
+                
+            except Exception as e:
+                self.logger.error(f"finalize() call failed for producer '{name}': {e}")
+                raise
     
     def get_producer_outputs(self) -> Dict[str, Any]:
         """

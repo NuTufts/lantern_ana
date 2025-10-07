@@ -72,3 +72,11 @@ class ProducerBaseClass(ABC):
             The output of the producer for this event
         """
         pass
+
+
+    @abstractmethod
+    def finalize(self) -> None:
+        """
+        Called after all event loops finished.
+        """
+        return None
