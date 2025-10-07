@@ -155,6 +155,7 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'delPTT':array('f',[0.0]),
           'pN':array('f',[0.0]),
           'delAlphaT':array('f',[0.0]),
+          'event_is_contained':array('i',[0]),
           'is_target_1mu1piNproton':array('i',[0])
         }
         self._counts = {
@@ -516,6 +517,11 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             energyPi = recoPiE/1000. # convert to GeV
             pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
             energyP = recoPE/1000. # convert to GeV
+
+          # is event contained? 
+            is_contained = ntuple.vtxContainment # event-wide variable
+            self._vars['event_is_contained'][0] = is_contained
+
 
           # calculate and save tki
             eNu = ntuple.recoNuE/1000. # convert to MeV
