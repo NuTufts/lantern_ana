@@ -1,0 +1,72 @@
+# tki_run3_detresponse.yaml: Create Detector Response Matrix for Run 3 MC
+
+# Output directory
+output_dir: "./output_tki_run3_detresponse/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: False
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+  mcc9_v29e_dl_run3b_bnb_nu_overlay_CV:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+     - mcc9_v29e_dl_run3b_bnb_nu_overlay_CV_20251007_100019.root
+
+# Producer configuration (producers run first)
+producers:
+  detresponse_pN:
+    type: DetResponseMatrixProducer
+    config:
+      xbinconfig: 
+        variable_formula: (ntuple.numuCC1piNp_pN)*1000.0
+        numbins: 20
+        minvalue: 0.0
+        maxvalue: 2000.0
+      ybinconfig:
+        variable_formula: (ntuple.numuCC1piNpReco_pN)*1000.0
+        numbins: 20
+        minvalue: 0.0
+        maxvalue: 2000.0
+      event_weight_formula: ntuple.eventweight_weight
+      apply_to_datasets:
+        - mcc9_v29e_dl_run3b_bnb_nu_overlay_CV
+      cut_formulas:
+        pass_reco_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+        pass_truth_selection: "{ntuple.numuCC1piNp_is_target_cc_numu_1pi_nproton}==1"
+      event_selection_critera: ['pass_reco_selection','pass_truth_selection']
+  detresponse_alphaT:
+    type: DetResponseMatrixProducer
+    config:
+      xbinconfig: 
+        variable_formula: (ntuple.numuCC1piNp_delAlphaT)
+        numbins: 10
+        minvalue: 0.0
+        maxvalue: 180.0
+      ybinconfig:
+        variable_formula: (ntuple.numuCC1piNpReco_delAlphaT)
+        numbins: 10
+        minvalue: 0.0
+        maxvalue: 180.0
+      event_weight_formula: ntuple.eventweight_weight
+      apply_to_datasets:
+        - mcc9_v29e_dl_run3b_bnb_nu_overlay_CV
+      cut_formulas:
+        pass_reco_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+        pass_truth_selection: "{ntuple.numuCC1piNp_is_target_cc_numu_1pi_nproton}==1"
+      event_selection_critera: ['pass_reco_selection','pass_truth_selection']
+

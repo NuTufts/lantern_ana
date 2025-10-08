@@ -125,6 +125,26 @@ class MyProducer(ProducerBaseClass):
         # Calculate your quantity
         self.my_variable[0] = some_calculation(ntuple)
         return {"var": self.my_variable[0]}
+	
+    def finalize(self):
+    	""" no action needed after event loop """
+        return
+```
+
+You can make a template for your producer using the following utility script:
+
+```
+$ generate_producer_template.py [producer_name]
+```
+
+```
+Usage:
+  generate_producer_template.py MyProducerName
+
+Examples:
+  python3 generate_producer_template.py TrackShowerRatioProducer
+  python3 generate_producer_template.py EventTopologyProducer
+  python3 generate_producer_template.py MissingEnergyProducer
 ```
 
 ### Custom Cut Template
