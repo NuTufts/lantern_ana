@@ -85,3 +85,10 @@ class MuonPropertiesProducer(ProducerBaseClass):
             "energy": self.muon_energy[0],
             "pid_score": self.muon_pid_score[0]
         }
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

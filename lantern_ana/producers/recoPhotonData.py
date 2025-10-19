@@ -257,14 +257,21 @@ class recoPhotonDataProducer(ProducerBaseClass):
             self.photonFromCharged[0] = min(photonFromChargedScores)
 
         #Store the data as a dictionary:
-        photonDataDict = {"nphotons":self.nphotons[0], 
-            "energy":self.photonEnergies[0], 
-            "posX":self.photonPositionX[0], 
-            "posY":self.photonPositionY[0], 
-            "posZ": self.photonPositionZ[0], 
+        photonDataDict = {"nphotons":self.nphotons[0],
+            "energy":self.photonEnergies[0],
+            "posX":self.photonPositionX[0],
+            "posY":self.photonPositionY[0],
+            "posZ": self.photonPositionZ[0],
             "photonFromCharged": self.photonFromCharged[0],
             "minComp": self.minComp[0],
             "minPur": self.minPur[0]
         }
 
         return photonDataDict
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

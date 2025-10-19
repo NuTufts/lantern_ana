@@ -46,3 +46,10 @@ class VisibleEnergyProducer(ProducerBaseClass):
                 self.total_visible_energy[0] += ntuple.showerRecoE[i]
         
         return {"evis":self.total_visible_energy[0]}
+
+    def finalize(self):
+        super().finalize()
+        """
+        nothing to do after the event loop
+        """
+        return

@@ -360,6 +360,13 @@ class FVtagProducer(ProducerBaseClass):
             # 'my_variable': self.my_variable[0],
         }
 
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return
+
 # ==========================================
 # HELPFUL PHYSICS FORMULAS AND EXAMPLES
 # ==========================================

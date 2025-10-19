@@ -42,5 +42,12 @@ class CutResultProducer(ProducerBaseClass):
         
         if result:
             self.cut_result[0] = 1
-        
+
         return self.cut_result[0]
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return
