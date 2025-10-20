@@ -2,6 +2,9 @@ import os,sys
 import ROOT as rt
 rt.gStyle.SetOptStat(0)
 
+output_plot_folder="./plots_flashvariables/"
+os.system(f"mkdir {output_plot_folder}")
+
 #rootfilepath = "./output_numu_run3b/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251019_181154_nopescale.root"
 rootfilepath = "./output_numu_run3b/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251019_200712.root"
 rootfile = rt.TFile(rootfilepath)
@@ -31,6 +34,7 @@ hpefrac_max.Draw()
 hnn_pefrac.Draw("same")
 hub_pefrac.Draw("same")
 cfracerr.Update()
+cfracerr.SaveAs(f"{output_plot_folder}/pe_fracerr.png")
 
 # PE Total Plot
 ctotpe = rt.TCanvas("ctotpe", "Total PE",800,600)
@@ -53,6 +57,7 @@ htotpe_max.Draw()
 hnn_totpe.Draw("same")
 hub_totpe.Draw("same")
 ctotpe.Update()
+ctotpe.SaveAs(f"{output_plot_folder}/totpe.png")
 
 # PE per PMT
 cpeperpmt = rt.TCanvas("cpeperpmt", "PE per PMT",800,600)
@@ -75,6 +80,7 @@ hpeperpmt_max.Draw()
 hnn_peperpmt.Draw("same")
 hub_peperpmt.Draw("same")
 cpeperpmt.Update()
+cpeperpmt.SaveAs(f"{output_plot_folder}/pe_per_pmt.png")
 
 # PE per PMT: Low PE
 clowpeperpmt = rt.TCanvas("clowpeperpmt", "Low PE per PMT",800,600)
@@ -97,6 +103,7 @@ hlowpeperpmt_max.Draw()
 hnn_lowpeperpmt.Draw("same")
 hub_lowpeperpmt.Draw("same")
 clowpeperpmt.Update()
+clowpeperpmt.SaveAs(f"{output_plot_folder}/lowpe_per_pmt.png")
 
 # Diff PE per PMT
 cdiffpmtpe = rt.TCanvas("cdiffpmtpe", "Difference PE per PMT",800,600)
@@ -109,6 +116,7 @@ hnn_diffpmtpe.SetLineColor(rt.kRed)
 analysis_tree.Draw("flashpred_nnmodel_pe_per_pmt-flashpred_ublm_pe_per_pmt>>hnn_diffpmtpe",f"flashpred_nnmodel_pe_per_pmt>=0.0 && ({numu_cut})")
 hnn_diffpmtpe.Draw()
 cdiffpmtpe.Update()
+cdiffpmtpe.SaveAs(f"{output_plot_folder}/diff_pmtpe.png")
 
 
 # BALANCED SINKHORN PLOT
@@ -132,6 +140,7 @@ hbalsinkdiv_max.Draw()
 hnn_balsinkdiv.Draw("same")
 hub_balsinkdiv.Draw("same")
 cbalsinkdiv.Update()
+cbalsinkdiv.SaveAs(f"{output_plot_folder}/balanced_sinkhorn_divergence.png")
 
 # UNBALANCED SINKHORN PLOT
 cunbsinkdiv = rt.TCanvas("cunbsinkdiv", "Unbalanced Sinkhorn Divergences",800,600)
@@ -154,6 +163,8 @@ hunbsinkdiv_max.Draw()
 hnn_unbsinkdiv.Draw("same")
 hub_unbsinkdiv.Draw("same")
 cunbsinkdiv.Update()
+cunbsinkdiv.SaveAs(f"{output_plot_folder}/unbalanced_sinkhorn_divergence.png")
+
 
 # UNBALANCED SINKHORN DIFF PLOT
 cdiff_unbsinkdiv = rt.TCanvas("cdiff_unbsinkdiv", "Unbalanced Sinkhorn Divergence Difference",800,600)
@@ -166,6 +177,7 @@ hdiff_unbsinkdiv.SetLineColor(rt.kRed)
 analysis_tree.Draw("flashpred_nnmodel_unbalanced_sinkdiv-flashpred_ublm_unbalanced_sinkdiv>>hdiff_unbsinkdiv",f"flashpred_nnmodel_unbalanced_sinkdiv>=0.0 && ({numu_cut})")
 hdiff_unbsinkdiv.Draw()
 cdiff_unbsinkdiv.Update()
+cdiff_unbsinkdiv.SaveAs(f"{output_plot_folder}/diff_unbalanced_sinkhorn.png")
 
 # BALANCED SINKHORN DIFF PLOT
 cdiff_balsinkdiv = rt.TCanvas("cdiff_sinkdiv", "Balanced Sinkhorn Divergence Difference",800,600)
@@ -178,6 +190,7 @@ hdiff_balsinkdiv.SetLineColor(rt.kRed)
 analysis_tree.Draw("flashpred_nnmodel_balanced_sinkdiv-flashpred_ublm_balanced_sinkdiv>>hdiff_balsinkdiv",f"flashpred_nnmodel_balanced_sinkdiv>=0.0 && ({numu_cut})")
 hdiff_balsinkdiv.Draw()
 cdiff_balsinkdiv.Update()
+cdiff_balsinkdiv.SaveAs(f"{output_plot_folder}/diff_balanced_sinkhorn.png")
 
 
 print("[enter] to exit")
