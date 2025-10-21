@@ -57,6 +57,7 @@ class FlashmodelVariablesProducer(ProducerBaseClass):
         self.flashvariables = {}
         self.flashvariables['observed_pe_per_pmt']        = array('f',[0.0]*self.NPMTS)
         self.flashvariables['observed_totpe']             = array('f',[0.0])
+        self.flashvariables['cosmic_totpe']               = array('f',[0.0])        
 
         self.flashvariables['nnmodel_pe_per_pmt']         = array('f',[0.0]*self.NPMTS)
         self.flashvariables['nnmodel_totpe']              = array('f',[0.0])
@@ -273,6 +274,10 @@ class FlashmodelVariablesProducer(ProducerBaseClass):
             for i in range(min(self.NPMTS, flashtree.obs_pe_per_pmt.size())):
                 self.flashvariables['observed_pe_per_pmt'][i] = flashtree.obs_pe_per_pmt[i]
             self.flashvariables['observed_totpe'][0] = flashtree.obs_total_pe
+        if hasattr(flashtree, 'cosmic_pe_per_pmt'):
+            #for i in range(min(self.NPMTS, flashtree.obs_pe_per_pmt.size())):
+            #    self.flashvariables['observed_pe_per_pmt'][i] = flashtree.obs_pe_per_pmt[i]
+            self.flashvariables['cosmic_totpe'][0] = flashtree.cosmic_total_pe
 
         return self.return_variables()
 
