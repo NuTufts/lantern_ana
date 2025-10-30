@@ -5,6 +5,7 @@ from scipy import constants
 epsilon = 0.0309
 
 # grab momentum from KE in reco
+# takes recoE and mass of particle in MeV, returns in GeV
 def recoMomCalc(recoE, mass):
     p = recoE + mass
     return np.sqrt( p**2 - mass**2 ) / 1000. # conversion from MeV to GeV

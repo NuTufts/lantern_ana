@@ -29,9 +29,9 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         self.fv_params['usetruevtx'] = True
 
         # mass values
-        self.mp  = 938.27209
-        self.mpi = 139.57039
-        self.mmu = 105.66
+        self.mp  = 938.27209 # MeV
+        self.mpi = 139.57039 # MeV
+        self.mmu = 105.66 # MeV
         
         # Output variables 
         self._vars = {
@@ -46,7 +46,25 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             'delPTT':array('f',[0.0]),
             'pN':array('f',[0.0]),
             'delAlphaT':array('f',[0.0]),
-            'hadronicM':array('f',[0.0])
+            'hadronicM':array('f',[0.0]),
+            'debug_eNu':array('f',[0.0]),
+            'debug_zX':array('f',[0.0]),
+            'debug_zY':array('f',[0.0]),
+            'debug_zZ':array('f',[0.0]),
+            'debug_muMomFromDirX':array('f',[0.0]),
+            'debug_muMomFromDirY':array('f',[0.0]),
+            'debug_muMomFromDirZ':array('f',[0.0]),
+            'debug_piMomFromDirX':array('f',[0.0]),
+            'debug_piMomFromDirY':array('f',[0.0]),
+            'debug_piMomFromDirZ':array('f',[0.0]),
+            'debug_pMomFromDirX':array('f',[0.0]),
+            'debug_pMomFromDirY':array('f',[0.0]),
+            'debug_pMomFromDirZ':array('f',[0.0]),
+            'debug_delPT':array('f',[0.0]),
+            'debug_pL':array('f',[0.0]),
+            'debug_energyMu':array('f',[0.0]),
+            'debug_energyPi':array('f',[0.0]),
+            'debug_energyP':array('f',[0.0])
         }
 
     def get_default_particle_thresholds(self):
@@ -202,7 +220,7 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
         if nprim_mu==1 and nprim_charged_pi==1 and nprim_proton>=1:
             self._vars['is_target_cc_numu_1pi_nproton'][0] = 1
             
-            eNu = ntuple.trueNuE
+            eNu = ntuple.trueNuE # already in GeV
 
             z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
             delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
@@ -217,6 +235,26 @@ class signalDefinitionCCnumuPiPlusNProton(ProducerBaseClass):
             self._vars['delAlphaT'][0] = math.degrees(delAlphaT)
 
             self._vars['hadronicM'][0] = self._calc_hadronic_invariant_mass( piMomFromDir, pMomFromDir, muMomFromDir )
+
+            # debug save vars
+            self._vars['debug_eNu'][0] = eNu
+            self._vars['debug_zX'][0] = z[0]
+            self._vars['debug_zY'][0] = z[1]
+            self._vars['debug_zZ'][0] = z[2]
+            self._vars['debug_muMomFromDirX'][0] = muMomFromDir[0]
+            self._vars['debug_muMomFromDirY'][0] = muMomFromDir[1]
+            self._vars['debug_muMomFromDirZ'][0] = muMomFromDir[2]
+            self._vars['debug_piMomFromDirX'][0] = piMomFromDir[0]
+            self._vars['debug_piMomFromDirY'][0] = piMomFromDir[1]
+            self._vars['debug_piMomFromDirZ'][0] = piMomFromDir[2]
+            self._vars['debug_pMomFromDirX'][0] = pMomFromDir[0]
+            self._vars['debug_pMomFromDirY'][0] = pMomFromDir[1]
+            self._vars['debug_pMomFromDirZ'][0] = pMomFromDir[2]
+            self._vars['debug_delPT'][0] = delPT
+            self._vars['debug_pL'][0] = pL
+            self._vars['debug_energyMu'][0] = energyMu
+            self._vars['debug_energyPi'][0] = energyPi
+            self._vars['debug_energyP'][0] = energyP
 
 
         return self._get_results()
