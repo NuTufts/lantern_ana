@@ -16,13 +16,11 @@ print_dependency_graph: true
 datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
-    - /mnt/ddrive/data/lantern_ntuples
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - ntuple_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
      #- run1_nuwro_jul23.root # temporarily using nuwro here
