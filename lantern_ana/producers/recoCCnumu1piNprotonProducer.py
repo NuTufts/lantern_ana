@@ -170,7 +170,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'debug_pMomFromDirX':array('f',[0.0]),
           'debug_pMomFromDirY':array('f',[0.0]),
           'debug_pMomFromDirZ':array('f',[0.0]),
-          'debug_delPT':array('f',[0.0]),
+          'debug_delPTX':array('f',[0.0]),
+          'debug_delPTY':array('f',[0.0]),
+          'debug_delPTZ':array('f',[0.0]),
           'debug_pL':array('f',[0.0]),
           'debug_energyMu':array('f',[0.0]),
           'debug_energyPi':array('f',[0.0]),
@@ -530,11 +532,11 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
 
             muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
-            energyMu = recoMuE/1000. # convert to GeV
+            energyMu = (recoMuE + self.mmu)/1000. # convert KE -> total energy, then MeV -> GeV
             piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
-            energyPi = recoPiE/1000. # convert to GeV
+            energyPi = (recoPiE + self.mpi)/1000. # convert KE -> total energy, then MeV -> GeV
             pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
-            energyP = recoPE/1000. # convert to GeV
+            energyP = (recoPE + self.mp)/1000. # convert KE -> total energy, then MeV -> GeV
 
           # is event contained? 
             is_contained = ntuple.vtxContainment # event-wide variable
@@ -570,7 +572,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             self._vars['debug_pMomFromDirX'][0] = pMomFromDir[0]
             self._vars['debug_pMomFromDirY'][0] = pMomFromDir[1]
             self._vars['debug_pMomFromDirZ'][0] = pMomFromDir[2]
-            self._vars['debug_delPT'][0] = delPT
+            self._vars['debug_delPTX'][0] = delPT[0]
+            self._vars['debug_delPTY'][0] = delPT[1]
+            self._vars['debug_delPTZ'][0] = delPT[2]
             self._vars['debug_pL'][0] = pL
             self._vars['debug_energyMu'][0] = energyMu
             self._vars['debug_energyPi'][0] = energyPi
