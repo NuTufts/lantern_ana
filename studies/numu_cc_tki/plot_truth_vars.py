@@ -1,7 +1,9 @@
 import os,sys
 import ROOT as rt
 from math import sqrt
+from datetime import datetime
 
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 targetpot = 1.32e21
 
@@ -15,10 +17,10 @@ scaling = {
 }
 
 files = {
-    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250731_110754.root",
-    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250731_110754.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250731_111704.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250731_111844.root"
+    "numu":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20251113_151939.root",
+    "numu_reco":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20251113_151939.root",
+    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20251113_152412.root",
+    "data":"./output_tki_dev/run1_bnb5e19_20251113_152521.root"
 }
 
 tfiles = {}
@@ -39,9 +41,9 @@ vars = [
     ('numuCC1piNp_protonKE',25, 0.0, 500.0, f'True Max Proton KE ({targetpot:.2e} POT)',   0),
     ('numuCC1piNp_pionKE',  25, 0.0, 2000.0, f'True Charged Pion KE ({targetpot:.2e} POT)', 0),
 #    ('eventweight_weight',  50, 0.0, 10.0,   f'event weight ({targetpot:.2e} POT)',         0),
-    ('numuCC1piNp_delPTT', 50, -1, 1, f'True delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNp_pN', 50, 0, 1.6, f'True pN (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNp_delAlphaT', 50, 0, 180, f'True delAlphaT )deg) ({targetpot:.2e} POT)', 0)
+    ('numuCC1piNp_delPTT', 25, -1, 1, f'True delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_pN', 25, 0, 1.6, f'True pN (GeV/c) ({targetpot:.2e} POT)', 0),
+    ('numuCC1piNp_delAlphaT', 10, 0, 180, f'True delAlphaT )deg) ({targetpot:.2e} POT)', 0)
     
 ]
 
@@ -120,6 +122,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     if (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
 
+    # don't draw reco on truth plot
     if (var,'numu_reco') in hists:
         hists[(var,'numu_reco')].Draw('histsame')
 
@@ -153,7 +156,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save canvas as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/truth_{var}_073125_tki.pdf")
+    canvs[var].SaveAs(f"{outdir}/truth_{var}_{timestamp}.pdf")
 
 #print("[enter] to close")
 #input()
