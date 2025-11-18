@@ -109,12 +109,19 @@ class trueDetectableParticleCountsProducer(ProducerBaseClass):
                     self.trueElectronsOverThreshold[0] += 1
 
         #Store the data as an array:
-        trueDetectableParticleDict = {"protons": self.trueProtonsOverThreshold[0], 
-            "pions": self.truePionsOverThreshold[0], 
-            "muons": self.trueMuonsOverThreshold[0], 
-            "electrons": self.trueElectronsOverThreshold[0], 
-            "justOverMuons": self.trueMuonsBarelyOverThreshold[0], 
+        trueDetectableParticleDict = {"protons": self.trueProtonsOverThreshold[0],
+            "pions": self.truePionsOverThreshold[0],
+            "muons": self.trueMuonsOverThreshold[0],
+            "electrons": self.trueElectronsOverThreshold[0],
+            "justOverMuons": self.trueMuonsBarelyOverThreshold[0],
             "justOverPions": self.truePionsBarelyOverThreshold[0]
             }
 
         return trueDetectableParticleDict
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

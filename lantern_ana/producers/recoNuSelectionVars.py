@@ -176,3 +176,10 @@ class RecoNuSelectionVariablesProducer(ProducerBaseClass):
 
         # Return results
         return results
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

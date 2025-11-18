@@ -1,0 +1,68 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_numu_run3b_opflashcosmic_sirenmodel_nopescale/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: False
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /mnt/ddrive/data/lantern_ntuples/
+  mcc9_v29e_dl_run3b_bnb_nu_overlay:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+     - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+    friendtrees:
+#      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_opflashcosmic_nopescale_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+#      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_opflashcosmic_wpescale_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_siren_floral_shape_059k_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+
+# Cut configuration
+cuts: {}
+
+# Producer configuration
+producers:
+  sigdef_numuccinc:
+    type: signalDefNumuCCInclusive
+    config: {}
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config:
+      use_friendtree: False
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
+  flashpred:
+    type: FlashmodelVariablesProducer
+    config: {}
