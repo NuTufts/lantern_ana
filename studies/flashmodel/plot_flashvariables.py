@@ -6,11 +6,12 @@ rt.gStyle.SetPadBottomMargin(0.15)
 rt.gStyle.SetPadLeftMargin(0.10)
 rt.gStyle.SetPadRightMargin(0.05)
 
-plot_label = "simpleflashbeam_nopescale"
+plot_label = "opflashcosmic_siren_nopescale"
 output_plot_folder="./plots_flashvariables/"
 os.system(f"mkdir {output_plot_folder}")
 
-rootfilepath = "./output_numu_run3b/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251019_181154_nopescale.root"
+rootfilepath = "./output_numu_run3b_opflashcosmic_sirenmodel_nopescale/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251023_174931.root"
+#rootfilepath = "./output_numu_run3b/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251019_181154_nopescale.root"
 #rootfilepath = "./output_numu_run3b/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251019_200712.root"
 #rootfilepath = "./output_numu_run3b_opflashcosmic_nopescale/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251020_215640.root"
 #rootfilepath = "./output_numu_run3b_opflashcosmic_wpescale/mcc9_v29e_dl_run3b_bnb_nu_overlay_20251020_211425.root"

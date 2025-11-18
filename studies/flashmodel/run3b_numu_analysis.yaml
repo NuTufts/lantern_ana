@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "./output_numu_run3b_opflashcosmic_nopescale/"
+output_dir: "./output_numu_run3b_opflashcosmic_sirenmodel_nopescale/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -24,8 +24,9 @@ datasets:
     filepaths:
      - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
     friendtrees:
-      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_opflashcosmic_nopescale_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+#      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_opflashcosmic_nopescale_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
 #      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_opflashcosmic_wpescale_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+      FlashPredictionTree: /mnt/ddrive/data/lantern_ntuples/flashprediction_siren_floral_shape_059k_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
 
 # Cut configuration
 cuts: {}
