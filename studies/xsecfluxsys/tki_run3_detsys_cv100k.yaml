@@ -18,7 +18,8 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    #- /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3
 
   mcc9_v29e_dl_run3b_bnb_nu_overlay_CV:
     type: RootDataset
@@ -26,7 +27,8 @@ datasets:
     ismc: true
     process: true
     filepaths:
-     - mcc9_v29e_dl_run3b_bnb_nu_overlay_CV_20251007_100019.root
+     #- mcc9_v29e_dl_run3b_bnb_nu_overlay_CV_20251007_100019.root
+      - mcc9_v29e_dl_run3b_bnb_nu_overlay_CV_20251122_152219.root
 
 # Producer configuration (producers run first)
 producers:
@@ -46,13 +48,13 @@ producers:
       event: eventIndex_event
       central_value_dataset: mcc9_v29e_dl_run3b_bnb_nu_overlay_CV
       variation_rootfiles:
-        LYAtt:      /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_LYAtt-bugFix_20251007_100047.root
-        LYDown:     /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_LYDown_20251007_101812.root
-        LYRayleigh: /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_LYRayleigh_20251007_101741.root
-        wiremodX:   /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodX_20251007_100113.root
-        wiremodYZ:  /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodYZ_20251007_100144.root
-        wiremodThetaYZ: /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaYZ_20251007_100238.root
-        wiremodThetaXZ: /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaXZ_20251007_100212.root
+        LYAtt:      /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_LYAtt-bugFix_20251122_152319.root
+        LYDown:     /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_LYDown_20251122_152915.root
+        LYRayleigh: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_LYRayleigh_20251122_152809.root
+        wiremodX:   /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_wiremodX_20251122_152413.root
+        wiremodYZ:  /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_wiremodYZ_20251122_152521.root
+        wiremodThetaYZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_wiremodThetaYZ_20251122_152713.root
+        wiremodThetaXZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/run3b_bnb_nu_overlay_wiremodThetaXZ_20251122_152619.root
       variation_treename: analysis_tree
       cut_formulas:
         pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
@@ -60,7 +62,7 @@ producers:
       bin_config: 
         numuCC1piNpReco_delPTT:
           formula: numuCC1piNpReco_delPTT
-          numbins: 20
+          numbins: 25
           minvalue: -1.0
           maxvalue: 1.0
           applicable_variations:
@@ -73,7 +75,7 @@ producers:
            - 'wiremodThetaYZ'
         numuCC1piNpReco_delAlphaT:
           formula: numuCC1piNpReco_delAlphaT
-          numbins: 20
+          numbins: 10
           minvalue: 0.0
           maxvalue: 180.0
           applicable_variations:
@@ -86,9 +88,9 @@ producers:
            - 'wiremodThetaYZ'
         numuCC1piNpReco_pN:
           formula: numuCC1piNpReco_pN
-          numbins: 17
+          numbins: 25
           minvalue: 0.0
-          maxvalue: 1.7
+          maxvalue: 1.6
           applicable_variations:
            - 'LYAtt'
            - 'LYDown'

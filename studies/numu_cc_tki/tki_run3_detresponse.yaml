@@ -18,7 +18,8 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    #- /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
   mcc9_v29e_dl_run3b_bnb_nu_overlay_CV:
     type: RootDataset
     tree: analysis_tree
