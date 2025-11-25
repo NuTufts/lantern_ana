@@ -45,7 +45,7 @@ vars = [
     ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
     ('numuCC1piNpReco_delPTT', 25, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT);#Delta p_{{TT}}', 0),
     ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT);p_{{N}}', 0),
-    ('numuCC1piNpReco_delAlphaT', 10, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT);#Delta #alpha_{{T}}', 0)
+    ('numuCC1piNpReco_delAlphaT', 10, 0, 180, f'Reco delAlphaT (deg) ({targetpot:.2e} POT);#Delta #alpha_{{T}}', 0)
 ]
 
 truth_var = {
@@ -155,8 +155,33 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")
 
+
     if (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
+
+    # redraw delAlphaT to fix y-axis issue
+    if var == 'numuCC1piNpReco_delAlphaT':
+        # create pad1
+        canvs[var].cd(1)
+        pad1 = canvs[var].cd(1)
+        pad1.Clear()
+
+        # create new hist 
+        frame_name = f"frame_{var}"
+        frame = rt.TH1D(frame_name, htitle, nbins, xmin, xmax)
+
+        # set y-axs
+        frame.SetMinimum(0.0)
+        frame.SetMaximum(50.0)
+
+        frame.Draw("AXIS")
+        hstack.Draw("HIST SAME")
+
+        if (var, "data") in hists:
+            hists[(var, "data")].Draw("E1 SAME")
+
+        pad1.Modified()
+        pad1.Update()
 
     canvs[var].cd(2)
     canvs[var].cd(2).SetGridx(1)
@@ -227,7 +252,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save plots as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/reco_{var}_{timestamp}.png")
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_fixingDelAlphaT.png")
     
 
     
