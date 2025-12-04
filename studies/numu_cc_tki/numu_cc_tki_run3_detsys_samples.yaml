@@ -81,21 +81,21 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root
   run3b_bnb_nu_overlay_500k_SCE:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_SCE.root
   run3b_bnb_nu_overlay_500k_recomb2:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_recomb2.root
 
