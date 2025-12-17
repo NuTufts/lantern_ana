@@ -113,6 +113,20 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             rfile = rt.TFile( weightfilepath )
             # get ttree
             ttree = rfile.Get(self._tree_name)
+            # If not found, search TDirectoryFile(s)
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                ttree = None
+                for key in rfile.GetListOfKeys():
+                    obj = key.ReadObj()
+                    if obj.InheritsFrom("TDirectoryFile"):
+                        dirfile = obj
+                        candidate = dirfile.Get(self._tree_name)
+                        if candidate and hasattr(candidate, 'SetBranchStatus'):
+                            ttree = candidate
+                            break
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
+
             # disable all but run, subrun, event branches to speed up read through file
             ttree.SetBranchStatus("*", 0)
             ttree.SetBranchStatus("run", 1)
