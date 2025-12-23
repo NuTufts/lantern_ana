@@ -22,42 +22,42 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_bnb_nu_overlay_CV.root
   run3b_bnb_nu_overlay_LYAtt-bugFix:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_LYAtt-bugFix.root
   run3b_bnb_nu_overlay_wiremodX:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_wiremodX.root
   run3b_bnb_nu_overlay_wiremodYZ:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_wiremodYZ.root
   run3b_bnb_nu_overlay_wiremodThetaXZ:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_wiremodThetaXZ.root
   run3b_bnb_nu_overlay_wiremodThetaYZ:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_wiremodThetaYZ.root
   run3b_bnb_nu_overlay_LYRayleigh:
@@ -81,21 +81,21 @@ datasets:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root
   run3b_bnb_nu_overlay_500k_SCE:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_SCE.root
   run3b_bnb_nu_overlay_500k_recomb2:
     type: RootDataset
     tree: EventTree
     ismc: true
-    process: false
+    process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_recomb2.root
 

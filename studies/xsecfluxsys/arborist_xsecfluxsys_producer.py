@@ -113,6 +113,20 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             rfile = rt.TFile( weightfilepath )
             # get ttree
             ttree = rfile.Get(self._tree_name)
+            # If not found, search TDirectoryFile(s)
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                ttree = None
+                for key in rfile.GetListOfKeys():
+                    obj = key.ReadObj()
+                    if obj.InheritsFrom("TDirectoryFile"):
+                        dirfile = obj
+                        candidate = dirfile.Get(self._tree_name)
+                        if candidate and hasattr(candidate, 'SetBranchStatus'):
+                            ttree = candidate
+                            break
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
+
             # disable all but run, subrun, event branches to speed up read through file
             ttree.SetBranchStatus("*", 0)
             ttree.SetBranchStatus("run", 1)
@@ -224,18 +238,37 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """Specify required inputs."""
         return ["gen2ntuple"]
 
-    def _load_sample_weight_tree(self, datasetname ):
+    def _load_sample_weight_tree(self, datasetname):
         if self._current_sample_tchain is not None:
             if datasetname != self._current_sample_name:
                 self._current_sample_tchain.Close()
             else:
                 return # already loaded
 
-        self._current_sample_tchain = rt.TChain( self._tree_name )
         if datasetname not in self._sample_filepaths:
             raise ValueError(f"Could not find sample name, '{datasetname}' in file path dictionary parameter")
 
-        self._current_sample_tchain.Add(self._sample_filepaths[datasetname])
+        weightfilepath = self._sample_filepaths[datasetname]
+        
+        # Determine correct tree path (may be inside TDirectoryFile)
+        rfile = rt.TFile(weightfilepath)
+        ttree = rfile.Get(self._tree_name)
+        tree_path = self._tree_name
+        
+        # If not found at root level, search TDirectoryFile(s)
+        if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+            for key in rfile.GetListOfKeys():
+                obj = key.ReadObj()
+                if obj.InheritsFrom("TDirectoryFile"):
+                    dirfile = obj
+                    candidate = dirfile.Get(self._tree_name)
+                    if candidate and hasattr(candidate, 'SetBranchStatus'):
+                        tree_path = f"{dirfile.GetName()}/{self._tree_name}"
+                        break
+        rfile.Close()
+        
+        self._current_sample_tchain = rt.TChain(tree_path)
+        self._current_sample_tchain.Add(weightfilepath)
         nentries = self._current_sample_tchain.GetEntries()
         print("Loaded weight tree for dataset: ",datasetname)
 

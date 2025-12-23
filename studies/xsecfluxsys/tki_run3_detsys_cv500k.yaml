@@ -18,7 +18,8 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    #- /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3
 
   run3b_bnb_nu_overlay_500k_CV:
     type: RootDataset
@@ -26,7 +27,8 @@ datasets:
     ismc: true
     process: true
     filepaths:
-     - run3b_bnb_nu_overlay_500k_CV_20251007_100305.root
+     #- run3b_bnb_nu_overlay_500k_CV_20251007_100305.root
+     - run3b_bnb_nu_overlay_500k_CV_20251204_094112.root
 
 # Producer configuration (producers run first)
 producers:
@@ -41,8 +43,8 @@ producers:
       event: eventIndex_event
       central_value_dataset: run3b_bnb_nu_overlay_500k_CV
       variation_rootfiles:
-        SCE: /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_500k_SCE_20251007_100557.root
-        recomb2: /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_500k_recomb2_20251007_100852.root
+        SCE: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_500k_SCE_20251204_094750.root
+        recomb2: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_500k_recomb2_20251204_095430.root
       variation_treename: analysis_tree
       cut_formulas:
         pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
