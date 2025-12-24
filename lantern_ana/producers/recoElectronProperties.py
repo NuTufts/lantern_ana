@@ -33,7 +33,8 @@ class RecoElectronPropertiesProducer(ProducerBaseClass):
             'emax_fromdwall': array('f', [0.0]),
             'emax_nplaneabove': array('i', [0]),
             'emax_el_normedscore': array('f', [0.0]),
-            'emax_fromshower': array('i', [-1])
+            'emax_fromshower': array('i', [-1]),
+            'ccnue_primary_true_completeness': array('f', [0.0]),
         }
 
     def setDefaultValues(self):
@@ -50,6 +51,7 @@ class RecoElectronPropertiesProducer(ProducerBaseClass):
         self.electron_vars['emax_nplaneabove'][0] = 0
         self.electron_vars['emax_el_normedscore'][0] = 0.0
         self.electron_vars['emax_fromshower'][0] = -1
+        self.electron_vars['ccnue_primary_true_completeness'][0] = 0.0
     
     def prepareStorage(self, output: Any) -> None:
         """Set up branches in the output ROOT TTree."""
@@ -67,6 +69,7 @@ class RecoElectronPropertiesProducer(ProducerBaseClass):
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
         """Calculate electron candidate properties."""
         ntuple = data["gen2ntuple"]
+        ismc = params.get('ismc', False)
         
         # Reset to defaults
         self.setDefaultValues()
@@ -117,6 +120,29 @@ class RecoElectronPropertiesProducer(ProducerBaseClass):
                 self.electron_vars['emax_fromshower'][0] = 0  # From track
             else:
                 self.electron_vars['emax_fromshower'][0] = 1  # From shower
+
+            # truth check
+            if ismc:
+                # get particle truth-matched pid
+                true_trackid = -1
+                true_pid = -1
+                true_completeness = 0.0
+                if elMaxIdx>=100:
+                    true_trackid = ntuple.trackTrueTID[ elMaxIdx-100 ]
+                    true_pid = ntuple.trackTruePID[ elMaxIdx-100 ]
+                    true_completeness = ntuple.trackTrueComp[ elMaxIdx-100 ]
+                else:
+                    true_trackid = ntuple.showerTrueTID[ elMaxIdx ]
+                    true_pid     = ntuple.showerTruePID[ elMaxIdx ]
+                    true_completeness = ntuple.showerTrueComp[ elMaxIdx ]
+                
+                if true_trackid>=0 and abs(true_pid)==11:
+                    # was truth-matched to an electron. check if it is a primary
+                    for isim in range( ntuple.nTrueSimParts ):
+                        if ntuple.trueSimPartTID[isim]==true_trackid:
+                            if ntuple.trueSimPartProcess[isim]==0:
+                                # is a primary lepton
+                                self.electron_vars['ccnue_primary_true_completeness'][0] = true_completeness
         
         return self._get_results()
     

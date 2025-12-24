@@ -5,6 +5,8 @@ from array import array
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
 from lantern_ana.tags.tag_factory import TagFactory
+from lantern_ana.utils.fiducial_volume import dwall
+from ctypes import c_bool
 
 @register
 class MuonPropertiesProducer(ProducerBaseClass):
@@ -17,17 +19,36 @@ class MuonPropertiesProducer(ProducerBaseClass):
         self.muon_angle = array('f', [-1.0])
         self.muon_energy = array('f', [-1.0])
         self.muon_pid_score = array('f', [-1.0])
+        self.muon_primary_true_completeness = array('f',[-1.0])
+        self.muon_containment = array('i',[-1])
+        self.muon_endpt_dwall = array('f',[-1.0])
+
+        try:
+            from larlite import larlite
+            from ROOT import larutil
+            self.reverse_sce = larutil.SpaceChargeMicroBooNE( larutil.SpaceChargeMicroBooNE.kMCC9_Backward )
+            self.has_larutil = True
+            print("[MuonPropertiesProducer] larutil setup.")
+        except:
+            self.has_larutil = False
+            print("[MuonPropertiesProducer] LArUtil NOT SETUP.")
         
     def prepareStorage(self, output):
         """Set up branches in the output ROOT TTree."""
         output.Branch(f"{self.name}_angle", self.muon_angle, f"{self.name}_angle/F")
         output.Branch(f"{self.name}_energy", self.muon_energy, f"{self.name}_energy/F")
         output.Branch(f"{self.name}_pid_score", self.muon_pid_score, f"{self.name}_pid_score/F")
+        output.Branch(f"{self.name}_primary_true_completeness", self.muon_primary_true_completeness, f"{self.name}_primary_true_completeness/F")
+        output.Branch(f"{self.name}_containment", self.muon_containment, f"{self.name}_containment/I")
+        output.Branch(f"{self.name}_endpt_dwall", self.muon_endpt_dwall, f"{self.name}_endpt_dwall/F")
 
     def setDefaultValues(self):
         self.muon_angle[0] = -1.0
         self.muon_energy[0] = -1.0
         self.muon_pid_score[0] = -1.0
+        self.muon_primary_true_completeness[0] = -1.0
+        self.muon_containment[0] = -1
+        self.muon_endpt_dwall[0] = -1.0
         return 
     
     def requiredInputs(self):
@@ -37,6 +58,7 @@ class MuonPropertiesProducer(ProducerBaseClass):
     def processEvent(self, data, params):
         """Extract muon properties."""
         ntuple = data["gen2ntuple"]
+        ismc = params.get('ismc', False)
         
         # Reset output variables
         self.muon_angle[0] = -1.0
@@ -79,11 +101,49 @@ class MuonPropertiesProducer(ProducerBaseClass):
             
             # Record muon PID score
             self.muon_pid_score[0] = ntuple.trackMuScore[muon_index]
+
+            # get muon end point
+            muon_endpt = (ntuple.trackEndPosX[muon_index],ntuple.trackEndPosY[muon_index],ntuple.trackEndPosZ[muon_index])
+            muon_dwall = -1.0
+            if self.has_larutil:
+                applied = c_bool(0)
+                muon_endpt_sce = self.reverse_sce.ApplySpaceChargeEffect( muon_endpt[0], muon_endpt[1], muon_endpt[2], applied )
+                #print("reverse sce applied: reco=",muon_endpt," sce-corrected=",muon_endpt_sce)
+                muon_dwall = dwall(muon_endpt_sce[0], muon_endpt_sce[1], muon_endpt_sce[2] )
+            else:
+                muon_dwall = dwall(muon_endpt[0], muon_endpt[1], muon_endpt[2] )
+            self.muon_endpt_dwall[0] = muon_dwall
+            if muon_dwall>5.0:
+                self.muon_containment[0] = 1
+            else:
+                self.muon_containment[0] = 0
+
+            # truth check of reconstructed muon
+            if ismc:
+                # get particle truth-matched pid
+                true_trackid = -1
+                true_pid = -1
+                true_completeness = 0.0
+                true_trackid = ntuple.trackTrueTID[ muon_index ]
+                true_pid     = ntuple.trackTruePID[ muon_index ]
+                true_completeness = ntuple.trackTrueComp[ muon_index ]
+                
+                if true_trackid>=0 and abs(true_pid)==13:
+                    # was truth-matched to a muon. check if it is a primary
+                    for isim in range( ntuple.nTrueSimParts ):
+                        if ntuple.trueSimPartTID[isim]==true_trackid:
+                            if ntuple.trueSimPartProcess[isim]==0:
+                                # is a primary lepton
+                                self.muon_primary_true_completeness[0] = true_completeness
+
         
         return {
             "angle": self.muon_angle[0],
             "energy": self.muon_energy[0],
-            "pid_score": self.muon_pid_score[0]
+            "pid_score": self.muon_pid_score[0],
+            "primary_true_completeness": self.muon_primary_true_completeness[0],
+            "containment": self.muon_containment[0],
+            "endpt_dwall": self.muon_endpt_dwall[0],
         }
 
     def finalize(self):
