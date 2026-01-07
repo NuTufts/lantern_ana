@@ -22,9 +22,74 @@ datasets:
     tree: lantern/EventTree
     pottree: lantern/potTree
     ismc: true
+    process: false
+    filepaths:
+      - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+    friendtrees:
+      nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+
+  run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
     process: true
     filepaths:
-     - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+     - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root
+    friendtrees:
+      nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root
+
+  run4a4c4d5_v10_04_07_13_BNB_dirt_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    filepaths:
+     - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_dirt_overlay_surprise_reco2_hist_4a.root
+    friendtrees:
+      nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_dirt_overlay_surprise_reco2_hist_4a.root
+
+  run4a4c4d5_v10_04_07_13_BNB_NCpi0_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    filepaths:
+     - MCC9.10_Run4a_v10_04_07_16_BNB_NCpi0_overlay_surprise_reco2_hist.root
+    friendtrees:
+      nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a_v10_04_07_16_BNB_NCpi0_overlay_surprise_reco2_hist.root
+
+  run4a4c4d5_v10_04_07_13_BNB_CCpi0_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    filepaths:
+     - MCC9.10_Run4a_v10_04_07_16_BNB_CCpi0_overlay_surprise_reco2_hist.root
+    friendtrees:
+      nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a_v10_04_07_16_BNB_CCpi0_overlay_surprise_reco2_hist.root
+
+  run4a4c4d5_v10_04_07_13_BNB_beam_off_data_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: true
+    filepaths:
+     - MCC9.10_Run4a_BNB_beam_off_data_surprise_reco2_hist.root
+
+  run4a4c4d5_v10_04_07_13_BNB_beam_on_data_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: true
+    filepaths:
+     - MCC9.10_Run4a_BNB_beam_on_data_surprise_reco2_hist.root
+
 
 # Cut configuration
 cuts: {}
@@ -43,7 +108,8 @@ producers:
   eventweight:
     type: eventWeightProducer
     config:
-      use_friendtree: False
+      use_friendtree: true
+      weight_branch: weightTune
   visible_energy:
     type: VisibleEnergyProducer
     config: {}
