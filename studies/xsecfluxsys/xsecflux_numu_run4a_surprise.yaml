@@ -45,8 +45,22 @@ producers:
       rootfilepaths:
         run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root"
       par_variations_to_include:
-        - All_UBGenie
-        - flux_all
+       - All_UBGenie
+       - flux_all
+       - reint_all
+       - AxFFCCQEshape_UBGenie
+       - DecayAngMEC_UBGenie
+       - NormCCCOH_UBGenie
+       - NormNCCOH_UBGenie
+       - RPA_CCQE_UBGenie
+       - RootinoFix_UBGenie
+       - ThetaDelta2NRad_UBGenie
+       - Theta_Delta2Npi_UBGenie
+       - TunedCentralValue_UBGenie
+       - VecFFCCQEshape_UBGenie
+       - XSecShape_CCMEC_UBGenie
+       - xsr_scc_Fa3_SCC
+       - xsr_scc_Fv3_SCC
       cut_formulas:
         pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
         pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy}>0.0"
