@@ -76,12 +76,19 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             self._params_to_include_v.push_back( parname )
         self._bin_config_list = config.get('bin_config')
         self.weight_calc = CalcEventWeightVariations()
-        self.outfile = rt.TFile("temp_covar.root",'recreate')
+        self.outfile_path = config.get('output_filename','temp_covar.root')
+        self.outfile = rt.TFile(self.outfile_path,'recreate')
 
-        # name of the run, subrun, event branches
+        # name of the run, subrun, event branches in the analysis_tree
         self.run_branch    = config.get('run','run')
         self.subrun_branch = config.get('subrun','subrun')
         self.event_branch  = config.get('event','event')
+
+        # name of the run, subrun, event branches in the weight tree
+        self.weighttree_run_branch    = config.get('weight_tree_run','run')
+        self.weighttree_subrun_branch = config.get('weight_tree_subrun','sub')
+        self.weighttree_event_branch  = config.get('weight_tree_event','evt')
+        self.sysweight_treename       = config.get('weight_tree_name', 'weights') # weights for surprise files, sys_weights for arborist
 
         # cap weight value: sometimes a crazy large weight occurs
         self.maxvalidweight = config.get('maxvalidweight',100)
@@ -110,6 +117,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
         try:
             # open file
+            print(f'Build event index map in file {weightfilepath} and tree {self._tree_name}.')
             rfile = rt.TFile( weightfilepath )
             # get ttree
             ttree = rfile.Get(self._tree_name)
@@ -129,11 +137,11 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
             # disable all but run, subrun, event branches to speed up read through file
             ttree.SetBranchStatus("*", 0)
-            ttree.SetBranchStatus("run", 1)
-            ttree.SetBranchStatus("subrun", 1)
-            ttree.SetBranchStatus("event", 1)            
+            ttree.SetBranchStatus(self.weighttree_run_branch, 1)
+            ttree.SetBranchStatus(self.weighttree_subrun_branch, 1)
+            ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
             nentries = ttree.GetEntries()
-            print(f'Loaded "{samplename}" weight tree with {nentries} entries')
+            print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
         except:
             raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
 
@@ -144,7 +152,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             #if (iientry%100000==0):
             #    print("  building index. entry ",iientry)
             ttree.GetEntry(iientry)
-            rse = (ttree.run,ttree.subrun,ttree.event)
+            runindex = eval(f'ttree.{self.weighttree_run_branch}')
+            subindex = eval(f'ttree.{self.weighttree_subrun_branch}')
+            evtindex = eval(f'ttree.{self.weighttree_event_branch}')
+            rse = (runindex,subindex,evtindex)
             rsedict[rse] = iientry
             if iientry%100000==0:
                 print("  building index. entry ",iientry," rse=",rse)
@@ -362,7 +373,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             ibin = hists['cv'].GetXaxis().FindBin( x )
 
             # Iterate over the map elements
-            for parname, values in self._current_sample_tchain.sys_weights:
+            for parname, values in eval(f'self._current_sample_tchain.{self.sysweight_treename}'):
                 if parname not in self._params_to_include:
                     continue
 

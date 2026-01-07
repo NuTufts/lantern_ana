@@ -20,7 +20,26 @@ root -x Strip_xsecweight.C
 
 The pandora tree also has the xsec and flux weights from the N throws of the systematic uncertainty parameter priors.
 
-Branches in the Pandora tree, 'nuselection/NuSelectionFilter'.
+Branches in the Pandora tree, 'nuselection/NuSelectionFilter':
+
+The event index branches:
+```
+*............................................................................*
+*Br    1 :run       : run/I                                                  *
+*Entries :   170233 : Total  Size=     781727 bytes  File Size  =     109352 *
+*Baskets :      922 : Basket Size=      32000 bytes  Compression=   6.98     *
+*............................................................................*
+*Br    2 :sub       : sub/I                                                  *
+*Entries :   170233 : Total  Size=     781727 bytes  File Size  =     185234 *
+*Baskets :      922 : Basket Size=      32000 bytes  Compression=   4.12     *
+*............................................................................*
+*Br    3 :evt       : evt/I                                                  *
+*Entries :   170233 : Total  Size=     781727 bytes  File Size  =     453893 *
+*Baskets :      922 : Basket Size=      32000 bytes  Compression=   1.68     *
+*............................................................................*
+```
+
+Branches that have to do with weights:
 
 ```
 *............................................................................*

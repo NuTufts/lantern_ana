@@ -1,0 +1,71 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "./output_numu_run4a_sys/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: 1000
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /exp/uboone/app/users/tmw/lantern_dev/lantern_ana/studies/numu_cc_inclusive/output_numu_run4a_surprise/
+
+  run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+    - run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_20260107_071513.root
+
+# Producer configuration (producers run first)
+producers:
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      run: eventindex_run
+      subrun: eventindex_subrun
+      event: eventindex_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
+      tree: nuselection/NeutrinoSelectionFilter
+      weight_tree_run: "run"
+      weight_tree_subrun: "sub"
+      weight_tree_event: "evt"
+      rootfilepaths:
+        run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root"
+      par_variations_to_include:
+        - All_UBGenie
+        - flux_all
+      cut_formulas:
+        pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
+        pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy}>0.0"
+      event_selection_critera: ['pass_vertex','pass_muon']
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise']
+          criteria: []
+
+# Cut configuration
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
+

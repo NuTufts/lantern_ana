@@ -1,0 +1,66 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "./output_numu_run4a_surprise"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: False
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/
+    
+  run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: true
+    process: true
+    filepaths:
+     - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+
+# Cut configuration
+cuts: {}
+
+# Producer configuration
+producers:
+  eventindex:
+    type: eventIndexProducer
+    config: {}
+  sigdef_numuccinc:
+    type: signalDefNumuCCInclusive
+    config: {}
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config:
+      use_friendtree: False
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  muon_properties:
+    type: MuonPropertiesProducer
+    config: {}
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: false
