@@ -1,9 +1,12 @@
 import os,sys
 import ROOT as rt
 from math import sqrt
+from datetime import datetime
 
-"""
-"""
+rt.gROOT.SetBatch(True) # so plots don't pop up
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 targetpot = 4.4e19
 
 samples = ['numu_sig',"numu_bg","extbnb","data"]
@@ -16,10 +19,10 @@ scaling = {
 }
 
 files = {
-    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250912_122816.root",
-    "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250912_122816.root",
-    "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20250912_095602.root",
-    "data":"./output_tki_dev/run1_bnb5e19_20250912_095707.root"
+    "numu_sig":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20251113_151939.root",
+     "numu_bg":"./output_tki_dev/run1_bnb_nu_overlay_mcc9_v28_wctagger_20251113_151939.root",
+      "extbnb":"./output_tki_dev/run1_extbnb_mcc9_v29e_C1_20251113_152412.root",
+        "data":"./output_tki_dev/run1_bnb5e19_20251113_152521.root"
 }
 
 tfiles = {}
@@ -40,9 +43,9 @@ vars = [
     ('numuCC1piNpReco_maxprotonKE', 25, 0.0, 500.0, f'Reco Max Proton KE ({targetpot:.2e} POT);proton KE (MeV)',   0),
     ('numuCC1piNpReco_pionKE',      25, 0.0, 500.0, f'Reco Charged Pion KE ({targetpot:.2e} POT);pion KE (MeV)', 0),
     ('numuCC1piNpReco_hadronicM',  25, 1000.0, 1600.0, f'Hadronic Invariant Mass ({targetpot:.2e} POT);invariant mass (MeV/c^{2})', 0),
-    ('numuCC1piNpReco_delPTT', 50, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT)', 0),
-    ('numuCC1piNpReco_delAlphaT', 20, 0, 180, f'Reco delAlphaT )deg) ({targetpot:.2e} POT)', 0)
+    ('numuCC1piNpReco_delPTT', 25, -1, 1, f'Reco delPTT (GeV/c) ({targetpot:.2e} POT);#Delta p_{{TT}}', 0),
+    ('numuCC1piNpReco_pN', 25, 0, 1.6, f'Reco pN (GeV/c) ({targetpot:.2e} POT);p_{{N}}', 0),
+    ('numuCC1piNpReco_delAlphaT', 10, 0, 180, f'Reco delAlphaT (deg) ({targetpot:.2e} POT);#Delta #alpha_{{T}}', 0)
 ]
 
 truth_var = {
@@ -70,7 +73,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     print("="*100)
 
     cname = f"c{var}"
-    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",2400,600)
+    canvs[var] = rt.TCanvas(cname,f"v3dev: {cname}",2100,700)
     canvs[var].Divide(3,1)
     canvs[var].Draw()
 
@@ -152,8 +155,33 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
         hists[(var,"data")].Draw("E1")
         hstack.Draw("histsame")
 
+
     if (var,'data') in hists:
         hists[(var,"data")].Draw("E1same")
+
+    # redraw delAlphaT to fix y-axis issue
+    if var == 'numuCC1piNpReco_delAlphaT':
+        # create pad1
+        canvs[var].cd(1)
+        pad1 = canvs[var].cd(1)
+        pad1.Clear()
+
+        # create new hist 
+        frame_name = f"frame_{var}"
+        frame = rt.TH1D(frame_name, htitle, nbins, xmin, xmax)
+
+        # set y-axs
+        frame.SetMinimum(0.0)
+        frame.SetMaximum(50.0)
+
+        frame.Draw("AXIS")
+        hstack.Draw("HIST SAME")
+
+        if (var, "data") in hists:
+            hists[(var, "data")].Draw("E1 SAME")
+
+        pad1.Modified()
+        pad1.Update()
 
     canvs[var].cd(2)
     canvs[var].cd(2).SetGridx(1)
@@ -164,6 +192,17 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     hpur_name = f"h{var}_purity"
     hsum    = hists[(var,"numu_sig")].Clone( hpur_name+"_sum" )
     hpurity = hists[(var,"numu_sig")].Clone( hpur_name )
+    htitle_split = htitle.split(";")
+    print("htitle_split: ",htitle_split)
+    if len(htitle_split)<=1:
+        hpurity.SetTitle("Purity")
+    if len(htitle_split)>=2:
+        xaxis_title = htitle_split[1]                
+        hpurity.SetTitle( f"Purity;{xaxis_title}" )
+    if len(htitle_split)>=3:
+        xaxis_title = htitle_split[1]        
+        yaxis_title = htitle_split[2]
+        hpurity.SetTitle( f"Purity;{xaxis_title};{yaxis_title}" )        
     hsum.Add( hists[(var,"numu_bg")] )
     hsum.Add( hists[(var,"extbnb")] )
     sigtot = hpurity.Integral()
@@ -189,6 +228,16 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     canvs[var].cd(3).SetGridx(1)
     canvs[var].cd(3).SetGridy(1)
     canvs[var].cd(3)
+    heff = hists[(var,'effnum')]
+    if len(htitle_split)<=1:
+        heff.SetTitle("Efficiency")
+    if len(htitle_split)>=2:
+        xaxis_title = htitle_split[1]                
+        heff.SetTitle( f"Efficiency;{xaxis_title}" )
+    if len(htitle_split)>=3:
+        xaxis_title = htitle_split[1]        
+        yaxis_title = htitle_split[2]
+        heff.SetTitle( f"Efficiency;{xaxis_title};{yaxis_title}" )        
     effnumer_tot = hists[(var,'effnum')].Integral()
     effdenom_tot = hists[((var,'effdenom'))].Integral()
     overall_eff = effnumer_tot/effdenom_tot
@@ -203,7 +252,7 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     # save plots as pdf (for quality) 
     outdir = "plots"
     os.makedirs(outdir, exist_ok=True)
-    canvs[var].SaveAs(f"{outdir}/reco_{var}_082125_tki.png")
+    canvs[var].SaveAs(f"{outdir}/reco_{var}_fixingDelAlphaT.png")
     
 
     
@@ -211,5 +260,5 @@ for var, nbins, xmin, xmax, htitle, setlogy in vars:
     #print("[enter] to continue")
     #input()
 
-print("[enter] to close")
-input()
+#print("[enter] to close")
+#input()

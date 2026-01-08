@@ -50,3 +50,10 @@ class runSubrunProducer(ProducerBaseClass):
         #print(returnDict)
 
         return returnDict
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

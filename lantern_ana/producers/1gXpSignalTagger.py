@@ -274,3 +274,10 @@ class oneGxPSignalTagProducer(ProducerBaseClass):
         #print(self.isMissed, self.isMisclassified, self.isFound)
 
         return {"Result":0}
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

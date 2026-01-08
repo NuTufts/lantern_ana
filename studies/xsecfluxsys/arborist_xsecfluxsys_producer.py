@@ -47,8 +47,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         We also want correlations amongst all bins
           1. so we need to save  Sum[w_i*w_j] as well
         what do we need for a bin definition?
-          1. observable to bin
-          2. bin bounds
+          1. observable quantify to histogram
+          2. bin bounds: 
+             - either use binedges with N+1 values to specify N bins 
+             - or provide numbins, minvalue, and maxvalue to define uniform-spaced bins
           3. criteria to be filled within the bin
           4. sample that contributes to the bin
         
@@ -74,12 +76,19 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             self._params_to_include_v.push_back( parname )
         self._bin_config_list = config.get('bin_config')
         self.weight_calc = CalcEventWeightVariations()
-        self.outfile = rt.TFile("temp_covar.root",'recreate')
+        self.outfile_path = config.get('output_filename','temp_covar.root')
+        self.outfile = rt.TFile(self.outfile_path,'recreate')
 
-        # name of the run, subrun, event branches
+        # name of the run, subrun, event branches in the analysis_tree
         self.run_branch    = config.get('run','run')
         self.subrun_branch = config.get('subrun','subrun')
         self.event_branch  = config.get('event','event')
+
+        # name of the run, subrun, event branches in the weight tree
+        self.weighttree_run_branch    = config.get('weight_tree_run','run')
+        self.weighttree_subrun_branch = config.get('weight_tree_subrun','sub')
+        self.weighttree_event_branch  = config.get('weight_tree_event','evt')
+        self.sysweight_treename       = config.get('weight_tree_name', 'weights') # weights for surprise files, sys_weights for arborist
 
         # cap weight value: sometimes a crazy large weight occurs
         self.maxvalidweight = config.get('maxvalidweight',100)
@@ -108,16 +117,31 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
         try:
             # open file
+            print(f'Build event index map in file {weightfilepath} and tree {self._tree_name}.')
             rfile = rt.TFile( weightfilepath )
             # get ttree
             ttree = rfile.Get(self._tree_name)
+            # If not found, search TDirectoryFile(s)
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                ttree = None
+                for key in rfile.GetListOfKeys():
+                    obj = key.ReadObj()
+                    if obj.InheritsFrom("TDirectoryFile"):
+                        dirfile = obj
+                        candidate = dirfile.Get(self._tree_name)
+                        if candidate and hasattr(candidate, 'SetBranchStatus'):
+                            ttree = candidate
+                            break
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
+
             # disable all but run, subrun, event branches to speed up read through file
             ttree.SetBranchStatus("*", 0)
-            ttree.SetBranchStatus("run", 1)
-            ttree.SetBranchStatus("subrun", 1)
-            ttree.SetBranchStatus("event", 1)            
+            ttree.SetBranchStatus(self.weighttree_run_branch, 1)
+            ttree.SetBranchStatus(self.weighttree_subrun_branch, 1)
+            ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
             nentries = ttree.GetEntries()
-            print(f'Loaded "{samplename}" weight tree with {nentries} entries')
+            print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
         except:
             raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
 
@@ -128,7 +152,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             #if (iientry%100000==0):
             #    print("  building index. entry ",iientry)
             ttree.GetEntry(iientry)
-            rse = (ttree.run,ttree.subrun,ttree.event)
+            runindex = eval(f'ttree.{self.weighttree_run_branch}')
+            subindex = eval(f'ttree.{self.weighttree_subrun_branch}')
+            evtindex = eval(f'ttree.{self.weighttree_event_branch}')
+            rse = (runindex,subindex,evtindex)
             rsedict[rse] = iientry
             if iientry%100000==0:
                 print("  building index. entry ",iientry," rse=",rse)
@@ -157,11 +184,6 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """
         ibin_global = 0
 
-        hlist_cv = []
-        hlist_w = []
-        hlist_w2 = []
-        hlist_n = []
-
         self.variable_list = []
         self.var_bininfo = {}
 
@@ -169,6 +191,17 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
         for varname in self._bin_config_list:
             vardict = self._bin_config_list[varname]
+
+            binedges = vardict.get('binedges',[])
+            if len(binedges)==0:
+                # specify uniform bins
+                bintype = 'uniform'
+            else:
+                # specify binedges
+                if len(binedges)==1:
+                    raise ValueError("When specifying bin edges, need 2 or more edges. Only 1 given.")
+                bintype = 'binedges'
+
             var_bin_info = {
                 'formula':vardict['formula'],
                 'samples':vardict['apply_to_datasets'],
@@ -176,8 +209,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'numbins':vardict['numbins'],
                 'sample_hists':{},
                 'sample_array':{}, # we save an array (nbins,nvariations) for each (sample,par) combination. So many!
-                'ibin_start':ibin_global
+                'ibin_start':ibin_global,
+                'bintype':bintype
             }
+
 
             nbins = vardict['numbins']
             for sample in vardict['apply_to_datasets']:
@@ -187,7 +222,15 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 hname = f"h{varname}_{sample}"
                 var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','N']:
-                    h = rt.TH1D(hname+f"_{x}","",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    hvar_name = hname+f"_{x}"
+
+                    if var_bin_info['bintype']=='uniform':
+                        h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
+                    elif var_bin_info['bintype']=='binedges':
+                        bin_array = array('f',binedges)
+                        nbins = len(binedges)-1
+                        h = rt.TH1D(hvar_name,"",nbins, bin_array)
+
                     var_bin_info['sample_hists'][sample][x] = h
                 # we make a dictionary with a slot for an array
                 # we create the actual array later once we know the number of variations of each parameter
@@ -206,18 +249,37 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """Specify required inputs."""
         return ["gen2ntuple"]
 
-    def _load_sample_weight_tree(self, datasetname ):
+    def _load_sample_weight_tree(self, datasetname):
         if self._current_sample_tchain is not None:
             if datasetname != self._current_sample_name:
                 self._current_sample_tchain.Close()
             else:
                 return # already loaded
 
-        self._current_sample_tchain = rt.TChain( self._tree_name )
         if datasetname not in self._sample_filepaths:
             raise ValueError(f"Could not find sample name, '{datasetname}' in file path dictionary parameter")
 
-        self._current_sample_tchain.Add(self._sample_filepaths[datasetname])
+        weightfilepath = self._sample_filepaths[datasetname]
+        
+        # Determine correct tree path (may be inside TDirectoryFile)
+        rfile = rt.TFile(weightfilepath)
+        ttree = rfile.Get(self._tree_name)
+        tree_path = self._tree_name
+        
+        # If not found at root level, search TDirectoryFile(s)
+        if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+            for key in rfile.GetListOfKeys():
+                obj = key.ReadObj()
+                if obj.InheritsFrom("TDirectoryFile"):
+                    dirfile = obj
+                    candidate = dirfile.Get(self._tree_name)
+                    if candidate and hasattr(candidate, 'SetBranchStatus'):
+                        tree_path = f"{dirfile.GetName()}/{self._tree_name}"
+                        break
+        rfile.Close()
+        
+        self._current_sample_tchain = rt.TChain(tree_path)
+        self._current_sample_tchain.Add(weightfilepath)
         nentries = self._current_sample_tchain.GetEntries()
         print("Loaded weight tree for dataset: ",datasetname)
 
@@ -311,7 +373,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             ibin = hists['cv'].GetXaxis().FindBin( x )
 
             # Iterate over the map elements
-            for parname, values in self._current_sample_tchain.sys_weights:
+            for parname, values in eval(f'self._current_sample_tchain.{self.sysweight_treename}'):
                 if parname not in self._params_to_include:
                     continue
 

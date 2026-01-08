@@ -113,9 +113,9 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
         self.min_muon_purity = config.get('min_muon_purity',0.5)
         self.use_tracks = config.get('use_tracks', True)   # Whether to include tracks
         self.use_showers = config.get('use_showers', True) # Whether to include showers
-        self.mp  = 938.27209
-        self.mpi = 139.57039
-        self.mmu = 105.66
+        self.mp  = 938.27209 # MeV
+        self.mpi = 139.57039 # MeV
+        self.mmu = 105.66 # MeV
         self.gii = np.array( (1.0, -1.0, -1.0, -1.0 )) # space-time signature we're using
 
         self.min_thresholds = {
@@ -155,7 +155,28 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
           'delPTT':array('f',[0.0]),
           'pN':array('f',[0.0]),
           'delAlphaT':array('f',[0.0]),
-          'is_target_1mu1piNproton':array('i',[0])
+          'event_is_contained':array('i',[0]),
+          'is_target_1mu1piNproton':array('i',[0]),
+          'debug_eNu':array('f',[0.0]),
+          'debug_zX':array('f',[0.0]),
+          'debug_zY':array('f',[0.0]),
+          'debug_zZ':array('f',[0.0]),
+          'debug_muMomFromDirX':array('f',[0.0]),
+          'debug_muMomFromDirY':array('f',[0.0]),
+          'debug_muMomFromDirZ':array('f',[0.0]),
+          'debug_piMomFromDirX':array('f',[0.0]),
+          'debug_piMomFromDirY':array('f',[0.0]),
+          'debug_piMomFromDirZ':array('f',[0.0]),
+          'debug_pMomFromDirX':array('f',[0.0]),
+          'debug_pMomFromDirY':array('f',[0.0]),
+          'debug_pMomFromDirZ':array('f',[0.0]),
+          'debug_delPTX':array('f',[0.0]),
+          'debug_delPTY':array('f',[0.0]),
+          'debug_delPTZ':array('f',[0.0]),
+          'debug_pL':array('f',[0.0]),
+          'debug_energyMu':array('f',[0.0]),
+          'debug_energyPi':array('f',[0.0]),
+          'debug_energyP':array('f',[0.0])
         }
         self._counts = {
           13:self._vars['nmuons'],
@@ -511,14 +532,19 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
             trkDirPZ = ntuple.trackStartDirZ[max_idx[2212]]*recoMomP
 
             muMomFromDir = np.array([trkDirMuX, trkDirMuY, trkDirMuZ])
-            energyMu = recoMuE/1000. # convert to GeV
+            energyMu = (recoMuE + self.mmu)/1000. # convert KE -> total energy, then MeV -> GeV
             piMomFromDir = np.array([trkDirPiX, trkDirPiY, trkDirPiZ]) # convert to GeV
-            energyPi = recoPiE/1000. # convert to GeV
+            energyPi = (recoPiE + self.mpi)/1000. # convert KE -> total energy, then MeV -> GeV
             pMomFromDir = np.array([trkDirPX, trkDirPY, trkDirPZ]) # convert to GeV
-            energyP = recoPE/1000. # convert to GeV
+            energyP = (recoPE + self.mp)/1000. # convert KE -> total energy, then MeV -> GeV
+
+          # is event contained? 
+            is_contained = ntuple.vtxContainment # event-wide variable
+            self._vars['event_is_contained'][0] = is_contained
+
 
           # calculate and save tki
-            eNu = ntuple.recoNuE/1000. # convert to MeV
+            eNu = ntuple.recoNuE/1000. # convert to GeV from MeV
 
             z = tki.getTransverseAxis( eNu, muMomFromDir[0], muMomFromDir[1], muMomFromDir[2] )
             delPTT = tki.delPTT(z, piMomFromDir, pMomFromDir)
@@ -531,6 +557,30 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
 
             delAlphaT = tki.delAlphaT(muMomFromDir[0], muMomFromDir[1], delPT) 
             self._vars['delAlphaT'][0] = math.degrees(delAlphaT)
+
+          # debug save vars
+            self._vars['debug_eNu'][0] = eNu
+            self._vars['debug_zX'][0] = z[0]
+            self._vars['debug_zY'][0] = z[1]
+            self._vars['debug_zZ'][0] = z[2]
+            self._vars['debug_muMomFromDirX'][0] = muMomFromDir[0]
+            self._vars['debug_muMomFromDirY'][0] = muMomFromDir[1]
+            self._vars['debug_muMomFromDirZ'][0] = muMomFromDir[2]
+            self._vars['debug_piMomFromDirX'][0] = piMomFromDir[0]
+            self._vars['debug_piMomFromDirY'][0] = piMomFromDir[1]
+            self._vars['debug_piMomFromDirZ'][0] = piMomFromDir[2]
+            self._vars['debug_pMomFromDirX'][0] = pMomFromDir[0]
+            self._vars['debug_pMomFromDirY'][0] = pMomFromDir[1]
+            self._vars['debug_pMomFromDirZ'][0] = pMomFromDir[2]
+            self._vars['debug_delPTX'][0] = delPT[0]
+            self._vars['debug_delPTY'][0] = delPT[1]
+            self._vars['debug_delPTZ'][0] = delPT[2]
+            self._vars['debug_pL'][0] = pL
+            self._vars['debug_energyMu'][0] = energyMu
+            self._vars['debug_energyPi'][0] = energyPi
+            self._vars['debug_energyP'][0] = energyP
+
+
 
           else:
             self._vars['is_target_1mu1piNproton'][0] = 0
@@ -569,3 +619,6 @@ class recoCCnumu1piNprotonProducer(ProducerBaseClass):
 
         return out
 
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return

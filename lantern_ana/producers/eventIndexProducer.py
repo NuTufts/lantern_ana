@@ -289,7 +289,10 @@ class eventIndexProducer(ProducerBaseClass):
         # Return a dictionary so other producers can access your results
         return self.output_vars
 
-
+    def finalize(self):
+        """ Nothing to do after event loop. """
+        return
+        
 # ==========================================
 # EXAMPLE USAGE IN YAML CONFIG
 # ==========================================

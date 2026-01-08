@@ -135,8 +135,15 @@ class NueInclusiveTruthSelectionProducer(ProducerBaseClass):
         ret_vars = {'is_CCnue_inclusive':self.is_CCnue_inclusive[0]}
         for part in self.particles:
             ret_vars[f'num_{part}'] = self.countvars[part]
-        
+
         return ret_vars
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return
         
 
 

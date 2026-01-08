@@ -228,13 +228,20 @@ class truePhotonDataProducer(ProducerBaseClass):
 
         #Store the data as a dictionary:
         truePhotonDataDict = {
-            "ntruePhotons":self.nTruePhotons[0], 
+            "ntruePhotons":self.nTruePhotons[0],
             "energy":self.truePhotonEnergies[0],
-            "posX":self.truePhotonPositionX[0], 
-            "posY":self.truePhotonPositionY[0], 
+            "posX":self.truePhotonPositionX[0],
+            "posY":self.truePhotonPositionY[0],
             "posZ":self.truePhotonPositionZ[0],
             #"EDepMax":self.EDepSumMax[0],
             "LeadingPhoton":self.trueLeadingPhotonEnergy[0],
             }
 
         return truePhotonDataDict
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return
