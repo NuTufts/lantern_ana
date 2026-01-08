@@ -15,16 +15,17 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
-    - /home/twongjirad/working/data/ntuples/
-    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
+    # - /home/twongjirad/working/larbys/gen2/container_u20_env/work/lantern_ana/
+    # - /home/twongjirad/working/data/ntuples/
+    # - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/v3dev_reco_retune/
     - /pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/
-    - /mnt/ddrive/data/
-    - /nashome/z/zimani/lantern/lantern_ana/xsecweights/
-    - /exp/uboone/data/users/imani/nutples/v3dev_reco_retune/
+    # - /mnt/ddrive/data/
+    - /exp/uboone/app/users/imani/lantern_ana/xsecweights
+    # - /exp/uboone/data/users/imani/nutples/v3dev_reco_retune/
     - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/detvar_test 
   run4b_v10_04_07_09_BNB_nu_overlay_surprise:
-    type: RootDataset
+    type: RootDataset;l
     tree: lantern/EventTree
     pottree: lantern/potTree
     ismc: true
@@ -67,6 +68,11 @@ producers:
   # trueNu:
   #   type: trueNuPropertiesProducer
   #   config: {}
+
+  ## Event index for uncertainties
+  eventIndex: 
+    type: eventIndexProducer
+    config: {} 
 
   ## MC event weight  
   eventweight:

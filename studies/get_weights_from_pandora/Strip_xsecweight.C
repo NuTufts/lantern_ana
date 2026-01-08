@@ -1,12 +1,41 @@
 int Strip_xsecweight() {
 
+  // Runs 4a
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root";
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root";
+
+  // Run 4b (old)
   //std::string input_path  = "/exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root";
   //std::string output_path = "/exp/uboone/data/users/tmw/weights/for_run4b_lantern/xsecweight_tree.root";
+  // std::string input_path = "/pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise.root";
   
-  //std::string input_path  = "/exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root";
-  std::string input_path = "/pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root";
-  std::string output_path = "xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise.root";
-  
+  // Run 4b 
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nu_overlay_surprise_reco2_hist.root";
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root";
+
+  // Run 4c 
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4c_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4c.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4c.root";
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4c_full_samples//BNB/MCC9.10_Run4c_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_redo_reco2_hist.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4c_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_redo_reco2_hist.root";
+
+  // Run 4d
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4d_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root";
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4d_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root";
+
+  // Run 5
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_5.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_5.root";
+  std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
+  std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
+
 
   // Open Input File
   TFile* input_rfile = new TFile(input_path.c_str(),"open");

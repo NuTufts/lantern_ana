@@ -3,11 +3,22 @@ import ROOT as rt
 
 rt.gSystem.Load("./libMapDict.so")
 
-test_inputpath = sys.argv[1]
+# test_inputpath = sys.argv[1]
+
+## nu (good)
+# test_inputpath = "/pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root"
+
+# nue (issues)
+test_inputpath = "/pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_intrinsic_nue_run1.root"
+
 
 inputfile = rt.TFile(test_inputpath,'read')
 
 tree = inputfile.Get("eventweight_tree")
+if not tree: 
+    tree = inputfile.Get(f"arborist/eventweight_tree")
+
+# tree.ls()
 
 nentries = tree.GetEntries()
 print(f"Num Entries: {nentries}")

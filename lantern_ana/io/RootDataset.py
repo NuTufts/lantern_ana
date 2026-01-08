@@ -30,6 +30,7 @@ class RootDataset(Dataset):
         self._folders   = config.get('folders',["./"])
         self._filepaths = config.get('filepaths', [])
         self._ismc = config.get('ismc', False)
+        self._islantern = config.get('islantern', True)
         self._potTreeName = config.get('pottree','potTree')        
         self._tree = None
         self._num_entries = 0
@@ -69,12 +70,13 @@ class RootDataset(Dataset):
 
             # Get POT information for MC datasets
             if self._ismc:
-                self._rfile = ROOT.TFile(xfpath)
-                pot_tree = self._rfile.Get(self._potTreeName)
-                if pot_tree:
-                    for i in range(pot_tree.GetEntries()):
-                        pot_tree.GetEntry(i)
-                        self._pot += pot_tree.totGoodPOT
+                if self._islantern:
+                    self._rfile = ROOT.TFile(xfpath)
+                    pot_tree = self._rfile.Get(self._potTreeName)
+                    if pot_tree:
+                        for i in range(pot_tree.GetEntries()):
+                            pot_tree.GetEntry(i)
+                            self._pot += pot_tree.totGoodPOT
 
         self._num_entries = self._tree.GetEntries()       
 

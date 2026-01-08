@@ -65,7 +65,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         Args:
             name: A unique identifier for this dataset
             config: Dictionary containing configuration parameters:
-             - todo: document parameters
+             - output_filename: Name of the output ROOT file (optional, defaults to 'xsecflux_covar.root')
+             - output_dir: Directory for output file (optional, defaults to current directory)
         """
         self._tree_name = config.get('tree','eventweight_tree')
         self._sample_filepaths  = config.get('rootfilepaths',{})
@@ -140,21 +141,69 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         """
         Open file and make (run,subrun,event) --> index dictionary
         """
->>>>>>> add a c++ function to calculate weights in order to save time. added event index producer
 
-        # save selection criteria
-        self.cut_formulas = config.get('cut_formulas',{})
-        self.event_selection_critera = config.get('event_selection_critera',[])
+        if samplename in self._sample_filepaths:
+            weightfilepath = self._sample_filepaths[samplename]
+        else:
+            raise ValueError(f"Could not find sample name, '{samplename}' in file path dictionary parameter")
 
-        # Storage for passing events per sample
-        # Format: { sample_name: { 'rse': [...], 'bin_indices': [...], 'weights': [...] } }
-        self._passing_events = {}
+        # try: 
 
-        # xsec
-        self.xsec_params = config.get('xsec_params',[])
+        # open file
+            print(f'Build event index map in file {weightfilepath} and tree {self._tree_name}.')
+        rfile = rt.TFile( weightfilepath )
+        # get ttree
+        ttree = rfile.Get(self._tree_name)
+        # try arborist directory for ttree 
+        if not ttree: 
+            self._tree_name = f"arborist/{self._tree_name}" ## update for use later
+            ttree = rfile.Get(self._tree_name)
+            # If not found, search TDirectoryFile(s)
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                ttree = None
+                for key in rfile.GetListOfKeys():
+                    obj = key.ReadObj()
+                    if obj.InheritsFrom("TDirectoryFile"):
+                        dirfile = obj
+                        candidate = dirfile.Get(self._tree_name)
+                        if candidate and hasattr(candidate, 'SetBranchStatus'):
+                            ttree = candidate
+                            break
+            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
+                raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
 
-        # C++ accumulator instance
-        self.accumulator = XsecFluxAccumulator()        
+        # disable all but run, subrun, event branches to speed up read through file
+        ttree.SetBranchStatus("*", 0)
+        ttree.SetBranchStatus(self.weighttree_run_branch, 1)
+        ttree.SetBranchStatus(self.weighttree_subrun_branch, 1)
+        ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
+        nentries = ttree.GetEntries()
+        print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
+
+        # except:
+        #     raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
+
+        tstart = time.time()
+        rsedict = {}
+        # TODO: use a tqdm loop here?
+        for iientry in range(nentries):
+            #if (iientry%100000==0):
+            #    print("  building index. entry ",iientry)
+            ttree.GetEntry(iientry)
+            runindex = eval(f'ttree.{self.weighttree_run_branch}')
+            subindex = eval(f'ttree.{self.weighttree_subrun_branch}')
+            evtindex = eval(f'ttree.{self.weighttree_event_branch}')
+            rse = (runindex,subindex,evtindex)
+            rsedict[rse] = iientry
+            if iientry%100000==0:
+                print("  building index. entry ",iientry," rse=",rse)
+
+        dt_index = time.time()-tstart
+        print(f'Time to make index: {dt_index:.2f}')
+        self._sample_rse_to_entryindex[samplename] = rsedict
+
+        rfile.Close()
+
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -299,7 +348,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
     def _load_sample_weight_tree(self, datasetname ):
         if self._current_sample_tchain is not None:
             if datasetname != self._current_sample_name:
-                self._current_sample_tchain.Close()
+                try: 
+                    self._current_sample_tchain.Close()
+                except: 
+                    pass ## is this ok??
             else:
                 return # already loaded
 
@@ -704,8 +756,11 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             for (sample,par),arr in varinfo['sample_array'].items():
 
                 # save result of all variations for this parameter
-                hname = "h{varname}__{sample}__{par}__allvariations"
-                print("Fill variation hist: ",hname)
+                hname = f"h{varname}__{sample}__{par}"
+                if arr is None: 
+                    print(f"Error: Failed to create array for {hname}")
+                    continue  ## is this ok??
+                print("Fill variation hist: ",hname,": shape=",arr.shape)
                 xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
                 xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()
                 hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )

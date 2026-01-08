@@ -17,7 +17,7 @@ datasets:
   folders:
     # - /cluster/tufts/wongjiradlabnu/zimani01/lantern_data/
     # - /cluster/tufts/wongjiradlabnu/zimani01/lantern_data/v3dev_reco_retune/
-    - /exp/uboone/data/users/imani/nutples/
+    
     - /exp/uboone/data/users/imani/nutples/v3dev_reco_retune/
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
@@ -59,6 +59,11 @@ producers:
   # trueNu:
   #   type: trueNuPropertiesProducer
   #   config: {}
+
+  ## Event index for uncertainties
+  eventIndex: 
+    type: eventIndexProducer
+    config: {} 
 
   ## MC event weight  
   eventweight:
