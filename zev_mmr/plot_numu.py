@@ -32,7 +32,7 @@ samples = ['nue','numu','extbnb','data']
 # 		 "extbnb":"./run4_mmr/run4_outputs/run4_ext_bnb.root",
 # 		 "data":"./run4_mmr/run4_outputs/run4_data.root"}
 
-run_num = 4
+run_num = 1
 
 ## Run 1 
 if run_num == 1: 

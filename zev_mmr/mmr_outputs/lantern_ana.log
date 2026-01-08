@@ -338,3 +338,148 @@
 2025-08-22 22:25:30,602 - LanternAna - INFO - ==================================================
 2025-08-22 22:25:30,602 - LanternAna - INFO - analysis complete!
 2025-08-22 22:25:30,607 - LanternAna - INFO - Statistics saved to: ./zev_mmr/mmr_outputs/statistics.yaml
+2025-09-23 15:43:43,362 - LanternAna - INFO - Loading configuration from zev_mmr/run1_mmr.yaml
+2025-09-23 15:43:43,363 - LanternAna - INFO - Discovering components...
+2025-09-23 15:43:51,500 - LanternAna - INFO - Found 13 cuts
+2025-09-23 15:43:51,500 - LanternAna - INFO - Found 35 producers
+2025-09-23 15:43:51,500 - LanternAna - INFO - Found 1 dataset types
+2025-09-23 15:43:51,500 - LanternAna - INFO - Found 1 tags
+2025-09-23 15:43:51,502 - LanternAna - INFO - Configuring components...
+2025-09-23 15:43:51,512 - LanternAna - INFO - Starting enhanced analysis run...
+2025-09-23 15:43:51,513 - LanternAna - INFO - Loading datasets...
+2025-09-23 15:43:54,594 - LanternAna - INFO - Loaded dataset 'run1_bnb_nue_overlay_mcc9_v28_wctagger' with 148967 entries
+2025-09-23 15:43:54,594 - LanternAna - INFO -   MC dataset with 9.662529168587103e+22 POT
+2025-09-23 15:43:54,743 - LanternAna - INFO - Loaded dataset 'run1_bnb_nu_overlay_mcc9_v28_wctagger' with 150015 entries
+2025-09-23 15:43:54,743 - LanternAna - INFO -   MC dataset with 4.675690535431973e+20 POT
+2025-09-23 15:43:54,941 - LanternAna - INFO - Loaded dataset 'run1_extbnb_mcc9_v29e_C1' with 433446 entries
+2025-09-23 15:43:55,010 - LanternAna - INFO - Loaded dataset 'run1_bnb5e19' with 176153 entries
+2025-09-23 15:43:55,010 - LanternAna - INFO - Processing dataset with enhanced architecture: run1_bnb_nue_overlay_mcc9_v28_wctagger
+2025-09-23 15:43:55,035 - LanternAna - INFO - Processing 148967 events with producer-first architecture...
+2025-09-23 15:44:04,558 - LanternAna - INFO - Progress: 5.0% (7448/148967), Est. time remaining: 180.9s
+2025-09-23 15:44:13,704 - LanternAna - INFO - Progress: 10.0% (14896/148967), Est. time remaining: 168.0s
+2025-09-23 15:44:22,999 - LanternAna - INFO - Progress: 15.0% (22344/148967), Est. time remaining: 158.5s
+2025-09-23 15:44:31,935 - LanternAna - INFO - Progress: 20.0% (29792/148967), Est. time remaining: 147.6s
+2025-09-23 15:44:41,206 - LanternAna - INFO - Progress: 25.0% (37240/148967), Est. time remaining: 138.5s
+2025-09-23 15:44:50,104 - LanternAna - INFO - Progress: 30.0% (44688/148967), Est. time remaining: 128.5s
+2025-09-23 15:44:59,253 - LanternAna - INFO - Progress: 35.0% (52136/148967), Est. time remaining: 119.3s
+2025-09-23 15:45:08,757 - LanternAna - INFO - Progress: 40.0% (59584/148967), Est. time remaining: 110.6s
+2025-09-23 15:45:17,946 - LanternAna - INFO - Progress: 45.0% (67032/148967), Est. time remaining: 101.3s
+2025-09-23 15:45:27,090 - LanternAna - INFO - Progress: 50.0% (74480/148967), Est. time remaining: 92.1s
+2025-09-23 15:45:36,027 - LanternAna - INFO - Progress: 55.0% (81928/148967), Est. time remaining: 82.6s
+2025-09-23 15:45:45,141 - LanternAna - INFO - Progress: 60.0% (89376/148967), Est. time remaining: 73.4s
+2025-09-23 15:45:54,689 - LanternAna - INFO - Progress: 65.0% (96824/148967), Est. time remaining: 64.4s
+2025-09-23 15:46:04,488 - LanternAna - INFO - Progress: 70.0% (104272/148967), Est. time remaining: 55.5s
+2025-09-23 15:46:13,597 - LanternAna - INFO - Progress: 75.0% (111720/148967), Est. time remaining: 46.2s
+2025-09-23 15:46:22,418 - LanternAna - INFO - Progress: 80.0% (119168/148967), Est. time remaining: 36.9s
+2025-09-23 15:46:31,128 - LanternAna - INFO - Progress: 85.0% (126616/148967), Est. time remaining: 27.6s
+2025-09-23 15:46:40,108 - LanternAna - INFO - Progress: 90.0% (134064/148967), Est. time remaining: 18.3s
+2025-09-23 15:46:49,069 - LanternAna - INFO - Progress: 95.0% (141512/148967), Est. time remaining: 9.2s
+2025-09-23 15:46:58,677 - LanternAna - INFO - Progress: 100.0% (148960/148967), Est. time remaining: 0.0s
+2025-09-23 15:46:58,745 - LanternAna - INFO - Dataset run1_bnb_nue_overlay_mcc9_v28_wctagger processed in 183.6s
+2025-09-23 15:46:58,745 - LanternAna - INFO - Results written to ./zev_mmr/mmr_outputs/run1_bnb_nue_overlay_mcc9_v28_wctagger_20250923_154355.root
+2025-09-23 15:46:58,745 - LanternAna - INFO - Processing dataset with enhanced architecture: run1_bnb_nu_overlay_mcc9_v28_wctagger
+2025-09-23 15:46:58,748 - LanternAna - INFO - Processing 150015 events with producer-first architecture...
+2025-09-23 15:47:05,674 - LanternAna - INFO - Progress: 5.0% (7500/150015), Est. time remaining: 131.6s
+2025-09-23 15:47:12,562 - LanternAna - INFO - Progress: 10.0% (15000/150015), Est. time remaining: 124.3s
+2025-09-23 15:47:19,042 - LanternAna - INFO - Progress: 15.0% (22500/150015), Est. time remaining: 115.0s
+2025-09-23 15:47:25,872 - LanternAna - INFO - Progress: 20.0% (30000/150015), Est. time remaining: 108.5s
+2025-09-23 15:47:32,431 - LanternAna - INFO - Progress: 25.0% (37500/150015), Est. time remaining: 101.1s
+2025-09-23 15:47:38,782 - LanternAna - INFO - Progress: 30.0% (45000/150015), Est. time remaining: 93.4s
+2025-09-23 15:47:45,137 - LanternAna - INFO - Progress: 35.0% (52500/150015), Est. time remaining: 86.2s
+2025-09-23 15:47:51,979 - LanternAna - INFO - Progress: 40.0% (60000/150015), Est. time remaining: 79.9s
+2025-09-23 15:47:58,423 - LanternAna - INFO - Progress: 45.0% (67500/150015), Est. time remaining: 72.9s
+2025-09-23 15:48:05,466 - LanternAna - INFO - Progress: 50.0% (75000/150015), Est. time remaining: 66.7s
+2025-09-23 15:48:11,979 - LanternAna - INFO - Progress: 55.0% (82500/150015), Est. time remaining: 59.9s
+2025-09-23 15:48:18,264 - LanternAna - INFO - Progress: 60.0% (90000/150015), Est. time remaining: 53.0s
+2025-09-23 15:48:24,573 - LanternAna - INFO - Progress: 65.0% (97500/150015), Est. time remaining: 46.2s
+2025-09-23 15:48:31,132 - LanternAna - INFO - Progress: 70.0% (105000/150015), Est. time remaining: 39.6s
+2025-09-23 15:48:37,245 - LanternAna - INFO - Progress: 75.0% (112500/150015), Est. time remaining: 32.8s
+2025-09-23 15:48:44,135 - LanternAna - INFO - Progress: 80.0% (120000/150015), Est. time remaining: 26.4s
+2025-09-23 15:48:50,844 - LanternAna - INFO - Progress: 85.0% (127500/150015), Est. time remaining: 19.8s
+2025-09-23 15:48:57,512 - LanternAna - INFO - Progress: 90.0% (135000/150015), Est. time remaining: 13.2s
+2025-09-23 15:49:03,916 - LanternAna - INFO - Progress: 95.0% (142500/150015), Est. time remaining: 6.6s
+2025-09-23 15:49:10,477 - LanternAna - INFO - Progress: 100.0% (150000/150015), Est. time remaining: 0.0s
+2025-09-23 15:49:10,511 - LanternAna - INFO - Dataset run1_bnb_nu_overlay_mcc9_v28_wctagger processed in 131.7s
+2025-09-23 15:49:10,512 - LanternAna - INFO - Results written to ./zev_mmr/mmr_outputs/run1_bnb_nu_overlay_mcc9_v28_wctagger_20250923_154658.root
+2025-09-23 15:49:10,512 - LanternAna - INFO - Processing dataset with enhanced architecture: run1_extbnb_mcc9_v29e_C1
+2025-09-23 15:49:10,514 - LanternAna - INFO - Processing 433446 events with producer-first architecture...
+2025-09-23 15:49:16,549 - LanternAna - INFO - Progress: 5.0% (21672/433446), Est. time remaining: 114.7s
+2025-09-23 15:49:22,268 - LanternAna - INFO - Progress: 10.0% (43344/433446), Est. time remaining: 105.8s
+2025-09-23 15:49:28,183 - LanternAna - INFO - Progress: 15.0% (65016/433446), Est. time remaining: 100.1s
+2025-09-23 15:49:33,864 - LanternAna - INFO - Progress: 20.0% (86688/433446), Est. time remaining: 93.4s
+2025-09-23 15:49:39,552 - LanternAna - INFO - Progress: 25.0% (108360/433446), Est. time remaining: 87.1s
+2025-09-23 15:49:45,492 - LanternAna - INFO - Progress: 30.0% (130032/433446), Est. time remaining: 81.6s
+2025-09-23 15:49:51,343 - LanternAna - INFO - Progress: 35.0% (151704/433446), Est. time remaining: 75.8s
+2025-09-23 15:49:57,024 - LanternAna - INFO - Progress: 40.0% (173376/433446), Est. time remaining: 69.8s
+2025-09-23 15:50:03,328 - LanternAna - INFO - Progress: 45.0% (195048/433446), Est. time remaining: 64.6s
+2025-09-23 15:50:09,380 - LanternAna - INFO - Progress: 50.0% (216720/433446), Est. time remaining: 58.9s
+2025-09-23 15:50:14,934 - LanternAna - INFO - Progress: 55.0% (238392/433446), Est. time remaining: 52.7s
+2025-09-23 15:50:20,569 - LanternAna - INFO - Progress: 60.0% (260064/433446), Est. time remaining: 46.7s
+2025-09-23 15:50:26,154 - LanternAna - INFO - Progress: 65.0% (281736/433446), Est. time remaining: 40.7s
+2025-09-23 15:50:31,743 - LanternAna - INFO - Progress: 70.0% (303408/433446), Est. time remaining: 34.8s
+2025-09-23 15:50:37,167 - LanternAna - INFO - Progress: 75.0% (325080/433446), Est. time remaining: 28.9s
+2025-09-23 15:50:42,812 - LanternAna - INFO - Progress: 80.0% (346752/433446), Est. time remaining: 23.1s
+2025-09-23 15:50:48,585 - LanternAna - INFO - Progress: 85.0% (368424/433446), Est. time remaining: 17.3s
+2025-09-23 15:50:54,232 - LanternAna - INFO - Progress: 90.0% (390096/433446), Est. time remaining: 11.5s
+2025-09-23 15:50:59,895 - LanternAna - INFO - Progress: 95.0% (411768/433446), Est. time remaining: 5.8s
+2025-09-23 15:51:05,717 - LanternAna - INFO - Progress: 100.0% (433440/433446), Est. time remaining: 0.0s
+2025-09-23 15:51:05,729 - LanternAna - INFO - Dataset run1_extbnb_mcc9_v29e_C1 processed in 115.2s
+2025-09-23 15:51:05,729 - LanternAna - INFO - Results written to ./zev_mmr/mmr_outputs/run1_extbnb_mcc9_v29e_C1_20250923_154910.root
+2025-09-23 15:51:05,730 - LanternAna - INFO - Processing dataset with enhanced architecture: run1_bnb5e19
+2025-09-23 15:51:05,733 - LanternAna - INFO - Processing 176153 events with producer-first architecture...
+2025-09-23 15:51:08,777 - LanternAna - INFO - Progress: 5.0% (8807/176153), Est. time remaining: 57.8s
+2025-09-23 15:51:11,262 - LanternAna - INFO - Progress: 10.0% (17614/176153), Est. time remaining: 49.8s
+2025-09-23 15:51:13,647 - LanternAna - INFO - Progress: 15.0% (26421/176153), Est. time remaining: 44.9s
+2025-09-23 15:51:16,074 - LanternAna - INFO - Progress: 20.0% (35228/176153), Est. time remaining: 41.4s
+2025-09-23 15:51:18,453 - LanternAna - INFO - Progress: 25.0% (44035/176153), Est. time remaining: 38.2s
+2025-09-23 15:51:20,885 - LanternAna - INFO - Progress: 30.0% (52842/176153), Est. time remaining: 35.4s
+2025-09-23 15:51:23,358 - LanternAna - INFO - Progress: 35.0% (61649/176153), Est. time remaining: 32.7s
+2025-09-23 15:51:25,859 - LanternAna - INFO - Progress: 40.0% (70456/176153), Est. time remaining: 30.2s
+2025-09-23 15:51:28,243 - LanternAna - INFO - Progress: 45.0% (79263/176153), Est. time remaining: 27.5s
+2025-09-23 15:51:30,660 - LanternAna - INFO - Progress: 50.0% (88070/176153), Est. time remaining: 24.9s
+2025-09-23 15:51:33,050 - LanternAna - INFO - Progress: 55.0% (96877/176153), Est. time remaining: 22.4s
+2025-09-23 15:51:35,480 - LanternAna - INFO - Progress: 60.0% (105684/176153), Est. time remaining: 19.8s
+2025-09-23 15:51:37,975 - LanternAna - INFO - Progress: 65.0% (114491/176153), Est. time remaining: 17.4s
+2025-09-23 15:51:40,335 - LanternAna - INFO - Progress: 70.0% (123298/176153), Est. time remaining: 14.8s
+2025-09-23 15:51:42,752 - LanternAna - INFO - Progress: 75.0% (132105/176153), Est. time remaining: 12.3s
+2025-09-23 15:51:45,198 - LanternAna - INFO - Progress: 80.0% (140912/176153), Est. time remaining: 9.9s
+2025-09-23 15:51:47,595 - LanternAna - INFO - Progress: 85.0% (149719/176153), Est. time remaining: 7.4s
+2025-09-23 15:51:50,082 - LanternAna - INFO - Progress: 90.0% (158526/176153), Est. time remaining: 4.9s
+2025-09-23 15:51:52,548 - LanternAna - INFO - Progress: 95.0% (167333/176153), Est. time remaining: 2.5s
+2025-09-23 15:51:55,009 - LanternAna - INFO - Progress: 100.0% (176140/176153), Est. time remaining: 0.0s
+2025-09-23 15:51:55,022 - LanternAna - INFO - Dataset run1_bnb5e19 processed in 49.3s
+2025-09-23 15:51:55,023 - LanternAna - INFO - Results written to ./zev_mmr/mmr_outputs/run1_bnb5e19_20250923_155105.root
+2025-09-23 15:51:55,023 - LanternAna - INFO - ==================================================
+2025-09-23 15:51:55,023 - LanternAna - INFO - Enhanced Analysis Statistics
+2025-09-23 15:51:55,024 - LanternAna - INFO - ==================================================
+2025-09-23 15:51:55,024 - LanternAna - INFO - Dataset: run1_bnb_nue_overlay_mcc9_v28_wctagger
+2025-09-23 15:51:55,029 - LanternAna - INFO -   Total events: 148967
+2025-09-23 15:51:55,030 - LanternAna - INFO -   Passed events: 148967 (100.0%)
+2025-09-23 15:51:55,030 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-09-23 15:51:55,031 - LanternAna - INFO -   Processing time: 183.6s
+2025-09-23 15:51:55,031 - LanternAna - INFO -   Cut statistics:
+2025-09-23 15:51:55,032 - LanternAna - INFO -     remove_true_nue_cc: 0/148967 (0.0%)
+2025-09-23 15:51:55,032 - LanternAna - INFO - Dataset: run1_bnb_nu_overlay_mcc9_v28_wctagger
+2025-09-23 15:51:55,033 - LanternAna - INFO -   Total events: 150015
+2025-09-23 15:51:55,033 - LanternAna - INFO -   Passed events: 149327 (99.5%)
+2025-09-23 15:51:55,034 - LanternAna - INFO -   Failed events: 688 (0.5%)
+2025-09-23 15:51:55,034 - LanternAna - INFO -   Processing time: 131.7s
+2025-09-23 15:51:55,035 - LanternAna - INFO -   Cut statistics:
+2025-09-23 15:51:55,035 - LanternAna - INFO -     remove_true_nue_cc: 688/150015 (0.5%)
+2025-09-23 15:51:55,036 - LanternAna - INFO - Dataset: run1_extbnb_mcc9_v29e_C1
+2025-09-23 15:51:55,036 - LanternAna - INFO -   Total events: 433446
+2025-09-23 15:51:55,036 - LanternAna - INFO -   Passed events: 433446 (100.0%)
+2025-09-23 15:51:55,036 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-09-23 15:51:55,037 - LanternAna - INFO -   Processing time: 115.2s
+2025-09-23 15:51:55,037 - LanternAna - INFO -   Cut statistics:
+2025-09-23 15:51:55,037 - LanternAna - INFO -     remove_true_nue_cc: 0/433446 (0.0%)
+2025-09-23 15:51:55,038 - LanternAna - INFO - Dataset: run1_bnb5e19
+2025-09-23 15:51:55,038 - LanternAna - INFO -   Total events: 176153
+2025-09-23 15:51:55,038 - LanternAna - INFO -   Passed events: 176153 (100.0%)
+2025-09-23 15:51:55,038 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2025-09-23 15:51:55,039 - LanternAna - INFO -   Processing time: 49.3s
+2025-09-23 15:51:55,039 - LanternAna - INFO -   Cut statistics:
+2025-09-23 15:51:55,039 - LanternAna - INFO -     remove_true_nue_cc: 0/176153 (0.0%)
+2025-09-23 15:51:55,039 - LanternAna - INFO - ==================================================
+2025-09-23 15:51:55,040 - LanternAna - INFO - analysis complete!
+2025-09-23 15:51:55,045 - LanternAna - INFO - Statistics saved to: ./zev_mmr/mmr_outputs/statistics.yaml

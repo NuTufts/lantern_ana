@@ -57,7 +57,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         Args:
             name: A unique identifier for this dataset
             config: Dictionary containing configuration parameters:
-             - todo: document parameters
+             - output_filename: Name of the output ROOT file (optional, defaults to 'xsecflux_covar.root')
+             - output_dir: Directory for output file (optional, defaults to current directory)
         """
         super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
@@ -115,11 +116,16 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         else:
             raise ValueError(f"Could not find sample name, '{samplename}' in file path dictionary parameter")
 
-        try:
-            # open file
+        # try: 
+
+        # open file
             print(f'Build event index map in file {weightfilepath} and tree {self._tree_name}.')
-            rfile = rt.TFile( weightfilepath )
-            # get ttree
+        rfile = rt.TFile( weightfilepath )
+        # get ttree
+        ttree = rfile.Get(self._tree_name)
+        # try arborist directory for ttree 
+        if not ttree: 
+            self._tree_name = f"arborist/{self._tree_name}" ## update for use later
             ttree = rfile.Get(self._tree_name)
             # If not found, search TDirectoryFile(s)
             if not ttree or not hasattr(ttree, 'SetBranchStatus'):
@@ -135,15 +141,16 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             if not ttree or not hasattr(ttree, 'SetBranchStatus'):
                 raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
 
-            # disable all but run, subrun, event branches to speed up read through file
-            ttree.SetBranchStatus("*", 0)
-            ttree.SetBranchStatus(self.weighttree_run_branch, 1)
-            ttree.SetBranchStatus(self.weighttree_subrun_branch, 1)
-            ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
-            nentries = ttree.GetEntries()
-            print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
-        except:
-            raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
+        # disable all but run, subrun, event branches to speed up read through file
+        ttree.SetBranchStatus("*", 0)
+        ttree.SetBranchStatus(self.weighttree_run_branch, 1)
+        ttree.SetBranchStatus(self.weighttree_subrun_branch, 1)
+        ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
+        nentries = ttree.GetEntries()
+        print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
+
+        # except:
+        #     raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
 
         tstart = time.time()
         rsedict = {}
@@ -252,7 +259,10 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
     def _load_sample_weight_tree(self, datasetname):
         if self._current_sample_tchain is not None:
             if datasetname != self._current_sample_name:
-                self._current_sample_tchain.Close()
+                try: 
+                    self._current_sample_tchain.Close()
+                except: 
+                    pass ## is this ok??
             else:
                 return # already loaded
 
@@ -405,6 +415,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             for (sample,par),arr in varinfo['sample_array'].items():
                 # save result of all variations for this parameter
                 hname = f"h{varname}__{sample}__{par}"
+                if arr is None: 
+                    print(f"Error: Failed to create array for {hname}")
+                    continue  ## is this ok??
                 print("Fill variation hist: ",hname,": shape=",arr.shape)
                 xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
                 xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()

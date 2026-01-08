@@ -6,7 +6,7 @@ analysis_statistics:
         pass: 0
     failed: 0
     passed: 176153
-    processing_time: 47.0985472202301
+    processing_time: 49.27886462211609
     total: 176153
   run1_bnb_nu_overlay_mcc9_v28_wctagger:
     cut_stats:
@@ -15,7 +15,7 @@ analysis_statistics:
         pass: 688
     failed: 688
     passed: 149327
-    processing_time: 135.61669921875
+    processing_time: 131.7433135509491
     total: 150015
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     cut_stats:
@@ -24,7 +24,7 @@ analysis_statistics:
         pass: 0
     failed: 0
     passed: 148967
-    processing_time: 174.83790755271912
+    processing_time: 183.6499149799347
     total: 148967
   run1_extbnb_mcc9_v29e_C1:
     cut_stats:
@@ -33,40 +33,47 @@ analysis_statistics:
         pass: 0
     failed: 0
     passed: 433446
-    processing_time: 105.85587239265442
+    processing_time: 115.20485401153564
     total: 433446
 producer_statistics:
-  average_time_per_event: 0.00043440786766593497
+  average_time_per_event: 0.0004596234042832324
   execution_order:
+  - eventIndex
   - eventweight
   - numuIncCC
   - nueIncCC
   - nue_selection_result
   producer_metrics:
+    eventIndex:
+      average_time: 1.1908080165893994e-05
+      calls: 908581
+      error_rate: 0.0
+      errors: 0
+      total_time: 10.81945538520813
     eventweight:
-      average_time: 4.386228412549069e-06
+      average_time: 2.706616531791906e-06
       calls: 908581
       error_rate: 0.0
       errors: 0
-      total_time: 3.985243797302246
+      total_time: 2.4591803550720215
     nueIncCC:
-      average_time: 0.0002518461801944834
+      average_time: 0.00026067973837182775
       calls: 908581
       error_rate: 0.0
       errors: 0
-      total_time: 228.82265424728394
+      total_time: 236.84865736961365
     nue_selection_result:
-      average_time: 1.1442520500037777e-06
+      average_time: 1.3684205832226834e-06
       calls: 908581
       error_rate: 0.0
       errors: 0
-      total_time: 1.0396456718444824
+      total_time: 1.2433209419250488
     numuIncCC:
-      average_time: 0.00017703120700889868
+      average_time: 0.00018296054863049606
       calls: 908581
       error_rate: 0.0
       errors: 0
-      total_time: 160.84719109535217
+      total_time: 166.23447823524475
   total_events: 908581
-  total_processing_time: 394.69473481178284
-  total_producers: 4
+  total_processing_time: 417.6050922870636
+  total_producers: 5

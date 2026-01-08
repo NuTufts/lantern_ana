@@ -2,11 +2,22 @@ import os,sys
 import ROOT as rt
 from math import sqrt
 
-rfile = rt.TFile("temp_covar.root")
+working_dir = "./output_numu_run1_sys_test/"
+
+# rfile = rt.TFile(working_dir+"xsecflux_covar_run1_numu_vis.root")
+
+# rfile = rt.TFile("./run1_outputs/xsecflux_run1_nue_overlay_nu.root")
+# rfile = rt.TFile("./run1_outputs/xsecflux_run1_numu_overlay_nu.root")
+
+
+rfile = rt.TFile("./run1_outputs/xsecflux_run1_nue_intrinsic_nue.root")
+# rfile = rt.TFile("./run1_outputs/xsecflux_run1_numu_intrinsic_nue.root")
+
 
 histmodes = ['cv','w','w2','N']
 variables = ['delPTT','pN','delAlphaT']
-samples   = ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+# samples   = ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+samples   = ['run1_bnb_nue_overlay_mcc9_v28_wctagger']
 flux_params = [
     "expskin_FluxUnisim",
     "horncurrent_FluxUnisim",
@@ -81,13 +92,20 @@ def make_hist_w_errors( rfile, varname, sample, parlist ):
     return hists
     
         
-temp = rt.TFile("temp.root",'recreate')
+temp = rt.TFile(working_dir+"xsecflux_hists.root",'recreate')
 canvs = {}
 
 for var in variables:
     for sample in samples:
-        hists = make_hist_w_errors(rfile, var,sample,all_pars)
-        c = rt.TCanvas(f"c{var}_{sample}",f"{var} {sample}",2000,1000)
+        hists = make_hist_w_errors(rfile, var, sample, all_pars)
+        
+        # Write histograms to temp file
+        temp.cd()
+        hists['cv'].Write()
+        hists['mean2'].Write()
+        # hists['totvar'].Write()
+        
+        c = rt.TCanvas(f"c{var}_{sample}", f"{var} {sample}", 2000, 1000)
         c.Draw()
         c.cd(1)
         c.cd(1).SetGridx(1)
@@ -97,20 +115,24 @@ for var in variables:
         hcvline = hists['cv'].Clone(f"h{var}_{sample}_cvline")
         hcvline.SetLineWidth(2)
         hcv.SetFillColor(rt.kBlue-3)
-        hcv.SetFillStyle(3003)
+        hcv.SetFillStyle(3003) #hatched 
 
         hmeans2 = hists['mean2']
         hmeans2.SetLineWidth(2)
         hmeans2.SetLineColor(rt.kRed-2)
 
-
         hcv.Draw("E2")
         hcvline.Draw("histsame")
         hmeans2.Draw("histsame")
         c.Update()
-        canvs[(var,sample)] = c
-print("[enter] to exit")
-input()
+        c.Write()  # Also write the canvas to the file
+        canvs[(var, sample)] = c
+
+# Close the temp file to ensure everything is written
+temp.Close()
+rfile.Close()
+
+print("Histograms written to", working_dir+"xsecflux_hists.root")
 
 
 
