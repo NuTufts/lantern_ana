@@ -1,0 +1,7 @@
+2026-01-08 02:37:44,171 - LanternAna - INFO - Loading configuration from xsecflux_numu_run4a_surprise.yaml
+2026-01-08 02:37:44,172 - LanternAna - INFO - Discovering components...
+2026-01-08 02:37:46,981 - LanternAna - INFO - Found 13 cuts
+2026-01-08 02:37:46,981 - LanternAna - INFO - Found 37 producers
+2026-01-08 02:37:46,981 - LanternAna - INFO - Found 1 dataset types
+2026-01-08 02:37:46,982 - LanternAna - INFO - Found 1 tags
+2026-01-08 02:37:46,982 - LanternAna - INFO - Configuring components...

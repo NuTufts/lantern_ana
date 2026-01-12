@@ -1,0 +1,211 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/runs45_zev_mmr/nue_xsecflux/"
+
+# Override default temp_covar.root (DOESN'T WORK)
+# output_filename: "/exp/uboone/app/users/imani/lantern_ana/runs45_zev_mmr/nue_xsecflux/run4a_nu"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /exp/uboone/app/users/imani/lantern_ana/runs45_zev_mmr/nue_raw_root/
+
+  # run4a_nu: 
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4a_v10_04_07_13_BNB_nu_overlay_surprise.root
+  
+  # run4a_nue: 
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4a_v10_04_07_13_BNB_nue_overlay_surprise.root
+
+  # run4b_nu:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4b_v10_04_07_20_BNB_nu_overlay_retuple.root
+  
+  # run4b_nue:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4b_v10_04_07_09_BNB_nue_overlay_surprise.root
+
+  # run4c_nu:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4c_v10_04_07_13_BNB_nu_overlay_surprise.root
+  
+  # run4c_nue:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4c_v10_04_07_13_BNB_nue_overlay_surprise.root
+
+  # run4d_nu:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4d_v10_04_07_13_BNB_nu_overlay_surprise.root
+  
+  # run4d_nue:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4d_v10_04_07_13_BNB_nue_overlay_surprise.root
+  
+  # run5_nu:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run5_v10_04_07_13_BNB_nu_overlay_surprise.root
+  
+  run5_nue:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+    - run5_v10_04_07_13_BNB_nue_overlay_surprise.root
+
+# Producer configuration (producers run first)
+producers:
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
+      tree: nuselection/NeutrinoSelectionFilter
+      weight_tree_run: "run"
+      weight_tree_subrun: "sub"
+      weight_tree_event: "evt"
+      rootfilepaths:
+        # run4a_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root"
+        # run4a_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root"
+        # run4b_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/retuple/BNB/MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root"
+        # run4b_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root"
+        # run4c_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4c_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4c.root"
+        # run4c_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4c_full_samples//BNB/MCC9.10_Run4c_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_redo_reco2_hist.root"
+        # run4d_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4d_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root"
+        # run4d_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4d_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root"
+        # run5_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_5.root"
+        run5_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root"
+      par_variations_to_include:
+       - All_UBGenie
+       - flux_all
+       - reint_all
+       - AxFFCCQEshape_UBGenie
+       - DecayAngMEC_UBGenie
+       - NormCCCOH_UBGenie
+       - NormNCCOH_UBGenie
+       - RPA_CCQE_UBGenie
+       - RootinoFix_UBGenie
+       - ThetaDelta2NRad_UBGenie
+       - Theta_Delta2Npi_UBGenie
+       - TunedCentralValue_UBGenie
+       - VecFFCCQEshape_UBGenie
+       - XSecShape_CCMEC_UBGenie
+       - xsr_scc_Fa3_SCC
+       - xsr_scc_Fv3_SCC
+      cut_formulas:
+        mmr_cuts: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0
+                    "
+        # mmr_cuts_nu: "{ntuple.vertex_properties_infiducial}==1 and
+        #             {ntuple.vertex_properties_cosmicfrac}<1.0 and
+        #             {ntuple.recoMuonTrack_nMuTracks}==0 and
+        #             {ntuple.recoElectron_has_primary_electron}==1 and 
+        #             {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+        #             {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+        #             {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+        #             {ntuple.recoElectron_emax_econfidence}>7.0 and
+        #             {ntuple.nueCCinc_is_target_nuecc_inclusive_nofvcut}!=1
+        #             "
+        # mmr_cuts: "vertex_properties_infiducial==1 and
+        #           vertex_properties_cosmicfrac<1.0 and
+        #           recoMuonTrack_nMuTracks==0 and
+        #           recoElectron_has_primary_electron==1 and 
+        #           recoElectron_emax_primary_score>recoElectron_emax_fromcharged_score and
+        #           recoElectron_emax_primary_score>recoElectron_emax_fromneutral_score and
+        #           recoMuonTrack_max_muscore<-3.7 and
+        #           recoElectron_emax_econfidence>7.0
+        #           "
+        # signal_def = "nueCCinc_is_target_nuecc_inclusive_nofvcut==1 && nueCCinc_dwalltrue>=%.2f"%(true_vertex_dwallcut)
+        # pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
+        # pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy}>0.0"
+      event_selection_critera: ['mmr_cuts']
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          # apply_to_datasets: ['run4b_v10_04_07_09_BNB_nue_overlay_surprise']
+          # apply_to_datasets: [run4b_v10_04_07_20_BNB_nu_overlay_retuple]
+          apply_to_datasets: [run5_nue]
+          criteria: []
+        reco_neutrino_energy: 
+          formula: vertex_properties_recoEnuMeV
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          # apply_to_datasets: ['run4b_v10_04_07_09_BNB_nue_overlay_surprise']
+          # apply_to_datasets: ['run4b_v10_04_07_20_BNB_nu_overlay_retuple']
+          apply_to_datasets: [run5_nue]
+          criteria: []
+
+## Cuts have already been applied in creation of raw files (I think)
+
+# Cut configuration
+# cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run4a_nu
+
+# cut_logic: "(not {remove_true_nue_cc})"
+

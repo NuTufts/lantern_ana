@@ -1,0 +1,77 @@
+analysis_statistics:
+  run4b_BNB_nu_overlay_CV:
+    cut_stats: {}
+    failed: 0
+    passed: 438038
+    processing_time: 560.3851163387299
+    total: 438038
+producer_statistics:
+  average_time_per_event: 0.0011988910537252667
+  execution_order:
+  - trueNu
+  - eventweight
+  - visible_energy
+  - vertex_properties
+  - recoElectron
+  - recoMuonTrack
+  - nueCCinc
+  - truth_mode
+  - eventIndex
+  producer_metrics:
+    eventIndex:
+      average_time: 1.005886068249149e-05
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 4.406163215637207
+    eventweight:
+      average_time: 1.81550622431072e-05
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 7.952607154846191
+    nueCCinc:
+      average_time: 0.00038006987806478367
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 166.4850492477417
+    recoElectron:
+      average_time: 0.0001321517273651898
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 57.88747835159302
+    recoMuonTrack:
+      average_time: 8.844413031201238e-05
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 38.74188995361328
+    trueNu:
+      average_time: 6.482962997171991e-06
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 2.8397841453552246
+    truth_mode:
+      average_time: 0.0003772064406565068
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 165.23075485229492
+    vertex_properties:
+      average_time: 0.00012687161945896204
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 55.57459044456482
+    visible_energy:
+      average_time: 5.9450371945041324e-05
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 26.04152202606201
+  total_events: 438038
+  total_processing_time: 525.1598393917084
+  total_producers: 9

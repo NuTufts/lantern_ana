@@ -1,0 +1,21 @@
+analysis_statistics:
+  run5_nue:
+    cut_stats: {}
+    failed: 0
+    passed: 229798
+    processing_time: 66.77534127235413
+    total: 229798
+producer_statistics:
+  average_time_per_event: 0.00027311561734273037
+  execution_order:
+  - xsfluxweight
+  producer_metrics:
+    xsfluxweight:
+      average_time: 0.00027311561734273037
+      calls: 229798
+      error_rate: 0.0
+      errors: 0
+      total_time: 62.761422634124756
+  total_events: 229798
+  total_processing_time: 62.761422634124756
+  total_producers: 1

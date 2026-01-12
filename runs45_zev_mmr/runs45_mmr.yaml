@@ -1,0 +1,276 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/runs45_zev_mmr/nue_raw_root/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    # 4a 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/
+    # 4b 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/
+    # 4b Retuples 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/retuple/BNB/
+    # 4c 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run4c_full_samples/BNB/
+    # 4d 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run4d_full_samples/BNB/
+    # 5 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/
+
+    # Pandora Weight Trees 
+    # - /exp/uboone/app/users/imani/lantern_ana/xsecweights/
+
+    # - /pnfs/uboone/scratch/users/eyandel/SURPRISE/processed_checkout_rootfiles/run4b/
+    # - /exp/uboone/app/users/imani/lantern_ana/xsecweights
+    # - /exp/uboone/data/uboonepro/MCC9.10/liangliu/v10_04_07_09/
+    # - /pnfs/uboone/persistent/users/uboonepro/surprise/detvar_test 
+  
+  # run4a_v10_04_07_13_BNB_nu_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root
+  # run4a_v10_04_07_13_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4a.root
+
+  # run4b_v10_04_07_20_BNB_nu_overlay_retuple:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lanter/potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root
+  #   friendtrees: 
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root
+  # run4b_v10_04_07_09_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lanter/potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
+  #   friendtrees: 
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root
+
+
+  # run4c_v10_04_07_13_BNB_nu_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4c.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4c.root
+  # run4c_v10_04_07_13_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4c_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_redo_reco2_hist.root
+  #   filepaths:
+  #    - MCC9.10_Run4c_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_redo_reco2_hist.root
+ 
+  # run4d_v10_04_07_13_BNB_nu_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root
+  # run4d_v10_04_07_13_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root
+ 
+  # run5_v10_04_07_13_BNB_nu_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4d.root
+  # run5_v10_04_07_13_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   friendtrees:
+  #     nuselection/NeutrinoSelectionFilter: MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root
+  #   filepaths:
+  #    - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_4d.root
+
+  run4a_extbnb:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: true
+    filepaths:
+    - MCC9.10_Run4a_BNB_beam_off_data_surprise_reco2_hist.root
+  run4a_beamon:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: true
+    filepaths:
+    - MCC9.10_Run4a_BNB_beam_on_data_surprise_reco2_hist.root
+  # run4a_dirt:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_dirt_overlay_surprise_reco2_hist_4a.root
+
+  # run4b_extbnb:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - MCC9.10_Run4b_v10_04_07_09_Run4b_BNB_beam_off_surprise_reco2_hist.root
+  # run4b_beamon:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+  # run4b_dirt:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - /pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/MCC9.10_Run4b_v10_04_07_09_BNB_dirt_surpise_reco2_hist.root
+
+
+# Producer configuration
+producers:
+
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  # vertex properties
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  # electron properties  
+  recoElectron:
+    type: RecoElectronPropertiesProducer
+    config:
+      electron_quality_cuts:
+        min_charge: 0.0
+        min_purity: 0.0
+        min_completeness: 0.0
+  
+  # muon track properties
+  recoMuonTrack:
+    type: RecoMuonTrackPropertiesProducer
+    config:
+      track_min_energy: 25.0
+
+  # nue signal definition
+  nueCCinc:
+    type: signalNueCCInclusive
+    config:
+      fv_params:
+        width: 0.0
+        apply_scc: false
+        usetruevtx: true
+
+  # Truth mode classification
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        eKE: 0.0
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: true
+        condense_ncmodes: true
+
+  ## Event index for uncertainties (no longer needed?)
+  eventIndex: 
+    type: eventIndexProducer
+    config: {} 
+
+  ## MC event weight  (no longer needed?)
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+
+# Cut configuration
+cuts:
+  # Remove true nue CC events (based on MC truth)
+  remove_true_nue_cc:
+    applyto:
+      - run4a_v10_04_07_13_BNB_nu_overlay_surprise
+      - run4b_v10_04_07_20_BNB_nu_overlay_retuple
+      - run4b_v10_04_07_09_BNB_nu_overlay_surprise
+      - run4c_v10_04_07_13_BNB_nu_overlay_surprise
+      - run4d_v10_04_07_13_BNB_nu_overlay_surprise
+      - run5_v10_04_07_13_BNB_nu_overlay_surprise
+
+cut_logic: "not {remove_true_nue_cc}"
