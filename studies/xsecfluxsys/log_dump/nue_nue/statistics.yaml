@@ -1,0 +1,21 @@
+analysis_statistics:
+  run1_bnb_nue_overlay_mcc9_v28_wctagger:
+    cut_stats: {}
+    failed: 0
+    passed: 148967
+    processing_time: 5676.5825934410095
+    total: 148967
+producer_statistics:
+  average_time_per_event: 0.0380648036608318
+  execution_order:
+  - xsfluxweight
+  producer_metrics:
+    xsfluxweight:
+      average_time: 0.0380648036608318
+      calls: 148967
+      error_rate: 0.0
+      errors: 0
+      total_time: 5670.3996069431305
+  total_events: 148967
+  total_processing_time: 5670.3996069431305
+  total_producers: 1

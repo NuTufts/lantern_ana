@@ -1,0 +1,130 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "./log_dump/nue_nu/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
+    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
+    - /nashome/z/zimani/lantern/lantern_ana/zev_mmr/mmr_outputs/
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+     - run1_bnb_nu_overlay_mcc9_v28_wctagger.root
+  # run1_bnb_nue_overlay_mcc9_v28_wctagger:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - run1_bnb_nue_overlay_mcc9_v28_wctagger.root
+
+# Producer configuration (producers run first)
+producers:
+  
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      output_filename: "xsecflux_run1_nue_overlay_nu.root"
+      output_dir: "./run1_outputs/"
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
+      # tree: arborist
+      rootfilepaths:
+        run1_bnb_nu_overlay_mcc9_v28_wctagger: /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
+        # run1_bnb_nue_overlay_mcc9_v28_wctagger: /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_intrinsic_nue_run1.root
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie # what is this?
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+
+      cut_formulas:
+        # pass_vertex: "{ntuple.numuIncCC_has_vertex_in_fv}==1" 
+        # pass_electron: "{ntuple.numuIncCC_passes_cosmic_rejection}==1 and {ntuple.numuIncCC_has_muon_track}==1"
+        pass_selection: "{ntuple.nueIncCC_passes_all_cuts}==1"
+      event_selection_critera: ['pass_selection']
+      
+      ## Uncertianty histograms 
+      bin_config: 
+
+        visible_energy:
+          formula: nueIncCC_reco_nu_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3.0
+          # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: []
+
+        electron_momentum:
+          formula: nueIncCC_reco_nu_energy
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1.5
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: []
+
+        electron_angle:
+          formula: nueIncCC_reco_electron_costheta
+          numbins: 20
+          minvalue: -1.0
+          maxvalue: 1.0
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
+          criteria: []
+
+
+# Cut configuration
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
+

@@ -1,0 +1,136 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part2/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_raw_root/
+    - /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/
+
+    # Detector Systematics 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/detvar_test/
+
+  # run4b_v10_04_07_09_BNB_nue_overlay_surprise:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #   - run4b_v10_04_07_09_BNB_nue_overlay_surprise.root
+  
+  run4b_BNB_nu_overlay_CV:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+     - run4b_BNB_nu_overlay_CV.root
+
+# Producer configuration (producers run first)
+producers:
+  detsys_run4b:
+    type: UBDetSysProducer
+    config:
+      variations_to_include:
+        - LYAtt
+        - LYDown
+        - LYRayleigh
+        - wiremodX
+        # - wiremodYZ
+        # - wiremodThetaXZ
+        # - wiremodThetaYZ  
+        - Recomb2
+        - SCE    
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
+      central_value_dataset: run4b_BNB_nu_overlay_CV
+      variation_rootfiles:
+        LYAtt:      /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYAtt.root
+        LYDown:     /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYDown.root
+        LYRayleigh: /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYRayleigh.root
+        wiremodX:   /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_wiremodX.root
+        # wiremodYZ:  /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodYZ_20251204_093540.root
+        # wiremodThetaYZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaYZ_20251204_093744.root
+        # wiremodThetaXZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaXZ_20251204_093644.root
+        Recomb2:    /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_Recomb2.root
+        SCE:        /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_SCE.root
+      variation_treename: analysis_tree
+
+      cut_formulas:
+        mmr_cuts: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0
+                    "
+        # signal_def = "nueCCinc_is_target_nuecc_inclusive_nofvcut==1 && nueCCinc_dwalltrue>=%.2f"%(true_vertex_dwallcut)
+        # pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
+        # pass_muon: "{ntuple.muon_properties_pid_score}>-0.9 and {ntuple.muon_properties_energy}>0.0"
+      event_selection_critera: ['mmr_cuts']
+      
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          applicable_variations: 
+            - 'LYAtt'
+            - 'LYDown'
+            - 'LYRayleigh'
+            - 'wiremodX'
+            # - 'wiremodYZ'
+            # - 'wiremodThetaXZ'
+            # - 'wiremodThetaYZ'  
+            - 'Recomb2'
+            - 'SCE'    
+          # apply_to_datasets: ['run4b_v10_04_07_09_BNB_nue_overlay_surprise']
+          # apply_to_datasets: [run4b_v10_04_07_20_BNB_nu_overlay_retuple]
+          # criteria: []
+        reco_neutrino_energy: 
+          formula: vertex_properties_recoEnuMeV
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          applicable_variations: 
+            - 'LYAtt'
+            - 'LYDown'
+            - 'LYRayleigh'
+            - 'wiremodX'
+            # - 'wiremodYZ'
+            # - 'wiremodThetaXZ'
+            # - 'wiremodThetaYZ'  
+            - 'Recomb2'
+            - 'SCE'    
+          # apply_to_datasets: ['run4b_v10_04_07_09_BNB_nue_overlay_surprise']
+          # apply_to_datasets: [run4b_v10_04_07_20_BNB_nu_overlay_retuple]
+          # criteria: []
+
+      
+
+# Cut configuration
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
+

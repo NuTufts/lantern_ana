@@ -1,0 +1,21 @@
+analysis_statistics:
+  run4b_BNB_nu_overlay_CV:
+    cut_stats: {}
+    failed: 0
+    passed: 438038
+    processing_time: 238.56857872009277
+    total: 438038
+producer_statistics:
+  average_time_per_event: 0.0005249974499236722
+  execution_order:
+  - detsys_run4b
+  producer_metrics:
+    detsys_run4b:
+      average_time: 0.0005249974499236722
+      calls: 438038
+      error_rate: 0.0
+      errors: 0
+      total_time: 229.96883296966553
+  total_events: 438038
+  total_processing_time: 229.96883296966553
+  total_producers: 1

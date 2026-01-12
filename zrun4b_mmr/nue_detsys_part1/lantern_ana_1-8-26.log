@@ -1,0 +1,207 @@
+2026-01-08 05:15:49,340 - LanternAna - INFO - Loading configuration from ../../zrun4b_mmr/detsys_part1_nue_run4b.yaml
+2026-01-08 05:15:49,340 - LanternAna - INFO - Discovering components...
+2026-01-08 05:15:52,011 - LanternAna - INFO - Found 13 cuts
+2026-01-08 05:15:52,011 - LanternAna - INFO - Found 39 producers
+2026-01-08 05:15:52,011 - LanternAna - INFO - Found 1 dataset types
+2026-01-08 05:15:52,011 - LanternAna - INFO - Found 1 tags
+2026-01-08 05:15:52,012 - LanternAna - INFO - Configuring components...
+2026-01-08 05:15:52,036 - LanternAna - INFO - Starting enhanced analysis run...
+2026-01-08 05:15:52,036 - LanternAna - INFO - Loading datasets...
+2026-01-08 05:15:52,778 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_LYAtt' with 90224 entries
+2026-01-08 05:15:52,778 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:52,856 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_LYDown' with 97271 entries
+2026-01-08 05:15:52,856 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:52,925 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_LYRayleigh' with 94825 entries
+2026-01-08 05:15:52,925 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:52,992 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_wiremodX' with 96987 entries
+2026-01-08 05:15:52,992 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:53,061 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_Recomb2' with 92678 entries
+2026-01-08 05:15:53,061 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:53,130 - LanternAna - INFO - Loaded dataset 'run4b_BNB_nu_overlay_SCE' with 96991 entries
+2026-01-08 05:15:53,130 - LanternAna - INFO -   MC dataset with 0.0 POT
+2026-01-08 05:15:53,130 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_LYAtt
+2026-01-08 05:15:53,177 - LanternAna - INFO - Processing 90224 events with producer-first architecture...
+2026-01-08 05:15:58,579 - LanternAna - INFO - Progress: 5.0% (4511/90224), Est. time remaining: 102.6s
+2026-01-08 05:16:04,081 - LanternAna - INFO - Progress: 10.0% (9022/90224), Est. time remaining: 98.1s
+2026-01-08 05:16:09,498 - LanternAna - INFO - Progress: 15.0% (13533/90224), Est. time remaining: 92.5s
+2026-01-08 05:16:14,831 - LanternAna - INFO - Progress: 20.0% (18044/90224), Est. time remaining: 86.6s
+2026-01-08 05:16:20,129 - LanternAna - INFO - Progress: 25.0% (22555/90224), Est. time remaining: 80.9s
+2026-01-08 05:16:25,475 - LanternAna - INFO - Progress: 30.0% (27066/90224), Est. time remaining: 75.4s
+2026-01-08 05:16:30,823 - LanternAna - INFO - Progress: 35.0% (31577/90224), Est. time remaining: 69.9s
+2026-01-08 05:16:36,199 - LanternAna - INFO - Progress: 40.0% (36088/90224), Est. time remaining: 64.5s
+2026-01-08 05:16:41,495 - LanternAna - INFO - Progress: 45.0% (40599/90224), Est. time remaining: 59.1s
+2026-01-08 05:16:47,003 - LanternAna - INFO - Progress: 50.0% (45110/90224), Est. time remaining: 53.8s
+2026-01-08 05:16:52,394 - LanternAna - INFO - Progress: 55.0% (49621/90224), Est. time remaining: 48.5s
+2026-01-08 05:16:57,761 - LanternAna - INFO - Progress: 60.0% (54132/90224), Est. time remaining: 43.1s
+2026-01-08 05:17:03,439 - LanternAna - INFO - Progress: 65.0% (58643/90224), Est. time remaining: 37.8s
+2026-01-08 05:17:08,952 - LanternAna - INFO - Progress: 70.0% (63154/90224), Est. time remaining: 32.5s
+2026-01-08 05:17:14,350 - LanternAna - INFO - Progress: 75.0% (67665/90224), Est. time remaining: 27.1s
+2026-01-08 05:17:19,758 - LanternAna - INFO - Progress: 80.0% (72176/90224), Est. time remaining: 21.7s
+2026-01-08 05:17:25,305 - LanternAna - INFO - Progress: 85.0% (76687/90224), Est. time remaining: 16.3s
+2026-01-08 05:17:30,974 - LanternAna - INFO - Progress: 90.0% (81198/90224), Est. time remaining: 10.9s
+2026-01-08 05:17:36,768 - LanternAna - INFO - Progress: 95.0% (85709/90224), Est. time remaining: 5.5s
+2026-01-08 05:17:42,174 - LanternAna - INFO - Progress: 100.0% (90220/90224), Est. time remaining: 0.0s
+2026-01-08 05:17:42,633 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_LYAtt processed in 109.0s
+2026-01-08 05:17:42,633 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYAtt_20260108_051553.root
+2026-01-08 05:17:42,633 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_LYDown
+2026-01-08 05:17:43,187 - LanternAna - INFO - Processing 97271 events with producer-first architecture...
+2026-01-08 05:17:50,773 - LanternAna - INFO - Progress: 5.0% (4863/97271), Est. time remaining: 144.1s
+2026-01-08 05:17:56,398 - LanternAna - INFO - Progress: 10.0% (9726/97271), Est. time remaining: 118.9s
+2026-01-08 05:18:02,204 - LanternAna - INFO - Progress: 15.0% (14589/97271), Est. time remaining: 107.8s
+2026-01-08 05:18:08,036 - LanternAna - INFO - Progress: 20.0% (19452/97271), Est. time remaining: 99.4s
+2026-01-08 05:18:13,916 - LanternAna - INFO - Progress: 25.0% (24315/97271), Est. time remaining: 92.2s
+2026-01-08 05:18:19,744 - LanternAna - INFO - Progress: 30.0% (29178/97271), Est. time remaining: 85.3s
+2026-01-08 05:18:25,646 - LanternAna - INFO - Progress: 35.0% (34041/97271), Est. time remaining: 78.9s
+2026-01-08 05:18:31,428 - LanternAna - INFO - Progress: 40.0% (38904/97271), Est. time remaining: 72.4s
+2026-01-08 05:18:37,159 - LanternAna - INFO - Progress: 45.0% (43767/97271), Est. time remaining: 66.0s
+2026-01-08 05:18:42,934 - LanternAna - INFO - Progress: 50.0% (48630/97271), Est. time remaining: 59.8s
+2026-01-08 05:18:48,739 - LanternAna - INFO - Progress: 55.0% (53493/97271), Est. time remaining: 53.6s
+2026-01-08 05:18:54,690 - LanternAna - INFO - Progress: 60.0% (58356/97271), Est. time remaining: 47.7s
+2026-01-08 05:19:00,508 - LanternAna - INFO - Progress: 65.0% (63219/97271), Est. time remaining: 41.6s
+2026-01-08 05:19:06,718 - LanternAna - INFO - Progress: 70.0% (68082/97271), Est. time remaining: 35.8s
+2026-01-08 05:19:12,940 - LanternAna - INFO - Progress: 75.0% (72945/97271), Est. time remaining: 29.9s
+2026-01-08 05:19:18,849 - LanternAna - INFO - Progress: 80.0% (77808/97271), Est. time remaining: 23.9s
+2026-01-08 05:19:24,599 - LanternAna - INFO - Progress: 85.0% (82671/97271), Est. time remaining: 17.9s
+2026-01-08 05:19:30,470 - LanternAna - INFO - Progress: 90.0% (87534/97271), Est. time remaining: 11.9s
+2026-01-08 05:19:36,222 - LanternAna - INFO - Progress: 95.0% (92397/97271), Est. time remaining: 6.0s
+2026-01-08 05:19:42,033 - LanternAna - INFO - Progress: 100.0% (97260/97271), Est. time remaining: 0.0s
+2026-01-08 05:19:42,150 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_LYDown processed in 118.9s
+2026-01-08 05:19:42,150 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYDown_20260108_051742.root
+2026-01-08 05:19:42,150 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_LYRayleigh
+2026-01-08 05:19:42,798 - LanternAna - INFO - Processing 94825 events with producer-first architecture...
+2026-01-08 05:19:50,575 - LanternAna - INFO - Progress: 5.0% (4741/94825), Est. time remaining: 147.8s
+2026-01-08 05:19:56,141 - LanternAna - INFO - Progress: 10.0% (9482/94825), Est. time remaining: 120.1s
+2026-01-08 05:20:02,009 - LanternAna - INFO - Progress: 15.0% (14223/94825), Est. time remaining: 108.9s
+2026-01-08 05:20:07,508 - LanternAna - INFO - Progress: 20.0% (18964/94825), Est. time remaining: 98.8s
+2026-01-08 05:20:13,599 - LanternAna - INFO - Progress: 25.0% (23705/94825), Est. time remaining: 92.4s
+2026-01-08 05:20:19,158 - LanternAna - INFO - Progress: 30.0% (28446/94825), Est. time remaining: 84.8s
+2026-01-08 05:20:24,955 - LanternAna - INFO - Progress: 35.0% (33187/94825), Est. time remaining: 78.3s
+2026-01-08 05:20:30,692 - LanternAna - INFO - Progress: 40.0% (37928/94825), Est. time remaining: 71.8s
+2026-01-08 05:20:36,329 - LanternAna - INFO - Progress: 45.0% (42669/94825), Est. time remaining: 65.4s
+2026-01-08 05:20:41,974 - LanternAna - INFO - Progress: 50.0% (47410/94825), Est. time remaining: 59.2s
+2026-01-08 05:20:47,698 - LanternAna - INFO - Progress: 55.0% (52151/94825), Est. time remaining: 53.1s
+2026-01-08 05:20:55,209 - LanternAna - INFO - Progress: 60.0% (56892/94825), Est. time remaining: 48.3s
+2026-01-08 05:21:00,747 - LanternAna - INFO - Progress: 65.0% (61633/94825), Est. time remaining: 42.0s
+2026-01-08 05:21:06,499 - LanternAna - INFO - Progress: 70.0% (66374/94825), Est. time remaining: 35.9s
+2026-01-08 05:21:12,020 - LanternAna - INFO - Progress: 75.0% (71115/94825), Est. time remaining: 29.7s
+2026-01-08 05:21:17,685 - LanternAna - INFO - Progress: 80.0% (75856/94825), Est. time remaining: 23.7s
+2026-01-08 05:21:23,288 - LanternAna - INFO - Progress: 85.0% (80597/94825), Est. time remaining: 17.7s
+2026-01-08 05:21:29,051 - LanternAna - INFO - Progress: 90.0% (85338/94825), Est. time remaining: 11.8s
+2026-01-08 05:21:34,662 - LanternAna - INFO - Progress: 95.0% (90079/94825), Est. time remaining: 5.9s
+2026-01-08 05:21:40,244 - LanternAna - INFO - Progress: 100.0% (94820/94825), Est. time remaining: 0.0s
+2026-01-08 05:21:40,393 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_LYRayleigh processed in 117.5s
+2026-01-08 05:21:40,394 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_LYRayleigh_20260108_051942.root
+2026-01-08 05:21:40,394 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_wiremodX
+2026-01-08 05:21:40,419 - LanternAna - INFO - Processing 96987 events with producer-first architecture...
+2026-01-08 05:21:45,126 - LanternAna - INFO - Progress: 5.0% (4849/96987), Est. time remaining: 89.4s
+2026-01-08 05:21:49,642 - LanternAna - INFO - Progress: 10.0% (9698/96987), Est. time remaining: 83.0s
+2026-01-08 05:21:54,127 - LanternAna - INFO - Progress: 15.0% (14547/96987), Est. time remaining: 77.7s
+2026-01-08 05:21:58,587 - LanternAna - INFO - Progress: 20.0% (19396/96987), Est. time remaining: 72.7s
+2026-01-08 05:22:03,167 - LanternAna - INFO - Progress: 25.0% (24245/96987), Est. time remaining: 68.3s
+2026-01-08 05:22:07,582 - LanternAna - INFO - Progress: 30.0% (29094/96987), Est. time remaining: 63.4s
+2026-01-08 05:22:11,997 - LanternAna - INFO - Progress: 35.0% (33943/96987), Est. time remaining: 58.7s
+2026-01-08 05:22:16,506 - LanternAna - INFO - Progress: 40.0% (38792/96987), Est. time remaining: 54.1s
+2026-01-08 05:22:20,869 - LanternAna - INFO - Progress: 45.0% (43641/96987), Est. time remaining: 49.4s
+2026-01-08 05:22:25,404 - LanternAna - INFO - Progress: 50.0% (48490/96987), Est. time remaining: 45.0s
+2026-01-08 05:22:29,904 - LanternAna - INFO - Progress: 55.0% (53339/96987), Est. time remaining: 40.5s
+2026-01-08 05:22:34,365 - LanternAna - INFO - Progress: 60.0% (58188/96987), Est. time remaining: 36.0s
+2026-01-08 05:22:38,918 - LanternAna - INFO - Progress: 65.0% (63037/96987), Est. time remaining: 31.5s
+2026-01-08 05:22:43,381 - LanternAna - INFO - Progress: 70.0% (67886/96987), Est. time remaining: 27.0s
+2026-01-08 05:22:47,874 - LanternAna - INFO - Progress: 75.0% (72735/96987), Est. time remaining: 22.5s
+2026-01-08 05:22:52,465 - LanternAna - INFO - Progress: 80.0% (77584/96987), Est. time remaining: 18.0s
+2026-01-08 05:22:56,994 - LanternAna - INFO - Progress: 85.0% (82433/96987), Est. time remaining: 13.5s
+2026-01-08 05:23:01,703 - LanternAna - INFO - Progress: 90.0% (87282/96987), Est. time remaining: 9.0s
+2026-01-08 05:23:06,431 - LanternAna - INFO - Progress: 95.0% (92131/96987), Est. time remaining: 4.5s
+2026-01-08 05:23:10,866 - LanternAna - INFO - Progress: 100.0% (96980/96987), Est. time remaining: 0.0s
+2026-01-08 05:23:10,945 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_wiremodX processed in 90.5s
+2026-01-08 05:23:10,945 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_wiremodX_20260108_052140.root
+2026-01-08 05:23:10,945 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_Recomb2
+2026-01-08 05:23:10,976 - LanternAna - INFO - Processing 92678 events with producer-first architecture...
+2026-01-08 05:23:16,766 - LanternAna - INFO - Progress: 5.0% (4633/92678), Est. time remaining: 110.0s
+2026-01-08 05:23:22,329 - LanternAna - INFO - Progress: 10.0% (9266/92678), Est. time remaining: 102.2s
+2026-01-08 05:23:27,974 - LanternAna - INFO - Progress: 15.0% (13899/92678), Est. time remaining: 96.3s
+2026-01-08 05:23:33,470 - LanternAna - INFO - Progress: 20.0% (18532/92678), Est. time remaining: 90.0s
+2026-01-08 05:23:39,658 - LanternAna - INFO - Progress: 25.0% (23165/92678), Est. time remaining: 86.1s
+2026-01-08 05:23:45,184 - LanternAna - INFO - Progress: 30.0% (27798/92678), Est. time remaining: 79.8s
+2026-01-08 05:23:50,968 - LanternAna - INFO - Progress: 35.0% (32431/92678), Est. time remaining: 74.3s
+2026-01-08 05:23:56,456 - LanternAna - INFO - Progress: 40.0% (37064/92678), Est. time remaining: 68.2s
+2026-01-08 05:24:02,129 - LanternAna - INFO - Progress: 45.0% (41697/92678), Est. time remaining: 62.5s
+2026-01-08 05:24:08,060 - LanternAna - INFO - Progress: 50.0% (46330/92678), Est. time remaining: 57.1s
+2026-01-08 05:24:13,880 - LanternAna - INFO - Progress: 55.0% (50963/92678), Est. time remaining: 51.5s
+2026-01-08 05:24:19,813 - LanternAna - INFO - Progress: 60.0% (55596/92678), Est. time remaining: 45.9s
+2026-01-08 05:24:25,785 - LanternAna - INFO - Progress: 65.0% (60229/92678), Est. time remaining: 40.3s
+2026-01-08 05:24:31,716 - LanternAna - INFO - Progress: 70.0% (64862/92678), Est. time remaining: 34.6s
+2026-01-08 05:24:37,268 - LanternAna - INFO - Progress: 75.0% (69495/92678), Est. time remaining: 28.8s
+2026-01-08 05:24:42,786 - LanternAna - INFO - Progress: 80.0% (74128/92678), Est. time remaining: 23.0s
+2026-01-08 05:24:48,894 - LanternAna - INFO - Progress: 85.0% (78761/92678), Est. time remaining: 17.3s
+2026-01-08 05:24:54,335 - LanternAna - INFO - Progress: 90.0% (83394/92678), Est. time remaining: 11.5s
+2026-01-08 05:24:59,806 - LanternAna - INFO - Progress: 95.0% (88027/92678), Est. time remaining: 5.8s
+2026-01-08 05:25:05,598 - LanternAna - INFO - Progress: 100.0% (92660/92678), Est. time remaining: 0.0s
+2026-01-08 05:25:06,073 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_Recomb2 processed in 114.6s
+2026-01-08 05:25:06,073 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_Recomb2_20260108_052310.root
+2026-01-08 05:25:06,073 - LanternAna - INFO - Processing dataset with enhanced architecture: run4b_BNB_nu_overlay_SCE
+2026-01-08 05:25:06,087 - LanternAna - INFO - Processing 96991 events with producer-first architecture...
+2026-01-08 05:25:13,951 - LanternAna - INFO - Progress: 5.0% (4849/96991), Est. time remaining: 149.4s
+2026-01-08 05:25:19,914 - LanternAna - INFO - Progress: 10.0% (9698/96991), Est. time remaining: 124.5s
+2026-01-08 05:25:25,878 - LanternAna - INFO - Progress: 15.0% (14547/96991), Est. time remaining: 112.2s
+2026-01-08 05:25:31,879 - LanternAna - INFO - Progress: 20.0% (19396/96991), Est. time remaining: 103.2s
+2026-01-08 05:25:37,863 - LanternAna - INFO - Progress: 25.0% (24245/96991), Est. time remaining: 95.3s
+2026-01-08 05:25:43,707 - LanternAna - INFO - Progress: 30.0% (29094/96991), Est. time remaining: 87.8s
+2026-01-08 05:25:51,350 - LanternAna - INFO - Progress: 35.0% (33943/96991), Est. time remaining: 84.1s
+2026-01-08 05:25:57,040 - LanternAna - INFO - Progress: 40.0% (38792/96991), Est. time remaining: 76.4s
+2026-01-08 05:26:03,078 - LanternAna - INFO - Progress: 45.0% (43641/96991), Est. time remaining: 69.7s
+2026-01-08 05:26:08,964 - LanternAna - INFO - Progress: 50.0% (48490/96991), Est. time remaining: 62.9s
+2026-01-08 05:26:14,867 - LanternAna - INFO - Progress: 55.0% (53339/96991), Est. time remaining: 56.3s
+2026-01-08 05:26:20,836 - LanternAna - INFO - Progress: 60.0% (58188/96991), Est. time remaining: 49.8s
+2026-01-08 05:26:26,644 - LanternAna - INFO - Progress: 65.0% (63037/96991), Est. time remaining: 43.4s
+2026-01-08 05:26:32,498 - LanternAna - INFO - Progress: 70.0% (67886/96991), Est. time remaining: 37.0s
+2026-01-08 05:26:38,393 - LanternAna - INFO - Progress: 75.0% (72735/96991), Est. time remaining: 30.8s
+2026-01-08 05:26:44,434 - LanternAna - INFO - Progress: 80.0% (77584/96991), Est. time remaining: 24.6s
+2026-01-08 05:26:50,191 - LanternAna - INFO - Progress: 85.0% (82433/96991), Est. time remaining: 18.4s
+2026-01-08 05:26:56,224 - LanternAna - INFO - Progress: 90.0% (87282/96991), Est. time remaining: 12.3s
+2026-01-08 05:27:02,121 - LanternAna - INFO - Progress: 95.0% (92131/96991), Est. time remaining: 6.1s
+2026-01-08 05:27:07,886 - LanternAna - INFO - Progress: 100.0% (96980/96991), Est. time remaining: 0.0s
+2026-01-08 05:27:07,946 - LanternAna - INFO - Dataset run4b_BNB_nu_overlay_SCE processed in 121.8s
+2026-01-08 05:27:07,947 - LanternAna - INFO - Results written to /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/run4b_BNB_nu_overlay_SCE_20260108_052506.root
+2026-01-08 05:27:07,947 - LanternAna - INFO - ==================================================
+2026-01-08 05:27:07,947 - LanternAna - INFO - Enhanced Analysis Statistics
+2026-01-08 05:27:07,947 - LanternAna - INFO - ==================================================
+2026-01-08 05:27:07,947 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_LYAtt
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Total events: 90224
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Passed events: 90224 (100.0%)
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Processing time: 109.0s
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,947 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_LYDown
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Total events: 97271
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Passed events: 97271 (100.0%)
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Processing time: 118.9s
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,947 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_LYRayleigh
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Total events: 94825
+2026-01-08 05:27:07,947 - LanternAna - INFO -   Passed events: 94825 (100.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Processing time: 117.5s
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,948 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_wiremodX
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Total events: 96987
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Passed events: 96987 (100.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Processing time: 90.5s
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,948 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_Recomb2
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Total events: 92678
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Passed events: 92678 (100.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Processing time: 114.6s
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,948 - LanternAna - INFO - Dataset: run4b_BNB_nu_overlay_SCE
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Total events: 96991
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Passed events: 96991 (100.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Failed events: 0 (0.0%)
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Processing time: 121.8s
+2026-01-08 05:27:07,948 - LanternAna - INFO -   Cut statistics:
+2026-01-08 05:27:07,948 - LanternAna - INFO - ==================================================
+2026-01-08 05:27:07,948 - LanternAna - INFO - analysis complete!
+2026-01-08 05:27:07,953 - LanternAna - INFO - Statistics saved to: /exp/uboone/app/users/imani/lantern_ana/zrun4b_mmr/nue_detsys_part1/statistics.yaml
