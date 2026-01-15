@@ -12,7 +12,7 @@ try:
     from ROOT import XsecFluxAccumulator
     from ROOT import std
 except:
-    print("Error loading ROOT and/or libMapDict.so")
+    print("Error loading ROOT and/or libMapDict.so. Run 'make' to build. (Needs ROOT)")
     sys.exit(1)
 
 # Example implementation of a ROOT-based dataset
