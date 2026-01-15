@@ -142,8 +142,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             ttree.SetBranchStatus(self.weighttree_event_branch, 1)            
             nentries = ttree.GetEntries()
             print(f'Setup "{samplename}" weight tree event index map with {nentries} entries')
-        except:
-            raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
+        except Exception as e:
+            raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}. Error: ',e)
 
         tstart = time.time()
         rsedict = {}
@@ -215,6 +215,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
 
             nbins = vardict['numbins']
+            
             for sample in vardict['apply_to_datasets']:
                 # we save a histogram to
                 # 1. help us look up the bin position for this observable
@@ -223,14 +224,12 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','N']:
                     hvar_name = hname+f"_{x}"
-
                     if var_bin_info['bintype']=='uniform':
                         h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
                     elif var_bin_info['bintype']=='binedges':
                         bin_array = array('f',binedges)
                         nbins = len(binedges)-1
                         h = rt.TH1D(hvar_name,"",nbins, bin_array)
-
                     var_bin_info['sample_hists'][sample][x] = h
                 # we make a dictionary with a slot for an array
                 # we create the actual array later once we know the number of variations of each parameter
@@ -280,6 +279,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         
         self._current_sample_tchain = rt.TChain(tree_path)
         self._current_sample_tchain.Add(weightfilepath)
+        self._current_sample_tchain.SetBranchStatus("*", 0)
+        self._current_sample_tchain.SetBranchStatus(self.sysweight_treename,1)
         nentries = self._current_sample_tchain.GetEntries()
         print("Loaded weight tree for dataset: ",datasetname)
 
@@ -328,6 +329,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         subrun = eval(f'ntuple.{self.subrun_branch}')
         event  = eval(f'ntuple.{self.event_branch}')        
         rse = (run,subrun,event)
+        #print("process: ",rse)
         if rse in self._sample_rse_to_entryindex[datasetname]:
             entryindex = self._sample_rse_to_entryindex[datasetname][rse]
         else:
@@ -394,6 +396,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         return {}
 
     def finalize(self):
+        """
+        Runs at end of each event loop for each data sample processed.
+        """
         print("write arborist histograms")
         print(" number of entries missing a weight value: ",self.missing_entries)
         self.outfile.cd()
@@ -403,9 +408,11 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 hists['cv'].Write()
                 hists['N'].Write()
             for (sample,par),arr in varinfo['sample_array'].items():
+                if arr is None:
+                    continue                
                 # save result of all variations for this parameter
                 hname = f"h{varname}__{sample}__{par}"
-                print("Fill variation hist: ",hname,": shape=",arr.shape)
+                print("Fill variation hist: ",hname,": sample=",sample," par=",par," arr=",arr.shape)
                 xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
                 xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()
                 hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )
@@ -439,6 +446,6 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         for i,nbad in enumerate(self.num_badweights_per_universe):
             hbaduniverses.SetBinContent(i+1,nbad)
         hbaduniverses.Write()
-        self.outfile.Close()
+        #self.outfile.Close()
         
         
