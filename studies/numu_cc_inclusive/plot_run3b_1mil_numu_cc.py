@@ -32,13 +32,14 @@ mcc9_v29e_dl_run3_G1_extbnb_dlreco   58677653.0
 mcc9_v29e_dl_run3_G2_extbnb          19214565.0
 mcc9_v29e_dl_run3_G2a_extbnb         18619185.0
 
+mcc9_v29e_dl_run3_combined_extbnb    150523663.0
 """
 
 
-targetpot = 8.786e+18
+targetpot = 8.806e+18
 bnbnu_pot = 1.346689484233034e+21
-beam_numspills=2263559.0 # run C1 EXTBNB
-extbnb_numspills=34202767.0
+beam_numspills=2263559.0 
+extbnb_numspills=150523663.0 # combined
 
 plot_folder="./output_plots_numu_run3_1mil/"
 os.system(f"mkdir -p {plot_folder}")
@@ -53,7 +54,7 @@ scaling = {"numu_cc":targetpot/bnbnu_pot,
 files = {
     "numu_cc":"./output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260118_150324.root",
     "numu_bg":"./output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260118_150324.root",
-     "extbnb":"./output_numu_run1/run1_extbnb_mcc9_v29e_C1_20250906_043533.root",
+     "extbnb":"./output_numu_run3b_extbnb/mcc9_v29e_dl_run3_combined_extbnb.root",
        "data":"./output_numu_run3b/mcc9_v29e_dl_run3b_bnb1e19_20251019_200712.root",
 }
 
@@ -74,7 +75,7 @@ vars = [
     ('visible_energy', 30, 0, 3000, 'visible energy; MeV', 0, False),
     ('muon_properties_angle',16,-1.01,1.01,'muon angle; cos#theta_{beam}', 0, False),
     ('muon_properties_energy',50,0,2500.0,'muon kinetic energy (MeV)', 0, False),
-    ('muon_properties_pid_score',101,-1.01,0.01,'muon pid score', 0, False),
+    ('muon_properties_pid_score',50,-1.02,0.02,'muon pid score', 0, False),
     ('vertex_properties_score',30,0.7,1.0,'keypoint score', 0, False),
     ('eventweight_weight',200,0,10,';event weight;',0, True),
     #('nuselvar_mumax_primary_score',40,0,1.0,'primary score', 1),

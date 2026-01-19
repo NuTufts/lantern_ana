@@ -187,6 +187,8 @@ for var in variables:
         c.cd(3)
         hists['fracerr'].Draw("hist")
         hists['fracerr'].SetMinimum(0)
+
+        c.cd(4)
         
         c.Update()
         canvs[(var,sample)] = c
