@@ -18,8 +18,8 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run3b_1mil/
-
+#    - /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run3b_1mil/
+    - ../numu_cc_inclusive/output_numu_run3b_1mil/
   mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:  
     type: RootDataset
     tree: analysis_tree
@@ -35,12 +35,12 @@ producers:
     config:
       variations_to_include:
         - LYAtt
-#        - LYDown
-#        - LYRayleigh
-#        - wiremodX
-#        - wiremodYZ
-#        - wiremodThetaXZ
-#        - wiremodThetaYZ        
+        - LYDown
+        - LYRayleigh
+        - wiremodX
+        - wiremodYZ
+        - wiremodThetaXZ
+        - wiremodThetaYZ        
       run: eventindex_run
       subrun: eventindex_subrun
       event: eventindex_event
@@ -55,13 +55,13 @@ producers:
 #output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ_20260118_195923.root
 #output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodX_20260118_190138.root
 #output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ_20260118_192159.root
-        LYAtt:      /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYAtt_20260118_152204.root
-#        LYDown:     /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_LYDown_20251204_094003.root
-#        LYRayleigh: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_LYRayleigh_20251204_093848.root
-#        wiremodX:   /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodX_20251204_093427.root
-#        wiremodYZ:  /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodYZ_20251204_093540.root
-#        wiremodThetaYZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaYZ_20251204_093744.root
-#        wiremodThetaXZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3/run3b_bnb_nu_overlay_wiremodThetaXZ_20251204_093644.root
+        LYAtt:      ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYAtt_20260118_152204.root
+        LYDown:     ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYDown_20260118_182229.root
+        LYRayleigh: ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh_20260118_184136.root
+        wiremodX:   ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodX_20260118_190138.root
+        wiremodYZ:  ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ_20260118_192159.root
+        wiremodThetaXZ: ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ_20260118_194106.root
+        wiremodThetaYZ: ../numu_cc_inclusive/output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ_20260118_195923.root
       variation_treename: analysis_tree
       cut_formulas:
         pass_vertex: "{ntuple.vertex_properties_found}==1 and {ntuple.vertex_properties_infiducial}==1"
