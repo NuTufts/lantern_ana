@@ -2,18 +2,43 @@ import os,sys
 import ROOT as rt
 
 """
+BEAM ON "5e19"
+from Zarko's POT counting script using successfully processed files from the mcc9_v28_wctagger_bnb5e19 sample:
+
+            EXT         Gate2        E1DCNT        tor860        tor875   E1DCNT_wcut   tor860_wcut   tor875_wcut
+      5241863.0    10371289.0    10375708.0     4.451e+19     4.446e+19     9764047.0     4.402e+19     4.397e+19
 """
 
 """
+EXTBNB
+
+sample                               EXT_triggers
+
+mcc9_v29e_dl_run1_C1_extbnb          34202767.0
+mcc9_v29e_dl_run1_C2_extbnb          38971237.0
+mcc9_v29e_dl_run2_D1_extbnb          465951.0
+mcc9_v29e_dl_run2_D2_extbnb          59572045.0
+mcc9_v29e_dl_run2_E1_extbnb          22166992.0
+mcc9_v29e_dl_run2_E2_extbnb          36721376.0
+mcc9_v29e_dl_run3_F_extbnb           14817082.0
+mcc9_v29e_dl_run3_G1_extbnb_dlana    39195178.0
+mcc9_v29e_dl_run3_G1_extbnb_dlreco   58677653.0
+mcc9_v29e_dl_run3_G2_extbnb          19214565.0
+mcc9_v29e_dl_run3_G2a_extbnb         18619185.0
+
 """
-targetpot = 4.4e19
+
+beam_pot = 4.446e+19 # have not applied bad subrun list
+beam_spills = 10375708.0
+extbnb_spills = 34202767.0
+
 plot_folder="./output_plots_numu_run1/"
 os.system(f"mkdir -p {plot_folder}")
 
 samples = ['numu_cc','data','numu_bg','extbnb']
-scaling = {"numu_cc":targetpot/4.675690535431973e+20,
-           "numu_bg":targetpot/4.675690535431973e+20,
-           "extbnb":0.47809891*0.80,
+scaling = {"numu_cc":beam_pot/4.675690535431973e+20,
+           "numu_bg":beam_pot/4.675690535431973e+20,
+           "extbnb":beam_spills/extbnb_spills,
            "data":1.0
 }
 
