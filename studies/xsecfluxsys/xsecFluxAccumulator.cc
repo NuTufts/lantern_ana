@@ -3,14 +3,18 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <sstream>
 #include "TKey.h"
 #include "TDirectory.h"
+#include "TBranch.h"
+#include "TTreeReader.h"
 
 XsecFluxAccumulator::XsecFluxAccumulator()
     : numVariables_(0),
       maxVariations_(0),
       maxValidWeight_(1000.0),
       configured_(false),
+      kWeightBranchType(XsecFluxAccumulator::kArborist),
       missingEventCount_(0)
 {
 }
@@ -24,12 +28,19 @@ void XsecFluxAccumulator::configure(int numVariables,
                                      const std::vector<std::string>& paramNames,
 				     const std::vector<std::string>& xsecParams,
                                      int maxVariations,
-                                     double maxValidWeight)
+				     double maxValidWeight,
+				     int weightBranchType )
 {
     numVariables_ = numVariables;
     binsPerVariable_ = binsPerVariable;
     maxVariations_ = maxVariations;
     maxValidWeight_ = maxValidWeight;
+
+    if ( weightBranchType<0 || weightBranchType>=kNumWeightBranchTypes ) {
+      throw std::runtime_error( "Invalid weight type branch. Valid options: [0=arborist file type,1=surprise file type]" );
+    }
+    
+    kWeightBranchType = static_cast<WeightBranchType>(weightBranchType);
 
     includedParams_.clear();
     for (const auto& p : paramNames) {
@@ -120,6 +131,10 @@ int XsecFluxAccumulator::processAllEvents(
     std::cout << "XsecFluxAccumulator: Processing " << numEvents << " events from "
               << weightFilePath << std::endl;
 
+    // Build RSE -> entry index map for weight tree
+    std::cout << "  Building RSE index map for weight tree..." << std::endl;
+    std::map<std::tuple<int,int,int>, Long64_t> rseToEntry = makeRSEmap( weightFilePath, weightTreeName, runBranch, subrunBranch, eventBranch );
+
     // Open weight file
     TFile* weightFile = TFile::Open(weightFilePath.c_str(), "READ");
     if (!weightFile || weightFile->IsZombie()) {
@@ -137,40 +152,29 @@ int XsecFluxAccumulator::processAllEvents(
     Long64_t nWeightEntries = weightTree->GetEntries();
     std::cout << "  Weight tree has " << nWeightEntries << " entries" << std::endl;
 
-    // Set up branches for RSE lookup
-    weightTree->SetBranchStatus("*", 0);
-    weightTree->SetBranchStatus(runBranch.c_str(), 1);
-    weightTree->SetBranchStatus(subrunBranch.c_str(), 1);
-    weightTree->SetBranchStatus(eventBranch.c_str(), 1);
-
-    // Variables to hold branch values
-    int treeRun, treeSubrun, treeEvent;
-    weightTree->SetBranchAddress(runBranch.c_str(), &treeRun);
-    weightTree->SetBranchAddress(subrunBranch.c_str(), &treeSubrun);
-    weightTree->SetBranchAddress(eventBranch.c_str(), &treeEvent);
-
-    // Build RSE -> entry index map for weight tree
-    std::cout << "  Building RSE index map for weight tree..." << std::endl;
-    std::map<std::tuple<int,int,int>, Long64_t> rseToEntry;
-    for (Long64_t i = 0; i < nWeightEntries; i++) {
-        weightTree->GetEntry(i);
-        rseToEntry[std::make_tuple(treeRun, treeSubrun, treeEvent)] = i;
-        if (i % 100000 == 0) {
-            std::cout << "    Indexed entry " << i << std::endl;
-        }
-    }
-    std::cout << "  Index map built with " << rseToEntry.size() << " entries" << std::endl;
-
     // The weight map branch - need to handle as pointer
     // Now activating weightBranch, which is expensive.
-    weightTree->SetBranchStatus(weightBranchName.c_str(), 1);    
-    MapStringVecDouble* weightsPtr = nullptr;
+
+    // set up variables for reading the weights
+    // there are two ways the data is stored
+    //  1) arborist style: in a map< string, vector<double> > object
+    //  2) surprise style: in three separate branches
+    
+    // arborist branch object
+    MapStringVecDouble* weightsPtr = nullptr;       
     weightTree->SetBranchAddress(weightBranchName.c_str(), &weightsPtr);
 
     // ub_tune_weight: needed to make systematic variation reweighting is relative to nominal GENIE
-    double ub_tune_weight = 0;    
-    weightTree->SetBranchStatus("ub_tune_weight", 1 );
-    weightTree->SetBranchAddress("ub_tune_weight", &ub_tune_weight);
+    double ub_tune_weight = 0;
+    Float_t ub_tune_weight_surprise = 0;
+    if ( kWeightBranchType==kArborist ) {
+      std::string    ub_tune_branchname = "ub_tune_weight";
+      weightTree->SetBranchAddress(ub_tune_branchname.c_str(), &ub_tune_weight);
+    }
+    else {
+      std::string ub_tune_branchname = "weightTune";
+      weightTree->SetBranchAddress(ub_tune_branchname.c_str(), &ub_tune_weight_surprise );
+    }
     
     // Process all events
     int processedCount = 0;
@@ -180,6 +184,9 @@ int XsecFluxAccumulator::processAllEvents(
         if (iEvt % 10000 == 0) {
             std::cout << "    Processing event " << iEvt << " / " << numEvents << std::endl;
         }
+
+	ub_tune_weight = 0.0;
+	ub_tune_weight_surprise = 0.0;
 
         // Get RSE for this event
         const auto& rse = rseList[iEvt];
@@ -197,17 +204,23 @@ int XsecFluxAccumulator::processAllEvents(
         // Load the weight entry
         size_t nbytes = weightTree->GetEntry(it->second);
 
-        if (!weightsPtr || nbytes==0) {
+        if (nbytes==0) {
             missingEventCount_++;
             continue;
         }
 
-        const MapStringVecDouble& weights = *weightsPtr;
+        const MapStringVecDouble* weights = weightsPtr;
+
+	// std::cout << "try to read surprise branches" << std::endl;
+	// for ( const auto& pair : *weights ) {
+	//   std::cout << " parname=" << pair.first << std::endl;
+	// }
+
         double centralWeight = centralWeights[iEvt];
         const auto& binIndices = binIndicesList[iEvt];
 
         // Iterate over all parameters in the weight map
-        for (const auto& paramPair : weights) {
+        for (const auto& paramPair : *weights) {
             const std::string& parname = paramPair.first;
             const std::vector<double>& variations = paramPair.second;
 
@@ -229,8 +242,14 @@ int XsecFluxAccumulator::processAllEvents(
 	    // For xsec parameters, we reweight the event back to genie nominal by removing the UB tune
 	    double xsec_weight = 1.0;
 	    if ( xsecParamNames_.find(parname) != xsecParamNames_.end() ) {
-	      if ( ub_tune_weight>0.0 )
-		xsec_weight = 1.0/ub_tune_weight;
+	      if ( kWeightBranchType==kArborist ) {
+		if ( ub_tune_weight>0.0 )
+		  xsec_weight = 1.0/ub_tune_weight;
+	      }
+	      else {
+		if ( ub_tune_weight_surprise>0.0 )
+		  xsec_weight = 1.0/ub_tune_weight_surprise;
+	      }
 	    }
 
             // Accumulate into each variable's bins
@@ -336,4 +355,59 @@ std::vector<std::string> XsecFluxAccumulator::getFoundParams() const
         result.push_back(kv.first);
     }
     return result;
+}
+
+std::map<std::tuple<int,int,int>, Long64_t> 
+XsecFluxAccumulator::makeRSEmap( std::string weightFilePath, 
+				 std::string weightTreeName, 
+				 std::string runBranch,
+				 std::string subrunBranch,
+				 std::string eventBranch )
+{
+									     
+    // Open weight file
+    TFile* weightFile = TFile::Open(weightFilePath.c_str(), "READ");
+    if (!weightFile || weightFile->IsZombie()) {
+        throw std::runtime_error("Failed to open weight file: " + weightFilePath);
+    }
+
+    // Find weight tree
+    TTree* weightTree = findTreeInFile(weightFile, weightTreeName);
+    if (!weightTree) {
+        weightFile->Close();
+        throw std::runtime_error("Failed to find tree " + weightTreeName + " in " + weightFilePath);
+    }
+
+    // Get number of entries in weight tree
+    Long64_t nWeightEntries = weightTree->GetEntries();
+    std::cout << "  Weight tree has " << nWeightEntries << " entries" << std::endl;
+
+    // Set up branches for RSE lookup
+    weightTree->SetBranchStatus("*", 0);
+    weightTree->SetBranchStatus(runBranch.c_str(), 1);
+    weightTree->SetBranchStatus(subrunBranch.c_str(), 1);
+    weightTree->SetBranchStatus(eventBranch.c_str(), 1);
+
+    // Variables to hold branch values
+    int treeRun, treeSubrun, treeEvent;
+    weightTree->SetBranchAddress(runBranch.c_str(), &treeRun);
+    weightTree->SetBranchAddress(subrunBranch.c_str(), &treeSubrun);
+    weightTree->SetBranchAddress(eventBranch.c_str(), &treeEvent);
+
+    // Build RSE -> entry index map for weight tree
+    std::cout << "  Building RSE index map for weight tree..." << std::endl;
+    std::map<std::tuple<int,int,int>, Long64_t> rseToEntry;
+    for (Long64_t i = 0; i < nWeightEntries; i++) {
+        weightTree->GetEntry(i);
+        rseToEntry[std::make_tuple(treeRun, treeSubrun, treeEvent)] = i;
+        if (i % 100000 == 0) {
+            std::cout << "    Indexed entry " << i << std::endl;
+        }
+    }
+    std::cout << "  Index map built with " << rseToEntry.size() << " entries" << std::endl;
+
+    weightFile->Close();
+    
+    return rseToEntry;
+    
 }

@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <tuple>
 #include "TFile.h"
 #include "TTree.h"
 #include "TChain.h"
@@ -25,6 +26,8 @@ public:
     XsecFluxAccumulator();
     ~XsecFluxAccumulator();
 
+  enum WeightBranchType { kArborist=0, kSurprise, kNumWeightBranchTypes };
+
     /**
      * @brief Configure the accumulator with bin and parameter information.
      * @param numVariables Number of observable variables being histogrammed
@@ -32,13 +35,15 @@ public:
      * @param paramNames List of systematic parameter names to include
      * @param maxVariations Maximum number of universe variations to process
      * @param maxValidWeight Cap on valid weights (larger weights are flagged as bad)
+     * @param weightBranchType set how we read the variation dictionary in the TTree. Options: 0=arborist file, 1=surprise file.
      */
     void configure(int numVariables,
                    const std::vector<int>& binsPerVariable,
                    const std::vector<std::string>& paramNames,
                    const std::vector<std::string>& xsecParamNames,		   
                    int maxVariations,
-                   double maxValidWeight);
+                   double maxValidWeight,
+		   int weightBranchType );
 
     /**
      * @brief Reset all accumulators to zero (call before processing a new sample).
@@ -120,6 +125,13 @@ public:
    */
   std::vector<int>& getBadWeightsPerVarBin(int varIdx,std::string parName);
 
+  std::map<std::tuple<int,int,int>, Long64_t> makeRSEmap( std::string weightFilePath, 
+							  std::string weightTreeName, 
+							  std::string runBranch,
+							  std::string subrunBranch,
+							  std::string eventBranch );
+
+
 private:
     // Configuration
     int numVariables_;
@@ -128,6 +140,7 @@ private:
     int maxVariations_;
     double maxValidWeight_;
     bool configured_;
+    WeightBranchType kWeightBranchType; // change how we read the variation dictionary in the TTree
 
     // Storage: key is (varIndex, paramName), value is flattened array [bin * nvariations + universe]
     std::map<std::pair<int, std::string>, std::vector<double>> arrays_;
