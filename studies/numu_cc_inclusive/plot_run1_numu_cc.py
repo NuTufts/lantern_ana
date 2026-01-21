@@ -36,15 +36,9 @@ plot_folder="./output_plots_numu_run1/"
 os.system(f"mkdir -p {plot_folder}")
 
 samples = ['numu_cc','data','numu_bg','extbnb']
-<<<<<<< HEAD
 scaling = {"numu_cc":beam_pot/4.675690535431973e+20,
            "numu_bg":beam_pot/4.675690535431973e+20,
            "extbnb":beam_spills/extbnb_spills,
-=======
-scaling = {"numu_cc":targetpot/4.675690535431973e+20,
-           "numu_bg":targetpot/4.675690535431973e+20,
-           "extbnb":0.47809891*0.80,
->>>>>>> modified run4 to properly load eventweight. created run1 and run3b bnb nu yamls.
            "data":1.0
 }
 
