@@ -6,16 +6,16 @@ rt.gStyle.SetOptStat(0)
 rt.gStyle.SetPadLeftMargin(0.1)
 rt.gStyle.SetPadRightMargin(0.05)
 
-rfile = rt.TFile("./output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root")
+rfile = rt.TFile("./output_numu_run1/test_cvweights_xsecflux_numu_cc_inclusive_run1.root")
 
-TARGET_POT=8.806e18
-MCSAMPLE_POT=1.346689484233034e+21
+TARGET_POT=4.446e+19
+MCSAMPLE_POT=4.675690535431973e+20
 POT_SCALE=TARGET_POT/MCSAMPLE_POT
 
 
 histmodes = ['cv','w','w2','N']
 variables = ['visible_energy']
-samples   = ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+samples   = ['mcc9_v28_wctagger_run1_bnb_nu_overlay']
 flux_params = [
     "expskin_FluxUnisim",
     "horncurrent_FluxUnisim",
