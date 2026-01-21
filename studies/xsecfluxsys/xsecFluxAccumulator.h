@@ -36,6 +36,7 @@ public:
     void configure(int numVariables,
                    const std::vector<int>& binsPerVariable,
                    const std::vector<std::string>& paramNames,
+                   const std::vector<std::string>& xsecParamNames,		   
                    int maxVariations,
                    double maxValidWeight);
 
@@ -133,6 +134,9 @@ private:
 
     // Track actual number of variations per parameter (may differ between params)
     std::map<std::string, int> variationsPerParam_;
+
+    // List of parameters that are xsec reweights
+    std::map<std::string, int> xsecParamNames_;
 
     // Bad weight tracking
     std::vector<int> badWeightsPerUniverse_;

@@ -27,7 +27,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
     The heavy weight accumulation is offloaded to C++ (XsecFluxAccumulator) for performance.
     Python handles event selection and bin assignment, C++ handles the inner loop
     over ~1000 universe variations per parameter.
-    """
+    """    
+    
     def __init__(self, name: str, config: Dict[str, Any]):
         super().__init__(name, config)
         """
@@ -101,6 +102,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # Format: { sample_name: { 'rse': [...], 'bin_indices': [...], 'weights': [...] } }
         self._passing_events = {}
 
+        # xsec
+        self.xsec_params = config.get('xsec_params',[])
+
         # C++ accumulator instance
         self.accumulator = XsecFluxAccumulator()
 
@@ -167,10 +171,16 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             # +2 for underflow and overflow bins
             bins_per_var.append(self.var_bininfo[varname]['numbins'] + 2)
 
+        # make c++ vector for xsec param list
+        self.xsec_params_vec_cpp = rt.std.vector("string")()
+        for xsecpar in self.xsec_params:
+            self.xsec_params_vec_cpp.push_back( xsecpar )
+
         self.accumulator.configure(
             len(self.variable_list),
             bins_per_var,
             self._params_to_include,
+            self.xsec_params_vec_cpp,
             self.nvariations,
             self.maxvalidweight
         )

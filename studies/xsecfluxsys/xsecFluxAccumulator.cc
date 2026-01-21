@@ -22,6 +22,7 @@ XsecFluxAccumulator::~XsecFluxAccumulator()
 void XsecFluxAccumulator::configure(int numVariables,
                                      const std::vector<int>& binsPerVariable,
                                      const std::vector<std::string>& paramNames,
+				     const std::vector<std::string>& xsecParams,
                                      int maxVariations,
                                      double maxValidWeight)
 {
@@ -38,10 +39,9 @@ void XsecFluxAccumulator::configure(int numVariables,
     // Initialize bad weight counter
     badWeightsPerUniverse_.assign(maxVariations, 0);
 
-    // Initialize bad weight counter per bin variable
-    //for (int varIdx=0; varIdx<numVariables_; varIdx++) {
-    //  badWeightsPerVariableBins_[varIdx] = std::vector<int>( binsPerVariable_[varIdx] );
-    //}
+    for ( auto const& xsecparname : xsecParams ) {
+      xsecParamNames_[xsecparname] = 1;
+    }
 
     // Clear any existing arrays
     arrays_.clear();
@@ -167,6 +167,10 @@ int XsecFluxAccumulator::processAllEvents(
     MapStringVecDouble* weightsPtr = nullptr;
     weightTree->SetBranchAddress(weightBranchName.c_str(), &weightsPtr);
 
+    // ub_tune_weight: needed to make systematic variation reweighting is relative to nominal GENIE
+    double ub_tune_weight = 0;    
+    weightTree->SetBranchStatus("ub_tune_weight", 1 );
+    weightTree->SetBranchAddress("ub_tune_weight", &ub_tune_weight);
     
     // Process all events
     int processedCount = 0;
@@ -222,6 +226,13 @@ int XsecFluxAccumulator::processAllEvents(
                 variationsPerParam_[parname] = nvariations;
             }
 
+	    // For xsec parameters, we reweight the event back to genie nominal by removing the UB tune
+	    double xsec_weight = 1.0;
+	    if ( xsecParamNames_.find(parname) != xsecParamNames_.end() ) {
+	      if ( ub_tune_weight>0.0 )
+		xsec_weight = 1.0/ub_tune_weight;
+	    }
+
             // Accumulate into each variable's bins
             for (int varIdx = 0; varIdx < numVariables_; varIdx++) {
                 if (varIdx >= static_cast<int>(binIndices.size())) continue;
@@ -251,7 +262,7 @@ int XsecFluxAccumulator::processAllEvents(
 		    int idx = ibin * nvariations + iUniv;		    
                     if (w < maxValidWeight_) {
                         if (idx < static_cast<int>(arr.size())) {
-                            arr[idx] += w * centralWeight;
+                            arr[idx] += w * centralWeight*xsec_weight;
                         }
                     } else {
 		        // bad weight: either larger than max weight or NAN. set to 1.0.
@@ -260,7 +271,7 @@ int XsecFluxAccumulator::processAllEvents(
                             badWeightsPerUniverse_[iUniv]++;
                         }
 			badweights[ibin]++;
-			arr[idx] += centralWeight;
+			arr[idx] += centralWeight*xsec_weight;
                     }
                 }
             }
