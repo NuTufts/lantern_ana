@@ -1,5 +1,11 @@
 int Strip_xsecweight() {
 
+  // Run 3
+  std::string input_path = "/exp/uboone/data/users/imani/ntuples/run3/dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root";
+  std::string output_path = "xsecweight_dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root";
+
+
+
   // Runs 4a
   // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run4a_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root";
   // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_4a.root";
@@ -33,8 +39,8 @@ int Strip_xsecweight() {
   // Run 5
   // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_5.root";
   // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_reco2_hist_5.root";
-  std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
-  std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
+  // std::string input_path = "/pnfs/uboone/persistent/users/uboonepro/surprise/run5_full_samples/BNB/MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
+  // std::string output_path = "xsecweight_MCC9.10_Run4a4c4d5_v10_04_07_13_BNB_intrinsic_nue_overlay_surprise_reco2_hist_5.root";
 
 
   // Open Input File

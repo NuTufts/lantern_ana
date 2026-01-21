@@ -4,3 +4,9 @@
 *.so
 *.o
 ./output*
+*.png
+statistics.yaml
+lantern_ana.log
+
+statistics_*.yaml
+lantern_ana_*.log

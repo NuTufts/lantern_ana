@@ -1,0 +1,152 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/run3_mmr/root_files/xsecflux/logs/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    
+    - /exp/uboone/data/users/imani/ntuples/run3/
+    - /exp/uboone/data/users/imani/ntuples/run3/xsecweights/
+    - /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/
+    - /exp/uboone/app/users/imani/lantern_ana/run3_mmr/root_files/selection/
+
+  run3b_nu:
+    type: RootDataset
+    tree: analysis_tree
+    pottree: lifetime_tree
+    ismc: true
+    process: true
+    filepaths:
+     - run3b_bnb_nu_overlay_20260112_154048.root
+
+  # run3b_nue:
+  #   type: RootDataset
+  #   tree: analysis_tree
+  #   pottree: lifetime_tree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - run3b_bnb_nue_overlay_20260112_155555.root
+
+# Producer configuration (producers run first)
+producers:
+  xsfluxweight:
+    type: ArboristXsecFluxSysOldProducer
+    config:
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
+      # tree: nuselection/NeutrinoSelectionFilter
+      # weight_tree_run: "run"
+      # weight_tree_subrun: "sub"
+      # weight_tree_event: "evt"
+      rootfilepaths:
+        run3b_nu: "/pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root"
+        # run3b_nue: "/pnfs/uboone/persistent/users/yatesla/arborist_mcc9/arborist_v55_Jun20_withExtraGENIE_intrinsic_nue_run3.root"
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie # what is this?
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+      cut_formulas:
+        mmr_cuts_nue: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0
+                    "
+        mmr_cuts_nu: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0 and
+                    {ntuple.remove_true_nue_cc_flag}!=1
+                    "
+      event_selection_critera: ['mmr_cuts_nu']
+      # event_selection_criteria: ['mmr_cuts_nue']
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          apply_to_datasets: [run3b_nu]
+          criteria: []
+        reco_neutrino_energy: 
+          formula: vertex_properties_recoEnuMeV
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 3000.0
+          apply_to_datasets: [run3b_nu]
+          criteria: []
+        reco_electron_energy: 
+          formula: nueIncCC_reco_electron_momentum
+          numbins: 15
+          minvalue: 0.0
+          maxvalue: 1.5
+          apply_to_datasets: [run3b_nu]
+          criteria: []
+        reco_cos_theta: 
+          formula: nueIncCC_reco_electron_costheta
+          numbins: 20
+          minvalue: -1
+          maxvalue: 1
+          apply_to_datasets: [run3b_nu]
+          criteria: []
+
+
+
+# Cut configuration
+# cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run4a_nu
+
+# cut_logic: "(not {remove_true_nue_cc})"
+

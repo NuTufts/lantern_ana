@@ -476,3 +476,7 @@ class nueIncCCProducer(ProducerBaseClass):
             results[var_name] = var_array[0]
         
         return results
+    
+    def finalize(self):
+        """Nothing to do after event loop."""
+        return

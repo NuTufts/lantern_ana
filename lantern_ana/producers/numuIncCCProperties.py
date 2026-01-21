@@ -428,3 +428,7 @@ class numuIncCCProducer(ProducerBaseClass):
             # Combined result
             'passes_all_cuts': self._vars['passes_all_cuts'][0]
         }
+
+    def finalize(self):
+        """Nothing to do after event loop."""
+        return

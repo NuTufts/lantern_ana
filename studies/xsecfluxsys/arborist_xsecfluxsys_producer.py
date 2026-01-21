@@ -97,8 +97,23 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 >>>>>>> add a c++ function to calculate weights in order to save time. added event index producer
         self._bin_config_list = config.get('bin_config')
         self.weight_calc = CalcEventWeightVariations()
-        self.outfile = rt.TFile("temp_covar.root",'recreate')
->>>>>>> save for testing on tufts
+        self.outfile_path = config.get('output_filename','temp_covar.root')
+        self.outfile = rt.TFile(self.outfile_path,'recreate')
+
+        # Get output directory and filename
+        # output_dir = config.get('output_dir', './')
+        # output_filename = config.get('output_filename', 'temp_covar.root')
+
+        # # Create output directory if it doesn't exist
+        # if not os.path.exists(output_dir):
+        #     os.makedirs(output_dir)
+            
+        # # Join the output directory with the filename
+        # self.outfile_path = os.path.join(output_dir, output_filename)
+        # self.outfile = rt.TFile(self.outfile_path, 'recreate')
+
+        # print(f"Covariance output file will be saved to: {self.outfile_path}")
+       
 
 <<<<<<< HEAD
         # name of the run, subrun, event branches in the analysis_tree
