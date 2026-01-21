@@ -45,6 +45,7 @@ producers:
       weight_tree_subrun: subrun
       weight_tree_event: event
       weight_tree_name: sys_weights
+      weight_branch_type: 0 # arborist file
       rootfilepaths:
         mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root
       par_variations_to_include:

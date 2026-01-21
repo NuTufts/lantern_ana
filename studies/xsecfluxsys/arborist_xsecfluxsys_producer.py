@@ -90,6 +90,9 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self.weighttree_subrun_branch = config.get('weight_tree_subrun','sub')
         self.weighttree_event_branch  = config.get('weight_tree_event','evt')
         self.sysweight_treename       = config.get('weight_tree_name', 'weights')
+        self.weight_branch_type       = config.get('weight_branch_type',-1)
+        if self.weight_branch_type==-1:
+            raise ValueError("Must set config parameter 'weight_branch_type'. Options: 0=arborist file, 1=surprise file.")
 
         # cap weight value: sometimes a crazy large weight occurs
         self.maxvalidweight = config.get('maxvalidweight',1000)
@@ -106,7 +109,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self.xsec_params = config.get('xsec_params',[])
 
         # C++ accumulator instance
-        self.accumulator = XsecFluxAccumulator()
+        self.accumulator = XsecFluxAccumulator()        
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -182,7 +185,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             self._params_to_include,
             self.xsec_params_vec_cpp,
             self.nvariations,
-            self.maxvalidweight
+            self.maxvalidweight,
+            self.weight_branch_type
         )
 
         return

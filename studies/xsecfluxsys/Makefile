@@ -10,7 +10,8 @@ DICT_OBJ = mapDict.o
 DICT_LIB = libMapDict.so
 
 # Build flags
-CXXFLAGS = -fPIC -O3 $(ROOTCFLAGS)
+#CXXFLAGS = -fPIC -O3 $(ROOTCFLAGS)
+CXXFLAGS = -fPIC -g $(ROOTCFLAGS)
 LDFLAGS = -shared $(ROOTLIBS)
 
 # Default target
