@@ -1,3 +1,4 @@
+
 #include "xsecFluxAccumulator.h"
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +9,7 @@
 XsecFluxAccumulator::XsecFluxAccumulator()
     : numVariables_(0),
       maxVariations_(0),
-      maxValidWeight_(100.0),
+      maxValidWeight_(1000.0),
       configured_(false),
       missingEventCount_(0)
 {
@@ -37,6 +38,11 @@ void XsecFluxAccumulator::configure(int numVariables,
     // Initialize bad weight counter
     badWeightsPerUniverse_.assign(maxVariations, 0);
 
+    // Initialize bad weight counter per bin variable
+    //for (int varIdx=0; varIdx<numVariables_; varIdx++) {
+    //  badWeightsPerVariableBins_[varIdx] = std::vector<int>( binsPerVariable_[varIdx] );
+    //}
+
     // Clear any existing arrays
     arrays_.clear();
     variationsPerParam_.clear();
@@ -55,6 +61,14 @@ void XsecFluxAccumulator::reset()
         std::fill(kv.second.begin(), kv.second.end(), 0.0);
     }
     std::fill(badWeightsPerUniverse_.begin(), badWeightsPerUniverse_.end(), 0);
+
+    // for (int varIdx=0; varIdx<numVariables_; varIdx++) {
+    //   std::fill( badWeightsPerVariableBins_[varIdx].begin(), badWeightsPerVariableBins_[varIdx].end(), 0 );
+    // }
+    for ( auto& kv : badWeightsPerVariableBins_ ) {
+      std::fill(kv.second.begin(), kv.second.end(), 0);
+    }
+
     missingEventCount_ = 0;
 }
 
@@ -177,9 +191,9 @@ int XsecFluxAccumulator::processAllEvents(
         }
 
         // Load the weight entry
-        weightTree->GetEntry(it->second);
+        size_t nbytes = weightTree->GetEntry(it->second);
 
-        if (!weightsPtr) {
+        if (!weightsPtr || nbytes==0) {
             missingEventCount_++;
             continue;
         }
@@ -221,23 +235,32 @@ int XsecFluxAccumulator::processAllEvents(
                     int nbins = binsPerVariable_[varIdx];
                     arrays_[key].assign(nbins * nvariations, 0.0);
                 }
+		if (badWeightsPerVariableBins_.find(key) == badWeightsPerVariableBins_.end()) {
+		    int nbins = binsPerVariable_[varIdx];
+		    badWeightsPerVariableBins_[key].assign(nbins, 0);
+		}
 
                 auto& arr = arrays_[key];
+		auto& badweights = badWeightsPerVariableBins_[key];
                 int nbins = binsPerVariable_[varIdx];
 
                 // Fast inner loop - the core optimization
                 for (int iUniv = 0; iUniv < nvariations; iUniv++) {
                     double w = variations[iUniv];
+		    // Row-major: arr[ibin, iUniv] = arr[ibin * nvariations + iUniv]
+		    int idx = ibin * nvariations + iUniv;		    
                     if (w < maxValidWeight_) {
-                        // Row-major: arr[ibin, iUniv] = arr[ibin * nvariations + iUniv]
-                        int idx = ibin * nvariations + iUniv;
                         if (idx < static_cast<int>(arr.size())) {
                             arr[idx] += w * centralWeight;
                         }
                     } else {
+		        // bad weight: either larger than max weight or NAN. set to 1.0.
+		        std::cout << "badweight[" << varIdx << " | " << parname << "] weight=" << w << std::endl;
                         if (iUniv < static_cast<int>(badWeightsPerUniverse_.size())) {
                             badWeightsPerUniverse_[iUniv]++;
                         }
+			badweights[ibin]++;
+			arr[idx] += centralWeight;
                     }
                 }
             }
@@ -264,6 +287,17 @@ const std::vector<double>& XsecFluxAccumulator::getArray(int varIndex,
         return empty;
     }
     return it->second;
+}
+
+std::vector<int>& XsecFluxAccumulator::getBadWeightsPerVarBin(int varIndex,std::string paramName)
+{
+    auto key = std::make_pair(varIndex, paramName);
+    auto it = badWeightsPerVariableBins_.find(key);
+    if (it == badWeightsPerVariableBins_.end()) {
+        static std::vector<int> empty;
+        return empty;
+    }
+    return it->second;  
 }
 
 const std::vector<int>& XsecFluxAccumulator::getBadWeightCounts() const

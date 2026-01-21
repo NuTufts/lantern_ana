@@ -91,7 +91,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         self.sysweight_treename       = config.get('weight_tree_name', 'weights')
 
         # cap weight value: sometimes a crazy large weight occurs
-        self.maxvalidweight = config.get('maxvalidweight',100)
+        self.maxvalidweight = config.get('maxvalidweight',1000)
 
         # save selection criteria
         self.cut_formulas = config.get('cut_formulas',{})
@@ -379,6 +379,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                     hmean = rt.TH1D(hname_mean, "", nbins, xmin, xmax)
                     hname_var = f"h{varname}__{datasetname}__{par}_variance"
                     hvar = rt.TH1D(hname_var, "", nbins, xmin, xmax)
+                    hname_badweights = f"h{varname}__{datasetname}__{par}_badweights"
+                    hbadweights = rt.TH1D(hname_badweights, "", nbins, xmin, xmax)
 
                     for i in range(nbins_with_overflow):
                         hmean.SetBinContent(i, arr[i,:].mean())
@@ -386,12 +388,17 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                             hvar.SetBinContent(i, arr[i,:].var())
                             hmean.SetBinError(i, arr[i,:].std())
                         elif nvariations == 2:
-                            xdiff = 0.5 * np.abs(arr[i,1] - arr[i,0])
+                            xdiff = np.abs(arr[i,1] - arr[i,0])
                             hvar.SetBinContent(i, xdiff * xdiff)
-                            hmean.SetBinError(i, xdiff)
+                            hmean.SetBinError(i, xdiff )
+
+                    badweights_per_varbin = self.accumulator.getBadWeightsPerVarBin(var_idx,par)
+                    for ibin in range(1,hbadweights.GetXaxis().GetNbins()+1):
+                        hbadweights.SetBinContent(ibin,badweights_per_varbin.at(ibin-1))
 
                     hmean.Write()
                     hvar.Write()
+                    hbadweights.Write()
 
             # Write bad weight counts
             bad_weights = self.accumulator.getBadWeightCounts()

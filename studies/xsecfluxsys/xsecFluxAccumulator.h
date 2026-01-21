@@ -114,6 +114,11 @@ public:
      */
     int getMissingEventCount() const { return missingEventCount_; }
 
+  /**
+   * @brief Get Bad Weights count for variable bins
+   */
+  std::vector<int>& getBadWeightsPerVarBin(int varIdx,std::string parName);
+
 private:
     // Configuration
     int numVariables_;
@@ -131,6 +136,7 @@ private:
 
     // Bad weight tracking
     std::vector<int> badWeightsPerUniverse_;
+    std::map< std::pair<int,std::string>, std::vector<int> > badWeightsPerVariableBins_;
 
     // Missing event tracking
     int missingEventCount_;
