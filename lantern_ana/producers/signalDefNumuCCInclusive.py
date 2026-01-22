@@ -118,3 +118,9 @@ class signalDefNumuCCInclusive(ProducerBaseClass):
         for var_name, var_array in self._vars.items():
             results[var_name] = var_array[0]
         return results
+
+    def finalize(self):
+        """
+        nothing to do
+        """
+        return

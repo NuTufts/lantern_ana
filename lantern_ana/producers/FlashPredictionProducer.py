@@ -187,3 +187,10 @@ class FlashPredictionProducer(ProducerBaseClass):
           out[varname] = val[0]
 
         return out
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

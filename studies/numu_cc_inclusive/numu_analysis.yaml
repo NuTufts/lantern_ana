@@ -74,6 +74,9 @@ cut_logic: "{true_numu_CCinc} or {reco_numu_CCinc}"
 
 # Producer configuration
 producers:
+  eventindex:
+    type: eventIndexProducer
+    config: {}
   trueNu:
     type: trueNuPropertiesProducer
     config: {}

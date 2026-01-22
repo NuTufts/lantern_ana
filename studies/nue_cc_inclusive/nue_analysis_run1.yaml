@@ -19,6 +19,7 @@ print_dependency_graph: true
 datasets:
   folders:
     - /home/twongjirad/working/data/ntuples/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
   run1_bnb_nue_overlay_mcc9_v28_wctagger:
     type: RootDataset
     tree: EventTree
@@ -51,6 +52,11 @@ datasets:
 
 # Producer configuration (producers run first)
 producers:
+  # Indexing
+  eventindex:
+    type: eventIndexProducer
+    config: {}
+
   # Basic physics quantities
   trueNu:
     type: trueNuPropertiesProducer

@@ -34,7 +34,8 @@ class VertexPropertiesProducer(ProducerBaseClass):
             'observedPEtotal':array('f', [0.0]),
             'vtxKPscore':array('f', [0.0]),
             'vtxKPtype':array('i', [0]),
-            'mc_dist2true': array('f', [10000.0])
+            'mc_dist2true': array('f', [10000.0]),
+            'recoEnuMeV':array('f',[0.0])
         }
         self.WARN_NO_EXTRA_VTXINFO = False
         
@@ -60,6 +61,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
         self.vertex_vars['frac_outoftime_pixels'][0] = 0.0
         self.vertex_vars['frac_intime_unreco_pixels'][0] = 0.0
         self.vertex_vars['mc_dist2true'][0] = 10000.0
+        self.vertex_vars['recoEnuMeV'][0] = 0.0
     
     def requiredInputs(self) -> List[str]:
         """Specify required inputs."""
@@ -84,6 +86,7 @@ class VertexPropertiesProducer(ProducerBaseClass):
             self.vertex_vars['score'][0] = ntuple.vtxScore
             self.vertex_vars['cosmicfrac'][0] = ntuple.vtxFracHitsOnCosmic
             self.vertex_vars['dwall'][0] = dwall(ntuple.vtxX, ntuple.vtxY, ntuple.vtxZ)
+            self.vertex_vars['recoEnuMeV'][0] = ntuple.recoNuE
             
             # Calculate pixel fractions
             max_outoftime = 0.0

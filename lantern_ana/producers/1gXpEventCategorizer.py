@@ -462,3 +462,10 @@ class oneGxPEventCategorizingProducer(ProducerBaseClass):
             "sinkhornDiv": self.sinkhornDiv[0],
             "observedPE": self.observedPE[0]
             }
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

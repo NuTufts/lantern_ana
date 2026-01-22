@@ -301,3 +301,9 @@ class oneGxPEventSortingProducer(ProducerBaseClass):
 
         return {"Result":0}
 
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

@@ -14,7 +14,8 @@
 container=/cluster/tufts/wongjiradlabnu/larbys/larbys-container/u20.04_cu111_cudnn8_torch1.9.0_minkowski_npm.sif
 LANTERN_ANA_DIR=/cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/
 WORKDIR=${LANTERN_ANA_DIR}/studies/xsecfluxsys/
-CONFIG=${WORKDIR}/numu_run1_test.yaml
+#CONFIG=${WORKDIR}/numu_run1_test.yaml
+CONFIG=${WORKDIR}/numu_cc_inclusive_run3b_1mil_xsecflux.yaml
 
 module load apptainer/1.2.4-suid
 cd /cluster/tufts/

@@ -9,10 +9,10 @@ import numpy as np
 try:
     import ROOT as rt
     rt.gSystem.Load("libMapDict.so")
-    from ROOT import CalcEventWeightVariations
+    from ROOT import XsecFluxAccumulator
     from ROOT import std
 except:
-    print("Error loading ROOT and/or libMapDict.so")
+    print("Error loading ROOT and/or libMapDict.so. Run 'make' to build. (Needs ROOT)")
     sys.exit(1)
 
 # Example implementation of a ROOT-based dataset
@@ -20,7 +20,15 @@ except:
 class ArboristXsecFluxSysProducer(ProducerBaseClass):
     """
     Implementation of Dataset for ROOT files.
-    """
+
+    This producer estimates variance of model expectation for observable bins
+    based on variations of xsec and flux model parameters.
+
+    The heavy weight accumulation is offloaded to C++ (XsecFluxAccumulator) for performance.
+    Python handles event selection and bin assignment, C++ handles the inner loop
+    over ~1000 universe variations per parameter.
+    """    
+    
     def __init__(self, name: str, config: Dict[str, Any]):
         super().__init__(name, config)
         """
@@ -29,8 +37,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         Also want co-variances between these bins.
 
         Example of bin_config block:
-        
-        bin_config: 
+
+        bin_config:
           visible_energy: # bins of visible energy of the neutrino interaction
             formula: visible_energy
             numbins: 30
@@ -48,113 +56,60 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
           1. so we need to save  Sum[w_i*w_j] as well
         what do we need for a bin definition?
           1. observable quantify to histogram
-          2. bin bounds: 
-             - either use binedges with N+1 values to specify N bins 
+          2. bin bounds:
+             - either use binedges with N+1 values to specify N bins
              - or provide numbins, minvalue, and maxvalue to define uniform-spaced bins
           3. criteria to be filled within the bin
           4. sample that contributes to the bin
-        
+
         Args:
             name: A unique identifier for this dataset
             config: Dictionary containing configuration parameters:
              - todo: document parameters
         """
-        super().__init__(name, config)
         self._tree_name = config.get('tree','eventweight_tree')
         self._sample_filepaths  = config.get('rootfilepaths',{})
         self.nvariations = config.get('num_variations',1000)
         self._tree = None
         self._num_entries = 0
-        self._sample_rse_to_entryindex = {} # will hold entry dictionary for a given sample
         self._current_sample_name = "none"
-        self._current_sample_tchain = None
         self._params_to_include = config.get('par_variations_to_include',[])
         if len(self._params_to_include)==0:
             raise ValueError("Parameter list for reweight variations to include is empty.")
-        self._params_to_include_v = std.vector("string")()
-        for parname in self._params_to_include:
-            self._params_to_include_v.push_back( parname )
         self._bin_config_list = config.get('bin_config')
-        self.weight_calc = CalcEventWeightVariations()
-        self.outfile = rt.TFile("temp_covar.root",'recreate')
+        self.outfile_path = config.get('output_filename','temp_covar.root')
+        self.outfile = rt.TFile(self.outfile_path,'recreate')
 
-        # name of the run, subrun, event branches
+        # name of the run, subrun, event branches in the analysis_tree
         self.run_branch    = config.get('run','run')
         self.subrun_branch = config.get('subrun','subrun')
         self.event_branch  = config.get('event','event')
 
-        # cap weight value: sometimes a crazy large weight occurs
-        self.maxvalidweight = config.get('maxvalidweight',100)
+        # name of the run, subrun, event branches in the weight tree
+        self.weighttree_run_branch    = config.get('weight_tree_run','run')
+        self.weighttree_subrun_branch = config.get('weight_tree_subrun','sub')
+        self.weighttree_event_branch  = config.get('weight_tree_event','evt')
+        self.sysweight_treename       = config.get('weight_tree_name', 'weights')
+        self.weight_branch_type       = config.get('weight_branch_type',-1)
+        if self.weight_branch_type==-1:
+            raise ValueError("Must set config parameter 'weight_branch_type'. Options: 0=arborist file, 1=surprise file.")
 
-        # allow us to now have an event in the weight tree
-        # we set the event to one
-        self.allow_missing_weights = config.get('allow_missing_weights',True)
-        self.missing_entries = 0
+        # cap weight value: sometimes a crazy large weight occurs
+        self.maxvalidweight = config.get('maxvalidweight',1000)
 
         # save selection criteria
         self.cut_formulas = config.get('cut_formulas',{})
         self.event_selection_critera = config.get('event_selection_critera',[])
 
-        # keep track of number of bad weights
-        self.num_badweights_per_universe = [0]*self.nvariations
+        # Storage for passing events per sample
+        # Format: { sample_name: { 'rse': [...], 'bin_indices': [...], 'weights': [...] } }
+        self._passing_events = {}
 
-    def _build_sample_entry_index(self,samplename):
-        """
-        Open file and make (run,subrun,event) --> index dictionary
-        """
+        # xsec
+        self.xsec_params = config.get('xsec_params',[])
 
-        if samplename in self._sample_filepaths:
-            weightfilepath = self._sample_filepaths[samplename]
-        else:
-            raise ValueError(f"Could not find sample name, '{samplename}' in file path dictionary parameter")
-
-        try:
-            # open file
-            rfile = rt.TFile( weightfilepath )
-            # get ttree
-            ttree = rfile.Get(self._tree_name)
-            # If not found, search TDirectoryFile(s)
-            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
-                ttree = None
-                for key in rfile.GetListOfKeys():
-                    obj = key.ReadObj()
-                    if obj.InheritsFrom("TDirectoryFile"):
-                        dirfile = obj
-                        candidate = dirfile.Get(self._tree_name)
-                        if candidate and hasattr(candidate, 'SetBranchStatus'):
-                            ttree = candidate
-                            break
-            if not ttree or not hasattr(ttree, 'SetBranchStatus'):
-                raise RuntimeError(f'Could not find tree "{self._tree_name}" in file or subdirectories: {weightfilepath}')
-
-            # disable all but run, subrun, event branches to speed up read through file
-            ttree.SetBranchStatus("*", 0)
-            ttree.SetBranchStatus("run", 1)
-            ttree.SetBranchStatus("subrun", 1)
-            ttree.SetBranchStatus("event", 1)            
-            nentries = ttree.GetEntries()
-            print(f'Loaded "{samplename}" weight tree with {nentries} entries')
-        except:
-            raise RuntimeError(f'Weight file path for "{samplename}" could not be opened: {weightfilepath}')
-
-        tstart = time.time()
-        rsedict = {}
-        # TODO: use a tqdm loop here?
-        for iientry in range(nentries):
-            #if (iientry%100000==0):
-            #    print("  building index. entry ",iientry)
-            ttree.GetEntry(iientry)
-            rse = (ttree.run,ttree.subrun,ttree.event)
-            rsedict[rse] = iientry
-            if iientry%100000==0:
-                print("  building index. entry ",iientry," rse=",rse)
-
-        dt_index = time.time()-tstart
-        print(f'Time to make index: {dt_index:.2f}')
-        self._sample_rse_to_entryindex[samplename] = rsedict
-
-        rfile.Close()
-
+        # C++ accumulator instance
+        self.accumulator = XsecFluxAccumulator()        
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -163,13 +118,6 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
     def prepareStorage(self, output: Any) -> None:
         """
         Set up what to save in the output ROOT TTree. Here, we're saving histograms and covariances.
-
-        # TODO
-        #  - for each entry in the config list bin_config, define a histogram for each variable. 
-        #  - we define a TH1D to store the information. Mostly to use the find bin function
-        #  - make a copy of a histogram for seach sample
-        #  - for each (var,sample) histogram, we make 3 copies: one for sum[w], sum[w^2], N
-        #  - need a global index for each histogram, this way we can build a covariance matrix
         """
         ibin_global = 0
 
@@ -183,10 +131,8 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
 
             binedges = vardict.get('binedges',[])
             if len(binedges)==0:
-                # specify uniform bins
                 bintype = 'uniform'
             else:
-                # specify binedges
                 if len(binedges)==1:
                     raise ValueError("When specifying bin edges, need 2 or more edges. Only 1 given.")
                 bintype = 'binedges'
@@ -197,237 +143,411 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'criteria':vardict['criteria'],
                 'numbins':vardict['numbins'],
                 'sample_hists':{},
-                'sample_array':{}, # we save an array (nbins,nvariations) for each (sample,par) combination. So many!
                 'ibin_start':ibin_global,
                 'bintype':bintype
             }
 
-
             nbins = vardict['numbins']
+
             for sample in vardict['apply_to_datasets']:
-                # we save a histogram to
-                # 1. help us look up the bin position for this observable
-                # 2. store the central value and the number of entries per bin
                 hname = f"h{varname}_{sample}"
                 var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','N']:
                     hvar_name = hname+f"_{x}"
-
                     if var_bin_info['bintype']=='uniform':
                         h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
                     elif var_bin_info['bintype']=='binedges':
                         bin_array = array('f',binedges)
                         nbins = len(binedges)-1
                         h = rt.TH1D(hvar_name,"",nbins, bin_array)
-
                     var_bin_info['sample_hists'][sample][x] = h
-                # we make a dictionary with a slot for an array
-                # we create the actual array later once we know the number of variations of each parameter
-                for par in self._params_to_include:
-                    var_bin_info['sample_array'][(sample,par)] = None
 
             ibin_global += nbins
             self.variable_list.append( varname )
             self.var_bininfo[varname] = var_bin_info
 
         print("Number of total bins defined: ",ibin_global)
-        
+
+        # Configure the C++ accumulator
+        bins_per_var = []
+        for varname in self.variable_list:
+            # +2 for underflow and overflow bins
+            bins_per_var.append(self.var_bininfo[varname]['numbins'] + 2)
+
+        # make c++ vector for xsec param list
+        self.xsec_params_vec_cpp = rt.std.vector("string")()
+        for xsecpar in self.xsec_params:
+            self.xsec_params_vec_cpp.push_back( xsecpar )
+
+        self.accumulator.configure(
+            len(self.variable_list),
+            bins_per_var,
+            self._params_to_include,
+            self.xsec_params_vec_cpp,
+            self.nvariations,
+            self.maxvalidweight,
+            self.weight_branch_type
+        )
+
         return
 
     def requiredInputs(self) -> List[str]:
         """Specify required inputs."""
         return ["gen2ntuple"]
 
-    def _load_sample_weight_tree(self, datasetname):
-        if self._current_sample_tchain is not None:
-            if datasetname != self._current_sample_name:
-                self._current_sample_tchain.Close()
-            else:
-                return # already loaded
-
-        if datasetname not in self._sample_filepaths:
-            raise ValueError(f"Could not find sample name, '{datasetname}' in file path dictionary parameter")
-
-        weightfilepath = self._sample_filepaths[datasetname]
-        
-        # Determine correct tree path (may be inside TDirectoryFile)
-        rfile = rt.TFile(weightfilepath)
-        ttree = rfile.Get(self._tree_name)
-        tree_path = self._tree_name
-        
-        # If not found at root level, search TDirectoryFile(s)
-        if not ttree or not hasattr(ttree, 'SetBranchStatus'):
-            for key in rfile.GetListOfKeys():
-                obj = key.ReadObj()
-                if obj.InheritsFrom("TDirectoryFile"):
-                    dirfile = obj
-                    candidate = dirfile.Get(self._tree_name)
-                    if candidate and hasattr(candidate, 'SetBranchStatus'):
-                        tree_path = f"{dirfile.GetName()}/{self._tree_name}"
-                        break
-        rfile.Close()
-        
-        self._current_sample_tchain = rt.TChain(tree_path)
-        self._current_sample_tchain.Add(weightfilepath)
-        nentries = self._current_sample_tchain.GetEntries()
-        print("Loaded weight tree for dataset: ",datasetname)
-
-
     def processEvent(self, data: Dict[str, Any], params: Dict[str, Any]) -> Dict[str, Any]:
-        """Determine if event is signal nue CC inclusive."""
+        """
+        First pass: determine if event passes selection and record bin assignments.
+
+        This is now lightweight - just stores RSE, bin indices, and central weight.
+        The heavy weight accumulation happens in finalize() via C++.
+        """
         ntuple = data["gen2ntuple"]
         ismc = params.get('ismc', False)
         datasetname = params.get('dataset_name')
 
-        # evaluate all the selection formulas
-        # in order to decide if this event is something we are going to fill
+        # Evaluate all the selection formulas
         select_results = {}
         for cutname,cutformula in self.cut_formulas.items():
-            # Extract placeholders from the formula (strings inside {})
             placeholders = re.findall(r'\{([^}]+)\}', cutformula)
-
-            # Create clean expression and namespace
             clean_expression = cutformula
             namespace = {}
 
             for placeholder in placeholders:
-                # Create a simple variable name from the placeholder
                 var_name = placeholder.replace('.', '_').replace('[', '_').replace(']', '')
                 clean_expression = clean_expression.replace(f"{{{placeholder}}}", var_name)
-                # Evaluate the placeholder to get the actual value
                 namespace[var_name] = eval(placeholder)
 
-            # Evaluate the clean expression with the namespace
             select_results[cutname] = eval(clean_expression, namespace)
-        
+
         passes = True
         for cutname in self.event_selection_critera:
             if select_results[cutname]==False:
                 passes = False
                 break
-            
+
         if passes==False:
             return {}
 
-        if datasetname not in self._sample_rse_to_entryindex:
-            self._build_sample_entry_index( datasetname )
-            self._load_sample_weight_tree( datasetname )
-
+        # Get RSE
         run    = eval(f'ntuple.{self.run_branch}')
         subrun = eval(f'ntuple.{self.subrun_branch}')
-        event  = eval(f'ntuple.{self.event_branch}')        
-        rse = (run,subrun,event)
-        if rse in self._sample_rse_to_entryindex[datasetname]:
-            entryindex = self._sample_rse_to_entryindex[datasetname][rse]
-        else:
-            print(f'Could not find RSE={rse} in RSE->index dictionary')
-            self.missing_entries += 1
-            if not self.allow_missing_weights:
-                raise ValueError(f'Could not find RSE={rse} in RSE->index dictionary')
-            else:
-                return {}
-        
-        self._current_sample_tchain.GetEntry(entryindex)
+        event  = eval(f'ntuple.{self.event_branch}')
 
-        # get event weight
+        # Get central event weight
         evweight = ntuple.eventweight_weight
 
-        # now calculate event weights from the N parameter variations (sometimes referred to as 'universes')      
-        #universe_weight = self.weight_calc.calc( 1000, self._params_to_include_v, self._current_sample_tchain.sys_weights )
-        #print("sample variation weights: ",universe_weight[0]," ",universe_weight[1]," ",universe_weight[2])
-
-        # fill bins
-        varvalues = {}
+        # Compute bin indices for all variables
+        bin_indices = []
         for varname in self.variable_list:
-
             varinfo = self.var_bininfo[varname]
 
-            # does the current dataset (aka sample) apply to this variable? 
             if datasetname not in varinfo['sample_hists']:
-                continue # if not, we continue
+                # Variable doesn't apply to this dataset
+                bin_indices.append(-1)
+                continue
 
-            # sample does apply to this variable, so we get the observable variable value
+            # Get observable value and find bin
             varformula = varinfo['formula']
-            x = eval(f'ntuple.{varformula}')            
-            varvalues[varname] = x
+            x = eval(f'ntuple.{varformula}')
 
-            # get the histogram
             hists = varinfo['sample_hists'][datasetname]
 
-            # fill the central value (CV) and N (unweighted) histogram
-            hists['cv'].Fill(x,evweight)
+            # Fill CV and N histograms (still done per-event)
+            hists['cv'].Fill(x, evweight)
             hists['N'].Fill(x)
 
-            # find the bin
-            ibin = hists['cv'].GetXaxis().FindBin( x )
+            # Get bin index
+            ibin = hists['cv'].GetXaxis().FindBin(x)
+            bin_indices.append(ibin)
 
-            # Iterate over the map elements
-            for parname, values in self._current_sample_tchain.sys_weights:
-                if parname not in self._params_to_include:
-                    continue
+        # Initialize storage for this sample if needed
+        if datasetname not in self._passing_events:
+            self._passing_events[datasetname] = {
+                'rse': [],
+                'bin_indices': [],
+                'weights': []
+            }
 
-                sample_par = (datasetname,parname)
-                arr = varinfo['sample_array'][sample_par]
-                nvariations = values.size()
-                if arr is None:
-                    varinfo['sample_array'][sample_par] = np.zeros( (varinfo['numbins']+2,nvariations) )
-                    arr = varinfo['sample_array'][sample_par]
+        # Store this event's info for later C++ processing
+        self._passing_events[datasetname]['rse'].append([run, subrun, event])
+        self._passing_events[datasetname]['bin_indices'].append(bin_indices)
+        self._passing_events[datasetname]['weights'].append(evweight)
 
-                for i in range(nvariations):
-                    if values[i]<self.maxvalidweight:
-                        arr[ibin,i] += values[i]
-                    else:
-                        self.num_badweights_per_universe[i] += 1
-
-                
         return {}
 
     def finalize(self):
-        print("write arborist histograms")
-        print(" number of entries missing a weight value: ",self.missing_entries)
+        """
+        Second pass: process all passing events through C++ accumulator.
+
+        For each sample, call the C++ XsecFluxAccumulator to process all events
+        and accumulate weights across all universe variations.
+        """
+        print("ArboristXsecFluxSysProducer: finalize()")
+
         self.outfile.cd()
-        for varname in self.var_bininfo:
-            varinfo = self.var_bininfo[varname]
-            for sample,hists in varinfo['sample_hists'].items():
-                hists['cv'].Write()
-                hists['N'].Write()
-            for (sample,par),arr in varinfo['sample_array'].items():
-                # save result of all variations for this parameter
-                hname = f"h{varname}__{sample}__{par}"
-                print("Fill variation hist: ",hname,": shape=",arr.shape)
-                xmin = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmin()
-                xmax = varinfo['sample_hists'][sample]['cv'].GetXaxis().GetXmax()
-                hout = rt.TH2D( hname, "", arr.shape[0]-2, xmin, xmax, arr.shape[1], 0, arr.shape[1] )
-                for i in range(arr.shape[0]):
-                    for j in range(arr.shape[1]):
-                        hout.SetBinContent( i, j+1, arr[i,j] )
 
-                hname_mean = f"h{varname}__{sample}__{par}_mean"
-                hmean = rt.TH1D( hname_mean, "", arr.shape[0]-2, xmin, xmax )
-                hname_var = f"h{varname}__{sample}__{par}_variance"
-                hvar  = rt.TH1D( hname_var, "", arr.shape[0]-2, xmin, xmax )
-                for i in range(arr.shape[0]):
-                    hmean.SetBinContent(i,arr[i,:].mean())
-                    if arr.shape[1]>2:
-                        hvar.SetBinContent(i,arr[i,:].var())
-                        hmean.SetBinError(i,arr[i,:].std())
-                    elif arr.shape[1]==2:
-                        # for parameters with only 2 variations
-                        # use half the difference as the std
-                        xdiff = 0.5*np.abs(arr[i,1]-arr[i,0])
-                        hvar.SetBinContent(i,xdiff*xdiff)
-                        hmean.SetBinError(i,xdiff)
-                    else:
+        # Process each sample
+        for datasetname, event_data in self._passing_events.items():
+            if datasetname not in self._sample_filepaths:
+                print(f"Warning: No weight file path for sample {datasetname}, skipping")
+                continue
+
+            weight_file_path = self._sample_filepaths[datasetname]
+            num_events = len(event_data['rse'])
+
+            print(f"Processing sample {datasetname}: {num_events} passing events")
+
+            if num_events == 0:
+                continue
+
+            # Reset accumulator for this sample
+            self.accumulator.reset()
+
+            # Convert Python lists to std::vector for C++
+            rse_vec = std.vector("std::vector<int>")()
+            for rse in event_data['rse']:
+                inner = std.vector("int")()
+                for val in rse:
+                    inner.push_back(int(val))
+                rse_vec.push_back(inner)
+
+            bin_indices_vec = std.vector("std::vector<int>")()
+            for bins in event_data['bin_indices']:
+                inner = std.vector("int")()
+                for val in bins:
+                    inner.push_back(int(val))
+                bin_indices_vec.push_back(inner)
+
+            weights_vec = std.vector("double")()
+            for w in event_data['weights']:
+                weights_vec.push_back(float(w))
+
+            # Call C++ to process all events
+            tstart = time.time()
+            processed = self.accumulator.processAllEvents(
+                weight_file_path,
+                self._tree_name,
+                self.sysweight_treename,
+                self.weighttree_run_branch,
+                self.weighttree_subrun_branch,
+                self.weighttree_event_branch,
+                rse_vec,
+                bin_indices_vec,
+                weights_vec
+            )
+            dt = time.time() - tstart
+            print(f"  C++ processed {processed} events in {dt:.2f}s")
+            print(f"  Missing events: {self.accumulator.getMissingEventCount()}")
+
+            # IMPORTANT: C++ opened a TFile which changed ROOT's gDirectory
+            # Must switch back to our output file before writing
+            self.outfile.cd()
+
+            # Get results from C++ and write histograms
+            found_params = self.accumulator.getFoundParams()
+            print(f"  Found parameters: {list(found_params)}")
+
+            for var_idx, varname in enumerate(self.variable_list):
+                varinfo = self.var_bininfo[varname]
+
+                if datasetname not in varinfo['sample_hists']:
+                    continue
+
+                # Write CV and N histograms
+                varinfo['sample_hists'][datasetname]['cv'].Write()
+                varinfo['sample_hists'][datasetname]['N'].Write()
+
+                # Get histogram properties for output
+                h_cv = varinfo['sample_hists'][datasetname]['cv']
+                xmin = h_cv.GetXaxis().GetXmin()
+                xmax = h_cv.GetXaxis().GetXmax()
+                nbins = varinfo['numbins']
+
+                # Process each parameter
+                for par in found_params:
+                    nvariations = self.accumulator.getNumVariationsForParam(par)
+                    if nvariations == 0:
                         continue
-                hmean.Write()
-                hvar.Write()
 
-                hout.Write()
+                    # Get accumulated array from C++
+                    arr_flat = self.accumulator.getArray(var_idx, par)
+                    if len(arr_flat) == 0:
+                        continue
 
-        hbaduniverses = rt.TH1D("hnum_bad_universe_weights","Number of weights per universe;universe number",self.nvariations,0,self.nvariations)
-        for i,nbad in enumerate(self.num_badweights_per_universe):
-            hbaduniverses.SetBinContent(i+1,nbad)
-        hbaduniverses.Write()
-        self.outfile.Close()
+                    # Reshape to (nbins+2, nvariations)
+                    # The C++ stores as row-major: arr[ibin * nvariations + iUniv]
+                    nbins_with_overflow = nbins + 2
+                    arr = np.array(arr_flat).reshape(nbins_with_overflow, nvariations)
+
+                    # Create 2D histogram for all variations
+                    hname = f"h{varname}__{datasetname}__{par}"
+                    hout = rt.TH2D(hname, "", nbins, xmin, xmax, nvariations, 0, nvariations)
+                    for i in range(nbins_with_overflow):
+                        for j in range(nvariations):
+                            hout.SetBinContent(i, j+1, arr[i,j])
+                    if 'sample_par_hout' not in varinfo:
+                        varinfo['sample_par_hout'] = {}
+                    varinfo['sample_par_hout'][(datasetname,par)] = hout
+                    hout.Write()
+
+                    # Create mean and variance histograms
+                    hname_mean = f"h{varname}__{datasetname}__{par}_mean"
+                    hmean = rt.TH1D(hname_mean, "", nbins, xmin, xmax)
+                    hname_var = f"h{varname}__{datasetname}__{par}_variance"
+                    hvar = rt.TH1D(hname_var, "", nbins, xmin, xmax)
+                    hname_badweights = f"h{varname}__{datasetname}__{par}_badweights"
+                    hbadweights = rt.TH1D(hname_badweights, "", nbins, xmin, xmax)
+
+                    for i in range(nbins_with_overflow):
+                        hmean.SetBinContent(i, arr[i,:].mean())
+                        if nvariations > 2:
+                            hvar.SetBinContent(i, arr[i,:].var())
+                            hmean.SetBinError(i, arr[i,:].std())
+                        elif nvariations == 2:
+                            xdiff = np.abs(arr[i,1] - arr[i,0])
+                            hvar.SetBinContent(i, xdiff * xdiff)
+                            hmean.SetBinError(i, xdiff )
+
+                    badweights_per_varbin = self.accumulator.getBadWeightsPerVarBin(var_idx,par)
+                    for ibin in range(1,hbadweights.GetXaxis().GetNbins()+1):
+                        hbadweights.SetBinContent(ibin,badweights_per_varbin.at(ibin-1))
+
+                    if 'sample_par_hmean' not in varinfo:
+                        varinfo['sample_par_hmean'] = {}
+                    varinfo['sample_par_hmean'][(datasetname,par)] = hmean
+                    if 'sample_par_hvar' not in varinfo:
+                        varinfo['sample_par_hvar'] = {}
+                    varinfo['sample_par_hvar'][(datasetname,par)] = hvar
+
+                    hmean.Write()
+                    hvar.Write()
+                    hbadweights.Write()
+
+            # Write bad weight counts
+            bad_weights = self.accumulator.getBadWeightCounts()
+            hbaduniverses = rt.TH1D(
+                f"hnum_bad_universe_weights_{datasetname}",
+                f"Number of bad weights per universe ({datasetname});universe number",
+                self.nvariations, 0, self.nvariations
+            )
+            for i, nbad in enumerate(bad_weights):
+                if i < self.nvariations:
+                    hbaduniverses.SetBinContent(i+1, nbad)
+            hbaduniverses.Write()
+
+        # with all variationss processed, make covariance matrices
+        self.formCovarianceMatrices()
+
+        print("ArboristXsecFluxSysProducer: finalize() complete")
+
+    def formCovarianceMatrices(self):
+        """
+        We use the histograms we've formed and stored in self.var_bininfo to form covariance matrices.
+
+        We make a covariance matrix for observable bins between (sample,parameter) combinations 
+        """
+
+        print("Form Covariance Matrices ...")
+
+        self.outfile.cd()
+
+        # get list of datasets with MC variations
+        sample_list = []
+        for varinfo in self.var_bininfo:
+            for sample in varinfo['samples']:
+                if sample not in sample_list:
+                    sample_list.append(sample)
         
+        # index all observable bins
+        globalindex = 0
+        bin_list = []
+
+        for par in self._params_to_include:
+            sample_par_pair = (sample,par)
+
+        for sample in sample_list:
+            for variable in self.var_bininfo:
+                varinfo = self.var_bininfo[variable]
+                if sample not in varinfo['samples']:
+                    continue
+                hmean_hists = {}
+                hvar_hists = {}
+                hout_hists = {}
+                for par in self._params_to_include:
+                    sample_par_pair = (sample,par)
+                    if sample_par_pair in varinfo['sample_par_hmean']:
+                        hmean = varinfo['sample_par_hmean'][sample_par_pair]
+                        hvar  = varinfo['sample_par_hvar'][sample_par_pair]
+                        hout  = varinfo['sample_par_hout'][sample_par_pair]
+                        hmean_hists[par] = hmean
+                        hvar_hists[par] = hvar
+                        hout_hists[par] = hout
+
+                # bin covariance
+                numbins = varinfo['numbins']
+                for ii in range(numbins):
+                    bin_list.append( (globalindex,sample,variable,ii,hmean_hists,hvar_hists,hout_hists) )
+                    globalindex += 1
+        num_global_bins = globalindex
+
+        # make covariances between bins for each parameter
+        covar_hists = {}
+        for par in self._params_to_include:
+            hcovar_name = f"hcovar_{par}"
+            hcovar = rt.TH2D(hcovar_name,f"covar for {par}",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
+            for ibin in range(num_global_bins):
+                for jbin in range(ibin,num_global_bins):
+                    ibin_info = bin_list[ibin]
+                    jbin_info = bin_list[jbin]
+                    if par not in ibin_info[-1]:
+                        continue
+                    if par not in jbin_info[-1]:
+                        continue
+
+                    ihout = ibin_info[-1][par]
+                    jhout = jbin_info[-1][par]
+                    ihmean = ibin_info[-3][par]
+                    jhmean = jbin_info[-3][par]
+
+                    i_nvariations = ihout.GetYaxis().GetNbins()
+                    j_nvariations = jhout.GetYaxis().GetNbins()
+                    if i_nvariations!=j_nvariations:
+                        continue
+
+                    isample = ibin_info[1]
+                    jsample = jbin_info[1]
+                    ivariable = ibin_info[2]
+                    jvariable = ibin_info[2]
+
+                    covar = 0.0
+                    if i_nvariations==2:
+                        var_i = ihout.GetBinContent(ibin+1,1)-ihout.GetBinContent(ibin+1,2)
+                        var_j = jhout.GetBinContent(jbin+1,1)-jhout.GetBinContent(jbin+1,2)
+                        covar = var_i*var_j
+                    elif i_nvariations>2:
+                        for ii in range(i_nvariations):
+                            var_i = ihout.GetBinContent(ibin+1,ii)-ihmean.GetBinContent(ibin+1)
+                            var_j = jhout.GetBinContent(jbin+1,ii)-jhmean.GetBinContent(jbin+1)
+                            covar += (var_i*var_j)/float(i_nvariations)
+                    hcovar.SetBinContent( ibin+1, jbin+1, covar )
+                    if ibin!=jbin:
+                        hcovar.SetBinContent(jbin+1,ibin+1,covar)
+                    i_label = f"{ivariable},{isample}"
+                    j_label = f"{jvariable},{jsample}"
+                    hcovar.GetXaxis().SetBinLabel(ibin+1,i_label)
+                    hcovar.GetYaxis().SetBinLabel(jbin+1,j_label)
+            covar_hists[par] = hcovar
+            hcovar.Write()
+
+                    
+                    
+
+
         
+
+
+
+
+
+

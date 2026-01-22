@@ -290,3 +290,10 @@ class backgroundClassifyingProducer(ProducerBaseClass):
 
 
         return {"Outcome": 0}
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

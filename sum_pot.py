@@ -15,7 +15,7 @@ if __name__ == "__main__":
     fname = sys.argv[1]
     
     rfile = rt.TFile(fname,"open")
-    pottree = rfile.Get("potTree")
+    pottree = rfile.Get("lantern/potTree")
 
     pot = sum_pot_tree(pottree)
     print("pot: ",pot)

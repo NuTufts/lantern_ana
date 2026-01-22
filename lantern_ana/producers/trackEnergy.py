@@ -82,3 +82,10 @@ class TrackEnergyProducer(ProducerBaseClass):
             "n_tracks": self.n_tracks,
             "energy_array": self._energy_array
         }
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return

@@ -111,3 +111,10 @@ class recoDetectableParticleCountsProducer(ProducerBaseClass):
         detectableParticleDict = {"protons": self.protonsOverThreshold[0], "pions": self.pionsOverThreshold[0], "muons": self.muonsOverThreshold[0], "electrons": self.electronsOverThreshold[0], "justOverMuons": self.muonsBarelyOverThreshold[0], "justOverPions": self.pionsBarelyOverThreshold[0]}
 
         return detectableParticleDict
+
+    def finalize(self):
+        """
+        nothing to do after the event loop
+        """
+        super().finalize()
+        return
