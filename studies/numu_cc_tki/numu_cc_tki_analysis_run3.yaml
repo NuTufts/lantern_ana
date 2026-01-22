@@ -16,13 +16,14 @@ print_dependency_graph: true
 datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-  run3b_bnb_nu_overlay_mcc9_v29e_CV:
+  run3b_bnb_nu_overlay_nocrtremerge:
     type: RootDataset
     tree: EventTree
     ismc: true
     process: true
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_bnb_nu_overlay_CV.root
+     - dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root
+     #- dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_bnb_nu_overlay_CV.root
   #  friendtrees:
   #    FlashPredictionTree: flashprediction_mcc9_v28_wctagger_bnboverlay_v3dev_reco_retune.root
   run1_extbnb_mcc9_v29e_C1:

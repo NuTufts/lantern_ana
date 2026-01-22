@@ -1,0 +1,124 @@
+# polina_systematics_run3.yaml
+
+# Output directory
+output_dir: "./systematics_output_run3"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    #- /home/twongjirad/working/data/ntuples/
+    #- /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    #- /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/xsecfluxsys/
+    #- /cluster/tufts/wongjiradlabnu/twongj01/gen2/photon_analysis/lantern_ana/studies/numu_cc_inclusive/output_numu_run1/
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_dev_run3
+  run3b_bnb_nu_overlay_mcc9_v29e_CV:
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+     - run3b_bnb_nu_overlay_nocrtremerge_20260104_175308.root
+     #- run3b_bnb_nu_overlay_mcc9_v29e_nocrtremerge_20251215_110337.root
+  #run1_bnb_nu_overlay_mcc9_v28_wctagger:
+  #  type: RootDataset
+  #  tree: EventTree
+  #  ismc: true
+  #  process: true
+  #  filepaths:
+  #   - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+  #  friendtrees:
+  #    analysis_tree: run1_bnb_nu_overlay_mcc9_v28_wctagger_20250906_043957.root
+
+
+# Producer configuration (producers run first)
+producers:
+  
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event
+      maxvalidweight: 10.0
+      allow_missing_weights: True
+      rootfilepaths:
+        run3b_bnb_nu_overlay_mcc9_v29e_CV: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie # what is this?
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+      cut_formulas:
+        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+      event_selection_critera: ['pass_selection']
+      bin_config: 
+        delPTT:
+          formula: numuCC1piNpReco_delPTT
+          numbins: 25
+          minvalue: -1.0
+          maxvalue: 1.0
+          # binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run3b_bnb_nu_overlay_mcc9_v29e_CV']
+          criteria: []
+        pN:
+          formula:  numuCC1piNpReco_pN
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1.6
+          #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run3b_bnb_nu_overlay_mcc9_v29e_CV']
+          criteria: []
+        delAlphaT:
+          formula:  numuCC1piNpReco_delAlphaT
+          numbins: 10
+          minvalue: 0.0
+          maxvalue: 180.0
+          #binlist: [0.0,0.2,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+          apply_to_datasets: ['run3b_bnb_nu_overlay_mcc9_v29e_CV']
+          criteria: []
+
+
+# Cut configuration
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
+

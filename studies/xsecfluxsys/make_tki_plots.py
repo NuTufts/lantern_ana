@@ -7,7 +7,7 @@ rt.gStyle.SetPadBottomMargin(0.20)
 rt.gStyle.SetPadLeftMargin(0.10)
 rt.gStyle.SetPadRightMargin(0.05)
 
-rfile = rt.TFile("tki_covar.root")
+rfile = rt.TFile("temp_covar.root")
 
 targetpot = 4.4e19
 livetime_scale = targetpot/4.5221966264744385e+20
