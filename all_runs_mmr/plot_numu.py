@@ -3,9 +3,9 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 3
+run_num = 30
 
-lantern_dir = "/exp/uboone/app/users/imani/lantern_ana"
+lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
 
 ## Run 1 
 if run_num == 1: 
@@ -23,6 +23,7 @@ if run_num == 1:
 		"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_overlay_nu.root"
 	}
 	show_data = True 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 1: CC Inclusive Numu"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/numu_run1_hists.root"
 	xsecflux_variables = ['visible_energy', 'muon_momentum', 'muon_angle']
@@ -30,7 +31,11 @@ if run_num == 1:
 	'neutrino_energy': 'visible_energy',
 	'muon_momentum': 'muon_momentum',
 	'muon_costheta': 'muon_angle'
-}
+	}
+	xsecflux_sample_map = {
+		'numu': 'run1_bnb_nu_overlay_mcc9_v28_wctagger',
+		'nue': 'run1_bnb_nue_overlay_mcc9_v28_wctagger'
+	}
 
 
 ## Run 3b
@@ -50,6 +55,7 @@ if run_num == 3:
 		"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/run3b_numu_covar_nu.root"
 	}
 	show_data = True 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 3: CC Inclusive Numu"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/numu_run3_hists.root"
 	xsecflux_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_momentum', 'reco_cos_theta']
@@ -57,6 +63,42 @@ if run_num == 3:
 	'neutrino_energy': 'reco_neutrino_energy',
 	'muon_momentum': 'reco_muon_momentum',
 	'muon_costheta': 'reco_cos_theta'
+	}
+	xsecflux_sample_map = {
+		'numu': 'run3b_nu',
+		'nue': 'run3b_nue'
+	}
+
+## Run 3mil
+if run_num == 30: 
+	targetpot = 8.806e18
+	scaling = {"numu":targetpot/1.346689484233034e+21,
+			"nue":targetpot/2.891774385462469e+22,
+			# "extbnb":(176153)/(223580),  # Trigger ratio 3b
+			"extbnb": (2263559.0)/(19214565.0),
+			# "extbnb":(176153.0)/(19214565),  # Trigger ratio 3b
+			"data":1.0}
+	files = {"numu": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_nu_20260122_162913.root",
+			"nue":f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_nue_20260123_181343.root", 
+			"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3b_extbnb_20260123_164522.root",
+			"data":f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_data_20260126_180100.root"}
+	xsecflux_files = {
+		"nue": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nue.root",
+		"numu": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nu.root"
+	}
+	show_data = True 
+	data_legend = "Run3 1e19"
+	plot_title = "Run 3 1mil: CC Inclusive Numu"
+	out_name = f"{lantern_dir}/all_runs_mmr/plots/numu_run3mil_hists.root"
+	xsecflux_variables = ['visible_energy', 'reco_muon_momentum', 'reco_cos_theta']
+	var_name_map = {
+	'neutrino_energy': 'visible_energy',
+	'muon_momentum': 'reco_muon_momentum',
+	'muon_costheta': 'reco_cos_theta'
+	}
+	xsecflux_sample_map = {
+		'nue': 'run3mil_nue', # Not used, but keeping for consistency
+		'numu': 'run3mil_nu'  
 	}
 
 
@@ -76,6 +118,7 @@ if run_num == 4:
 		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/run4b_numu_covar_nu.root"
 		}
 	show_data = True 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 4b: CC Inclusive Numu"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/numu_run4b_hists.root"
 	xsecflux_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_momentum', 'reco_cos_theta']
@@ -116,23 +159,8 @@ def identify_systematic_type(syst_name):
 	# Default to cross section
 	return 'xsec'
 
-## Cross Section & Flux Uncertainties
-# xsecflux_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_energy', 'reco_cos_theta']
 
-# Map neutrino type to the sample name in the xsecflux file
-if run_num == 1:
-	xsecflux_sample_map = {
-		'numu': 'run1_bnb_nu_overlay_mcc9_v28_wctagger',
-		'nue': 'run1_bnb_nue_overlay_mcc9_v28_wctagger'
-	}
-elif run_num == 3:
-	xsecflux_sample_map = {
-		'numu': 'run3b_nu',
-		'nue': 'run3b_nue'
-	}
-
-
-if run_num in [1,3]:
+if run_num in [1,3, 30]:
 	flux_params = [
 		"expskin_FluxUnisim",
 		"horncurrent_FluxUnisim",
@@ -402,7 +430,7 @@ categories = {
 		'samples': ['data'],
 		'truth_cut': '',
 		'color': rt.kBlack,
-		'legend': 'Run1 Data'
+		'legend': data_legend
 	}
 }
 

@@ -3,9 +3,9 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 3
+run_num = 30
 
-lantern_dir = "/exp/uboone/app/users/imani/lantern_ana"
+lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
 
 ## Run 1 
 if run_num == 1: 
@@ -23,6 +23,7 @@ if run_num == 1:
 		"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_nue_overlay_nu.root"
 	}
 	show_data = True 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 1: CC Inclusive Nue"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/nue_run1_hists.root"
 	remove_cut = ""
@@ -54,6 +55,7 @@ if run_num == 3:
 		"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/run3b_nue_covar_nu.root"
 	}
 	show_data = True 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 3: CC Inclusive Nue"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/nue_run3_hists.root"
 	remove_cut = "&& (remove_true_nue_cc_flag==0)"
@@ -67,6 +69,38 @@ if run_num == 3:
 	xsecflux_sample_map = {
 		'numu': 'run3b_nu',
 		'nue': 'run3b_nue'  # Not used, but keeping for consistency
+	}
+
+
+## Run 3mil
+if run_num == 30: 
+	targetpot = 8.806e18
+	scaling = {"numu":targetpot/1.346689484233034e+21,
+			"nue":targetpot/2.891774385462469e+22,
+			"extbnb": (2263559.0)/(19214565.0),
+			"data":1.0}
+	files = {"numu": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_nu_20260122_162913.root",
+			"nue":f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_nue_20260123_181343.root", 
+			"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3b_extbnb_20260123_164522.root",
+			"data":f"{lantern_dir}/all_runs_mmr/run3mil/root_files/selection/run3mil_data_20260126_180100.root"}
+	xsecflux_files = {
+		"nue": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_nue_bnb_nue.root",
+		"numu": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_nue_bnb_nu.root"
+	}
+	show_data = True 
+	data_legend = "Run3 1e19"
+	plot_title = "Run 3 1mil: CC Inclusive Nue"
+	out_name = f"{lantern_dir}/all_runs_mmr/plots/nue_run3mil_hists.root"
+	remove_cut = "&& (remove_true_nue_cc_flag==0)"
+	xsecflux_variables = ['visible_energy', 'reco_electron_energy', 'reco_cos_theta']
+	var_name_map = {
+	'neutrino_energy': 'visible_energy',
+	'electron_momentum': 'reco_electron_energy',
+	'electron_costheta': 'reco_cos_theta'
+	}
+	xsecflux_sample_map = {
+		'nue': 'run3mil_nue', # Not used, but keeping for consistency
+		'numu': 'run3mil_nu'  
 	}
 
 
@@ -86,6 +120,7 @@ if run_num == 4:
 		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/run4b_nue_covar_nu.root"
 		}
 	show_data = False 
+	data_legend = "Run1 5e19"
 	plot_title = "Run 4b: CC Inclusive Nue"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/nue_run4b_hists.root"
 	remove_cut = "&& (remove_true_nue_cc_flag==0)"
@@ -126,30 +161,7 @@ def identify_systematic_type(syst_name):
 	# Default to cross section
 	return 'xsec'
 
-## Cross Section & Flux Uncertainties
-# xsecflux_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_electron_energy', 'reco_cos_theta']
-
-# Map neutrino type to the sample name in the xsecflux file
-# if run_num == 1:
-# 	xsecflux_sample_map = {
-# 		'numu': 'run1_bnb_nu_overlay_mcc9_v28_wctagger',
-# 		'nue': 'run1_bnb_nue_overlay_mcc9_v28_wctagger'
-# 	}
-# elif run_num == 3:
-# 	xsecflux_sample_map = {
-# 		'numu': 'run3b_nu',
-# 		'nue': 'run3b_nue'  # Not used, but keeping for consistency
-# 	}
-
-
-# Map plotting variable names to xsecflux variable names
-# var_name_map = {
-# 	'neutrino_energy': 'reco_neutrino_energy',
-# 	'electron_momentum': 'reco_electron_energy',
-# 	'electron_costheta': 'reco_cos_theta'
-# }
-
-if run_num in [1,3]: 
+if run_num in [1,3, 30]: 
 	flux_params = [
 		"expskin_FluxUnisim",
 		"horncurrent_FluxUnisim",
@@ -419,7 +431,7 @@ categories = {
 		'samples': ['data'],
 		'truth_cut': '',
 		'color': rt.kBlack,
-		'legend': 'Run1 Data'
+		'legend': data_legend
 	}
 }
 

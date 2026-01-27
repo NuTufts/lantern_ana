@@ -1,4 +1,4 @@
-# NeutrinoSelectionProducer.py
+# numuIncCCProducer.py
 """
 Producer for neutrino candidate selection implementing three key cuts:
 1. LArMatch-identified neutrino candidate vertex found inside the fiducial volume

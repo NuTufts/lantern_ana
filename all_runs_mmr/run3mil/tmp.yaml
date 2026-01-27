@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3/root_files/selection/"
+output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/selection/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -19,43 +19,27 @@ print_dependency_graph: true
 datasets:
   folders:
     
+    - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
 
-  run3b_nu:
-    type: RootDataset
-    tree: EventTree
-    pottree: potTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root
-  
-  run3b_nue:
-    type: RootDataset
-    tree: EventTree
-    pottree: potTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me05_ntuple_v7_mcc9_run3b_bnb_intrinsic_nue_overlay_nocrtremerge.root
+  # run3mil_nue:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   pottree: potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - dlgen2_reco_v2me05_ntuple_v7_mcc9_run3b_bnb_intrinsic_nue_overlay_nocrtremerge.root
 
-  run3b_extbnb:
+  run3mil_data:
     type: RootDataset
     tree: EventTree
     pottree: potTree
     ismc: false
     process: true
     filepaths:
-    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_G2_extbnb.root
-  
-  run3b_data:
-    type: RootDataset
-    tree: EventTree
-    pottree: potTree
-    ismc: false
-    process: true
-    filepaths:
-    - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+    - dlgen2_reco_v2me06_ntuple_v7_mcc9_v28_wctagger_run3_bnb1e19.root
+
 
   ## dirt is empty tree? 
   # run3b_dirt: 
@@ -148,7 +132,7 @@ producers:
   remove_true_nue_cc_flag: 
     type: RemoveTrueNueCCFlagProducer
     # applyto: # Nu overlay (doesn't work)
-    #   - run3b_bnb_nue_overlay
+    #   - run3b_nue
     
 
 # Cut configuration

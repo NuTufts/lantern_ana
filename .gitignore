@@ -5,8 +5,8 @@
 *.o
 ./output*
 *.png
+*.log
 statistics.yaml
-lantern_ana.log
-
 statistics_*.yaml
+lantern_ana.log
 lantern_ana_*.log

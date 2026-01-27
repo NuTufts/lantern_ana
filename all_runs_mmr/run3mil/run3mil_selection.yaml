@@ -1,0 +1,313 @@
+# numu_cc_analysis_config.yaml
+
+# Output directory
+output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/selection/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    
+    - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+
+  run3mil_nu:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
+  run3mil_nu_LYAtt:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: false
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYAtt.root
+  run3mil_nu_LYDown:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYDown.root
+  run3mil_nu_LYRayleigh:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh.root
+  run3mil_nu_wiremodX:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodX.root
+  run3mil_nu_wiremodYZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ.root
+  run3mil_nu_wiremodThetaXZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ.root
+  run3mil_nu_wiremodThetaYZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ.root
+
+  ### NUE OVERLAY 
+
+  # run3b_nue:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   pottree: potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - dlgen2_reco_v2me05_ntuple_v7_mcc9_run3b_bnb_intrinsic_nue_overlay_nocrtremerge.root
+
+  # run3mil_nue:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   pottree: potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - dlgen2_reco_v2me05_ntuple_v7_mcc9_run3b_bnb_intrinsic_nue_overlay_nocrtremerge.root
+
+  run3mil_nue:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
+
+
+  ## 100k CV Sample
+  run3b_nue_CV:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_CV.root
+  run3mil_nue_LYRayleigh:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_LYRayleigh.root
+  run3b_nue_LYDown:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_LYDown.root
+  run3b_nue_LYAtt:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_LYAtt-bugFix.root
+  run3mil_nue_LYRayleigh:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_LYRayleigh.root
+  run3mil_nue_SCE:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_SCE.root
+  run3mil_nue_recomb2:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v29e_dl_run3b_intrinsic_nue_overlay_recomb2.root
+  run3mil_nue_wiremodX:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_wiremodX.root
+  run3mil_nue_wiremodYZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_wiremodYZ.root
+  run3mil_nue_wiremodThetaXZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_wiremodThetaXZ.root
+  run3mil_nue_wiremodThetaYZ:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_wiremodThetaYZ.root
+
+
+
+  run3b_extbnb:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: false
+    process: true
+    filepaths:
+    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_G2_extbnb.root
+  
+  run3mil_data:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root
+
+  ## dirt is empty tree? 
+  # run3b_dirt: 
+  #   type: RootDataset
+  #   tree: EventTree
+  #   pottree: potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths: 
+  #   - dlgen2_reco_v2me06_ntuple_v1_mcc9_v29e_dl_run3b_bnb_dirt_overlay.root
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  ## Event index for uncertainties 
+  eventIndex: 
+    type: eventIndexProducer
+    config: {} 
+
+  ## MC event weight 
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+
+  # vertex properties
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  # electron properties  
+  recoElectron:
+    type: RecoElectronPropertiesProducer
+    config:
+      electron_quality_cuts:
+        min_charge: 0.0
+        min_purity: 0.0
+        min_completeness: 0.0
+  
+  # muon track properties
+  recoMuonTrack:
+    type: RecoMuonTrackPropertiesProducer
+    config:
+      track_min_energy: 25.0
+
+  # nue signal definition
+  nueCCinc:
+    type: signalNueCCInclusive
+    config:
+      fv_params:
+        width: 0.0
+        apply_scc: false
+        usetruevtx: true
+
+  # Truth mode classification
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        eKE: 0.0
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: true
+        condense_ncmodes: true
+
+  ## Numu MMR Cuts
+  numuIncCC:
+    type: numuIncCCProducer
+    config: {}
+
+  ## Nue MMR Cuts
+  nueIncCC:
+    type: nueIncCCProducer
+    config: {}
+
+  ## Remove True Nue CC Producer 
+  remove_true_nue_cc_flag: 
+    type: RemoveTrueNueCCFlagProducer
+    # applyto: # Nu overlay (doesn't work)
+    #   - run3b_nue
+    
+
+# Cut configuration
+# cuts: 
+#   remove_true_nue_cc:
+#     applyto:
+#      - run4b_v10_04_07_20_BNB_nu_overlay_retuple
+
+# cut_logic: "(not {remove_true_nue_cc})"
+

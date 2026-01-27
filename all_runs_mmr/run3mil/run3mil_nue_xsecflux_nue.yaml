@@ -1,7 +1,6 @@
-# numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/run3_mmr/root_files/xsecflux/logs/"
+output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/xsecflux/logs"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -16,35 +15,19 @@ producer_first_mode: True
 print_dependency_graph: true
 
 # Dataset configuration
+
 datasets:
   folders:
-    
-    # - /exp/uboone/data/users/imani/ntuples/run3/
-    # - /exp/uboone/data/users/imani/ntuples/run3/xsecweights/
-    # - /pnfs/uboone/persistent/users/yatesla/arborist_mcc9/
-    # - /exp/uboone/app/users/imani/lantern_ana/run3_mmr/root_files/selection/
-
-    - /cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3/root_files/selection/
-    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-
-
-  run3b_nu:
+    - /cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/selection/
+  
+  run3mil_nue:      
     type: RootDataset
     tree: analysis_tree
     pottree: lifetime_tree
     ismc: true
     process: true
     filepaths:
-     - run3b_nu_20260123_161929.root
-
-  # run3b_nue:
-  #   type: RootDataset
-  #   tree: analysis_tree
-  #   pottree: lifetime_tree
-  #   ismc: true
-  #   process: true
-  #   filepaths:
-  #    - run3b_nue_20260123_163821.root
+     - run3mil_nue_20260123_181343.root
 
 # Producer configuration (producers run first)
 producers:
@@ -52,7 +35,7 @@ producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
-      output_filename: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3_numu_bnb_nu.root"
+      output_filename: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_nue_bnb_nue.root"
       run: eventIndex_run
       subrun: eventIndex_subrun
       event: eventIndex_event   
@@ -65,7 +48,7 @@ producers:
       weight_tree_name: sys_weights
       weight_branch_type: 0 # arborist file
       rootfilepaths:
-        run3_nu: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root
+        run3mil_nue: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_intrinsic_nue_run3.root
       par_variations_to_include:
         - expskin_FluxUnisim
         - horncurrent_FluxUnisim
@@ -109,51 +92,57 @@ producers:
         - ThetaDelta2NRad_UBGenie
         - Theta_Delta2Npi_UBGenie
       cut_formulas:
-        # mmr_cuts_nu: "{ntuple.vertex_properties_found}==1 and 
-        #             {ntuple.vertex_properties_infiducial}==1 and 
-        #             {ntuple.muon_properties_pid_score}>-0.9 and 
-        #             {ntuple.muon_properties_energy}>0.0 and
-        #             {ntuple.remove_true_nue_cc_flag}!=1
-        #             "
-        # mmr_cuts_nue: "{ntuple.vertex_properties_found}==1 and 
-        #             {ntuple.vertex_properties_infiducial}==1 and 
-        #             {ntuple.muon_properties_pid_score}>-0.9 and 
-        #             {ntuple.muon_properties_energy}>0.0
-        #             "
-        mmr_cuts_nu: "{ntuple.numuIncCC_passes_all_cuts}==1 and 
+        mmr_cuts_nue: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0
+                    "
+        mmr_cuts_nu: "{ntuple.vertex_properties_infiducial}==1 and
+                    {ntuple.vertex_properties_cosmicfrac}<1.0 and
+                    {ntuple.recoMuonTrack_nMuTracks}==0 and
+                    {ntuple.recoElectron_has_primary_electron}==1 and 
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromcharged_score} and
+                    {ntuple.recoElectron_emax_primary_score}>{ntuple.recoElectron_emax_fromneutral_score} and
+                    {ntuple.recoMuonTrack_max_muscore}<-3.7 and
+                    {ntuple.recoElectron_emax_econfidence}>7.0 and
                     {ntuple.remove_true_nue_cc_flag}!=1
                     "
-        mmr_cuts_nue: "{ntuple.numuIncCC_passes_all_cuts}==1
-                    "
-      event_selection_critera: ['mmr_cuts_nu']
+      event_selection_critera: ['mmr_cuts_nue']
+      # event_selection_criteria: ['mmr_cuts_nue']
       bin_config: 
         visible_energy:
           formula: visible_energy
-          numbins: 60
-          minvalue: 0.0
-          maxvalue: 3000.0
-          apply_to_datasets: [run3_nu]
-          criteria: []
-        reco_muon_momentum: 
-          formula: numuIncCC_reco_muon_momentum
           numbins: 30
           minvalue: 0.0
+          maxvalue: 3000.0
+          apply_to_datasets: [run3mil_nue]
+          criteria: []
+        reco_electron_energy: 
+          formula: nueIncCC_reco_electron_momentum
+          numbins: 15
+          minvalue: 0.0
           maxvalue: 1.5
-          apply_to_datasets: [run3_nu]
+          apply_to_datasets: [run3mil_nue]
           criteria: []
         reco_cos_theta: 
-          formula: numuIncCC_reco_muon_costheta
-          numbins: 40
+          formula: nueIncCC_reco_electron_costheta
+          numbins: 20
           minvalue: -1
           maxvalue: 1
-          apply_to_datasets: [run3_nu]
+          apply_to_datasets: [run3mil_nue]
           criteria: []
+
 
 
 # Cut configuration
-#cuts: 
+# cuts: 
 #  remove_true_nue_cc:
 #    applyto:
-#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
-#
-#cut_logic: "(not {remove_true_nue_cc})"
+#     - run4a_nu
+
+# cut_logic: "(not {remove_true_nue_cc})"
+

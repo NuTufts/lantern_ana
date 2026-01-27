@@ -437,7 +437,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             hbaduniverses.Write()
 
         # with all variationss processed, make covariance matrices
-        self.formCovarianceMatrices()
+        # self.formCovarianceMatrices()
 
         print("ArboristXsecFluxSysProducer: finalize() complete")
 
