@@ -1,4 +1,4 @@
-# numu_cc_analysis_config.yaml
+# run3b_beamon_numu_analysis.yaml
 
 # Output directory
 output_dir: "./output_numu_run3b_beamon/"
@@ -16,7 +16,6 @@ print_dependency_graph: true
 datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-    - /mnt/ddrive/data/lantern_ntuples/
     
   mcc9_v28_wctagger_run3_bnb1e19:
     type: RootDataset
@@ -24,7 +23,7 @@ datasets:
     ismc: false
     process: true
     filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v28_wctagger_run3_bnb1e19.root
+      - dlgen2_reco_v2me06_ntuple_v7_mcc9_v28_wctagger_run3_bnb1e19.root
 
 # Cut configuration
 cuts: {}
