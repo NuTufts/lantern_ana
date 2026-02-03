@@ -1,0 +1,154 @@
+# numu_run1_test.yaml
+
+# Output directory
+output_dir: "./output_numu_run3b_1mil_xsecflux/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+
+datasets:
+  folders:
+    - ./../numu_cc_tki/output_tki_run3b_1mil/
+  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:      
+    type: RootDataset
+    tree: analysis_tree
+    ismc: true
+    process: true
+    filepaths:
+     - mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260119_134204.root
+
+# Producer configuration (producers run first)
+producers:
+  
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      output_filename: "./output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
+      run: eventindex_run
+      subrun: eventindex_subrun
+      event: eventindex_event   
+      maxvalidweight: 1000.0
+      allow_missing_weights: True
+      tree: eventweight_tree
+      weight_tree_run: run
+      weight_tree_subrun: subrun
+      weight_tree_event: event
+      weight_tree_name: sys_weights
+      weight_branch_type: 0 # arborist file
+      rootfilepaths:
+        mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+      xsec_params:
+        - All_UBGenie
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+      cut_formulas:
+        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+      event_selection_critera: ['pass_selection']
+      bin_config:
+        numuCC1piNpReco_delPTT:
+          formula: numuCC1piNpReco_delPTT
+          numbins: 25
+          minvalue: -1.0
+          maxvalue: 1.0
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_delAlphaT:
+          formula: numuCC1piNpReco_delAlphaT
+          numbins: 10
+          minvalue: 0.0
+          maxvalue: 180.0
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_pN:
+          formula: numuCC1piNpReco_pN
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1.6
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_hadronicM:
+          formula: numuCC1piNpReco_hadronicM
+          numbins: 30
+          minvalue: 1000.0
+          maxvalue: 1600.0
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_muKE:
+          formula: numuCC1piNpReco_muKE
+          numbins: 6
+          binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_maxprotonKE:
+          formula: numuCC1piNpReco_maxprotonKE
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 500.0
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+        numuCC1piNpReco_pionKE:
+          formula: numuCC1piNpReco_pionKE
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 500.0
+          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          criteria: []
+
+
+# Cut configuration
+#cuts: 
+#  remove_true_nue_cc:
+#    applyto:
+#     - run1_bnb_nu_overlay_mcc9_v28_wctagger
+#
+#cut_logic: "(not {remove_true_nue_cc})"
+
