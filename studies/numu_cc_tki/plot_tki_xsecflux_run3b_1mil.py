@@ -6,7 +6,7 @@ rt.gStyle.SetOptStat(0)
 rt.gStyle.SetPadLeftMargin(0.1)
 rt.gStyle.SetPadRightMargin(0.05)
 
-rfile = rt.TFile("./output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root")
+rfile = rt.TFile("./output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root")
 
 TARGET_POT=8.806e18
 MCSAMPLE_POT=1.346689484233034e+21
@@ -14,7 +14,15 @@ POT_SCALE=TARGET_POT/MCSAMPLE_POT
 
 
 histmodes = ['cv','w','w2','N']
-variables = ['visible_energy']
+variables = [
+    'numuCC1piNpReco_delPTT',
+    'numuCC1piNpReco_delAlphaT',
+    'numuCC1piNpReco_pN',
+    'numuCC1piNpReco_hadronicM',
+    'numuCC1piNpReco_muKE',
+    'numuCC1piNpReco_maxprotonKE',
+    'numuCC1piNpReco_pionKE'
+]
 samples   = ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
 flux_params = [
     "expskin_FluxUnisim",
@@ -165,7 +173,7 @@ for var in variables:
                     print(stddev,"/",hists['var_tot'].GetBinContent(ibin))
                     hpar.SetBinContent(ibin,frac_var)
                 else:
-                    hpar.GetBinContent(ibin,0.0)
+                    hpar.SetBinContent(ibin,0.0)
             hpar.SetFillColor( icolor )
             hpar.GetXaxis().SetTitle("reco. neutrino energy (MeV)")                                
             icolor += 1

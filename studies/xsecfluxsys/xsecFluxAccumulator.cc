@@ -185,8 +185,8 @@ int XsecFluxAccumulator::processAllEvents(
             std::cout << "    Processing event " << iEvt << " / " << numEvents << std::endl;
         }
 
-	ub_tune_weight = 0.0;
-	ub_tune_weight_surprise = 0.0;
+        ub_tune_weight = 0.0
+        ub_tune_weight_surprise = 0.0;
 
         // Get RSE for this event
         const auto& rse = rseList[iEvt];
@@ -211,10 +211,10 @@ int XsecFluxAccumulator::processAllEvents(
 
         const MapStringVecDouble* weights = weightsPtr;
 
-	// std::cout << "try to read surprise branches" << std::endl;
-	// for ( const auto& pair : *weights ) {
-	//   std::cout << " parname=" << pair.first << std::endl;
-	// }
+        // std::cout << "try to read surprise branches" << std::endl;
+        // for ( const auto& pair : *weights ) {
+        //   std::cout << " parname=" << pair.first << std::endl;
+        // }
 
         double centralWeight = centralWeights[iEvt];
         const auto& binIndices = binIndicesList[iEvt];
@@ -239,18 +239,18 @@ int XsecFluxAccumulator::processAllEvents(
                 variationsPerParam_[parname] = nvariations;
             }
 
-	    // For xsec parameters, we reweight the event back to genie nominal by removing the UB tune
-	    double xsec_weight = 1.0;
-	    if ( xsecParamNames_.find(parname) != xsecParamNames_.end() ) {
-	      if ( kWeightBranchType==kArborist ) {
-		if ( ub_tune_weight>0.0 )
-		  xsec_weight = 1.0/ub_tune_weight;
-	      }
-	      else {
-		if ( ub_tune_weight_surprise>0.0 )
-		  xsec_weight = 1.0/ub_tune_weight_surprise;
-	      }
-	    }
+            // For xsec parameters, we reweight the event back to genie nominal by removing the UB tune
+            double xsec_weight = 1.0;
+            if ( xsecParamNames_.find(parname) != xsecParamNames_.end() ) {
+	            if ( kWeightBranchType==kArborist ) {
+                    if ( ub_tune_weight>0.0 )
+                        xsec_weight = 1.0/ub_tune_weight;
+                }
+                else {
+                    if ( ub_tune_weight_surprise>0.0 )
+                        xsec_weight = 1.0/ub_tune_weight_surprise;
+                }
+            }
 
             // Accumulate into each variable's bins
             for (int varIdx = 0; varIdx < numVariables_; varIdx++) {
@@ -265,32 +265,32 @@ int XsecFluxAccumulator::processAllEvents(
                     int nbins = binsPerVariable_[varIdx];
                     arrays_[key].assign(nbins * nvariations, 0.0);
                 }
-		if (badWeightsPerVariableBins_.find(key) == badWeightsPerVariableBins_.end()) {
-		    int nbins = binsPerVariable_[varIdx];
-		    badWeightsPerVariableBins_[key].assign(nbins, 0);
-		}
+                if (badWeightsPerVariableBins_.find(key) == badWeightsPerVariableBins_.end()) {
+                    int nbins = binsPerVariable_[varIdx];
+                    badWeightsPerVariableBins_[key].assign(nbins, 0);
+                }
 
                 auto& arr = arrays_[key];
-		auto& badweights = badWeightsPerVariableBins_[key];
+                auto& badweights = badWeightsPerVariableBins_[key];
                 int nbins = binsPerVariable_[varIdx];
 
                 // Fast inner loop - the core optimization
                 for (int iUniv = 0; iUniv < nvariations; iUniv++) {
                     double w = variations[iUniv];
-		    // Row-major: arr[ibin, iUniv] = arr[ibin * nvariations + iUniv]
-		    int idx = ibin * nvariations + iUniv;		    
+		            // Row-major: arr[ibin, iUniv] = arr[ibin * nvariations + iUniv]
+		            int idx = ibin * nvariations + iUniv;		    
                     if (w < maxValidWeight_) {
                         if (idx < static_cast<int>(arr.size())) {
                             arr[idx] += w * centralWeight*xsec_weight;
                         }
                     } else {
-		        // bad weight: either larger than max weight or NAN. set to 1.0.
-		        std::cout << "badweight[" << varIdx << " | " << parname << "] weight=" << w << std::endl;
+		                // bad weight: either larger than max weight or NAN. set to 1.0.
+		                std::cout << "badweight[" << varIdx << " | " << parname << "] weight=" << w << std::endl;
                         if (iUniv < static_cast<int>(badWeightsPerUniverse_.size())) {
                             badWeightsPerUniverse_[iUniv]++;
                         }
-			badweights[ibin]++;
-			arr[idx] += centralWeight*xsec_weight;
+			            badweights[ibin]++;
+			            arr[idx] += centralWeight*xsec_weight;
                     }
                 }
             }

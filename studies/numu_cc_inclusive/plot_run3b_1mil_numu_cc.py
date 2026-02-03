@@ -54,8 +54,8 @@ scaling = {"numu_cc":targetpot/bnbnu_pot,
 files = {
     "numu_cc":"./output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260118_150324.root",
     "numu_bg":"./output_numu_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260118_150324.root",
-     "extbnb":"./output_numu_run3b_extbnb/mcc9_v29e_dl_run3_combined_extbnb.root",
-       "data":"./output_numu_run3b/mcc9_v29e_dl_run3b_bnb1e19_20251019_200712.root",
+    "extbnb":"./output_numu_run3b_extbnb/mcc9_v29e_dl_run3_combined_extbnb.root",
+    "data":"./output_numu_run3b_beamon/mcc9_v28_wctagger_run3_bnb1e19_20260126_174528.root"
 }
 
 tfiles = {}

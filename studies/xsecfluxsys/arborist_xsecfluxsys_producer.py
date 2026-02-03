@@ -437,117 +437,12 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             hbaduniverses.Write()
 
         # with all variationss processed, make covariance matrices
-        self.formCovarianceMatrices()
+        #self.formCovarianceMatrices()
 
         print("ArboristXsecFluxSysProducer: finalize() complete")
 
     def formCovarianceMatrices(self):
         """
-        We use the histograms we've formed and stored in self.var_bininfo to form covariance matrices.
-
-        We make a covariance matrix for observable bins between (sample,parameter) combinations 
+        See make_covar_matrices.py
         """
-
-        print("Form Covariance Matrices ...")
-
-        self.outfile.cd()
-
-        # get list of datasets with MC variations
-        sample_list = []
-        for varinfo in self.var_bininfo:
-            for sample in varinfo['samples']:
-                if sample not in sample_list:
-                    sample_list.append(sample)
-        
-        # index all observable bins
-        globalindex = 0
-        bin_list = []
-
-        for par in self._params_to_include:
-            sample_par_pair = (sample,par)
-
-        for sample in sample_list:
-            for variable in self.var_bininfo:
-                varinfo = self.var_bininfo[variable]
-                if sample not in varinfo['samples']:
-                    continue
-                hmean_hists = {}
-                hvar_hists = {}
-                hout_hists = {}
-                for par in self._params_to_include:
-                    sample_par_pair = (sample,par)
-                    if sample_par_pair in varinfo['sample_par_hmean']:
-                        hmean = varinfo['sample_par_hmean'][sample_par_pair]
-                        hvar  = varinfo['sample_par_hvar'][sample_par_pair]
-                        hout  = varinfo['sample_par_hout'][sample_par_pair]
-                        hmean_hists[par] = hmean
-                        hvar_hists[par] = hvar
-                        hout_hists[par] = hout
-
-                # bin covariance
-                numbins = varinfo['numbins']
-                for ii in range(numbins):
-                    bin_list.append( (globalindex,sample,variable,ii,hmean_hists,hvar_hists,hout_hists) )
-                    globalindex += 1
-        num_global_bins = globalindex
-
-        # make covariances between bins for each parameter
-        covar_hists = {}
-        for par in self._params_to_include:
-            hcovar_name = f"hcovar_{par}"
-            hcovar = rt.TH2D(hcovar_name,f"covar for {par}",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
-            for ibin in range(num_global_bins):
-                for jbin in range(ibin,num_global_bins):
-                    ibin_info = bin_list[ibin]
-                    jbin_info = bin_list[jbin]
-                    if par not in ibin_info[-1]:
-                        continue
-                    if par not in jbin_info[-1]:
-                        continue
-
-                    ihout = ibin_info[-1][par]
-                    jhout = jbin_info[-1][par]
-                    ihmean = ibin_info[-3][par]
-                    jhmean = jbin_info[-3][par]
-
-                    i_nvariations = ihout.GetYaxis().GetNbins()
-                    j_nvariations = jhout.GetYaxis().GetNbins()
-                    if i_nvariations!=j_nvariations:
-                        continue
-
-                    isample = ibin_info[1]
-                    jsample = jbin_info[1]
-                    ivariable = ibin_info[2]
-                    jvariable = ibin_info[2]
-
-                    covar = 0.0
-                    if i_nvariations==2:
-                        var_i = ihout.GetBinContent(ibin+1,1)-ihout.GetBinContent(ibin+1,2)
-                        var_j = jhout.GetBinContent(jbin+1,1)-jhout.GetBinContent(jbin+1,2)
-                        covar = var_i*var_j
-                    elif i_nvariations>2:
-                        for ii in range(i_nvariations):
-                            var_i = ihout.GetBinContent(ibin+1,ii)-ihmean.GetBinContent(ibin+1)
-                            var_j = jhout.GetBinContent(jbin+1,ii)-jhmean.GetBinContent(jbin+1)
-                            covar += (var_i*var_j)/float(i_nvariations)
-                    hcovar.SetBinContent( ibin+1, jbin+1, covar )
-                    if ibin!=jbin:
-                        hcovar.SetBinContent(jbin+1,ibin+1,covar)
-                    i_label = f"{ivariable},{isample}"
-                    j_label = f"{jvariable},{jsample}"
-                    hcovar.GetXaxis().SetBinLabel(ibin+1,i_label)
-                    hcovar.GetYaxis().SetBinLabel(jbin+1,j_label)
-            covar_hists[par] = hcovar
-            hcovar.Write()
-
-                    
-                    
-
-
-        
-
-
-
-
-
-
+        return

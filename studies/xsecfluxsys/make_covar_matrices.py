@@ -228,7 +228,8 @@ if __name__=="__main__":
 
   # test
   #input_rootfilename = "../numu_cc_inclusive/output_numu_run4a_surprise/xsecflux_numu_cc_inclusive_run4a_surprise.root"
-  input_rootfilename = "../numu_cc_inclusive/output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root"
+  #input_rootfilename = "../numu_cc_inclusive/output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root"
+  #input_rootfilename = "../numu_cc_tki/output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
   rinput = rt.TFile(input_rootfilename)
 
   output_rootfile = "test_covariance.root"
