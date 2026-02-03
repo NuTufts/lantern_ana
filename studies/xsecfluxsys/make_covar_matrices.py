@@ -226,13 +226,19 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
 
 if __name__=="__main__":
 
-  # test
+  if len(sys.argv)!=2 or sys.argv[1]=="--help":
+    print("usage: python3 make_covar_matrices.py")
+    sys.exit()
+
+  input_rootfilename = sys.argv[1]    
+  # for debug
   #input_rootfilename = "../numu_cc_inclusive/output_numu_run4a_surprise/xsecflux_numu_cc_inclusive_run4a_surprise.root"
   #input_rootfilename = "../numu_cc_inclusive/output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root"
   #input_rootfilename = "../numu_cc_tki/output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
+
   rinput = rt.TFile(input_rootfilename)
 
-  output_rootfile = "test_covariance.root"
+  output_rootfile = "output_covariance.root"
   rout = rt.TFile(output_rootfile,'recreate')
 
   histdata = load_xsecflux_file( rinput )

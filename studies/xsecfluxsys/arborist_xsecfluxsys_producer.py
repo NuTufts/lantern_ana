@@ -147,20 +147,23 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'bintype':bintype
             }
 
-            nbins = vardict['numbins']
-
+            nbins = None
             for sample in vardict['apply_to_datasets']:
                 hname = f"h{varname}_{sample}"
                 var_bin_info['sample_hists'][sample] = {}
                 for x in ['cv','N']:
                     hvar_name = hname+f"_{x}"
                     if var_bin_info['bintype']=='uniform':
+                        nbins = vardict['numbins']                        
                         h = rt.TH1D(hvar_name,"",nbins, vardict['minvalue'],vardict['maxvalue'])
                     elif var_bin_info['bintype']=='binedges':
                         bin_array = array('f',binedges)
                         nbins = len(binedges)-1
                         h = rt.TH1D(hvar_name,"",nbins, bin_array)
                     var_bin_info['sample_hists'][sample][x] = h
+
+            if nbins==None:
+                raise ValueError("nbins was not properly set")
 
             ibin_global += nbins
             self.variable_list.append( varname )
@@ -437,12 +440,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             hbaduniverses.Write()
 
         # with all variationss processed, make covariance matrices
-        #self.formCovarianceMatrices()
+        # use make_covar_matrics.py script
 
         print("ArboristXsecFluxSysProducer: finalize() complete")
 
-    def formCovarianceMatrices(self):
-        """
-        See make_covar_matrices.py
-        """
-        return
