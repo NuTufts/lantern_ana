@@ -53,3 +53,63 @@ for key, values in tree.weights:
         print(f"  First few values: {list(values[:min(3, len(values))])}")
 
 print("done")
+
+
+'''
+py dump_surprise_weight_structure.py /pnfs/uboone/persistent/users/uboonepro/surprise/retuple/BNB/MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root
+Num Entries: 635989
+Number of elements in dictionary:  18
+Key: All_UBGenie
+  Number of values: 500
+  First few values: [1.3008141374478273, 1.3766012527192042, 1.0382438207498141]
+Key: AxFFCCQEshape_UBGenie
+  Number of values: 2
+  First few values: [1.2556887255733338, 1.249732904553856]
+Key: DecayAngMEC_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: NormCCCOH_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: NormNCCOH_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: RPA_CCQE_UBGenie
+  Number of values: 2
+  First few values: [1.6454448743717793, 0.8540209347359337]
+Key: RootinoFix_UBGenie
+  Number of values: 1
+  First few values: [1.0]
+Key: ThetaDelta2NRad_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: Theta_Delta2Npi_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: TunedCentralValue_UBGenie
+  Number of values: 1
+  First few values: [1.249732904553856]
+Key: VecFFCCQEshape_UBGenie
+  Number of values: 2
+  First few values: [1.2959355497926863, 1.249732904553856]
+Key: XSecShape_CCMEC_UBGenie
+  Number of values: 2
+  First few values: [1.249732904553856, 1.249732904553856]
+Key: flux_all
+  Number of values: 1000
+  First few values: [1.0134712361028264, 1.0636540591536108, 1.0311838481323323]
+Key: ppfx_all
+  Number of values: 0
+Key: reint_all
+  Number of values: 1000
+  First few values: [0.9862253475222929, 0.9580234919623365, 1.0275182332679123]
+Key: splines_general_Spline
+  Number of values: 1
+  First few values: [1.0]
+Key: xsr_scc_Fa3_SCC
+  Number of values: 10
+  First few values: [1.0002097352313706, 1.0007518674004936, 0.9991613802913236]
+Key: xsr_scc_Fv3_SCC
+  Number of values: 10
+  First few values: [0.98668210670973, 0.975076258172307, 1.0011685476513525]
+'''

@@ -3,9 +3,10 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 30
+run_num = 4
 
-lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
+# lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
+lantern_dir = "/exp/uboone/app/users/imani/lantern_ana/"
 
 ## Run 1 
 if run_num == 1: 
@@ -22,6 +23,9 @@ if run_num == 1:
 		"nue": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_intrinsic_nue.root",
 		"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_overlay_nu.root"
 	}
+	detsys_file = None
+	detsys_params = []
+	detsys_variables = []
 	show_data = True 
 	data_legend = "Run1 5e19"
 	plot_title = "Run 1: CC Inclusive Numu"
@@ -54,6 +58,9 @@ if run_num == 3:
 		"nue": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/run3b_numu_covar_nue.root",
 		"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/run3b_numu_covar_nu.root"
 	}
+	detsys_file = None
+	detsys_params = []
+	detsys_variables = []
 	show_data = True 
 	data_legend = "Run1 5e19"
 	plot_title = "Run 3: CC Inclusive Numu"
@@ -86,6 +93,9 @@ if run_num == 30:
 		"nue": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nue.root",
 		"numu": f"{lantern_dir}/all_runs_mmr/run3mil/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nu.root"
 	}
+	detsys_file = None
+	detsys_params = []
+	detsys_variables = []
 	show_data = True 
 	data_legend = "Run3 1e19"
 	plot_title = "Run 3 1mil: CC Inclusive Numu"
@@ -114,14 +124,16 @@ if run_num == 4:
 			"extbnb":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_extbnb_20260114_212008.root",
 			"data":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_data_20260114_212707.root"}
 	xsecflux_files = {
-		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/run4b_numu_covar_nue.root",
-		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/run4b_numu_covar_nu.root"
+		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nu.root",
+		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nue.root"
 		}
+	detsys_file = f"{lantern_dir}/all_runs_mmr/run4b/root_files/detsys_final/detsys_cv_run4b_nu_cv.root"
 	show_data = True 
 	data_legend = "Run1 5e19"
 	plot_title = "Run 4b: CC Inclusive Numu"
 	out_name = f"{lantern_dir}/all_runs_mmr/plots/numu_run4b_hists.root"
 	xsecflux_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_momentum', 'reco_cos_theta']
+	detsys_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_momentum', 'reco_cos_theta']
 	var_name_map = {
 	'neutrino_energy': 'reco_neutrino_energy',
 	'muon_momentum': 'reco_muon_momentum',
@@ -131,20 +143,31 @@ if run_num == 4:
 		'nue': 'run4b_nue', # Not used, but keeping for consistency
 		'numu': 'run4b_nu'  
 	}
+	# Detector variation parameters
+	detsys_params = [
+		"wiremodX", "wiremodYZ", "wiremodThetaXZ", "wiremodThetaYZ", 
+		"LYAtt", "LYDown", "LYRayleigh",
+		"recomb2", "SCE"
+	]
 
 
 # Function to identify systematic type based on name
 def identify_systematic_type(syst_name):
-	"""Identify if systematic is flux, xsec, or reinteraction based on name"""
+	"""Identify if systematic is flux, xsec, reinteraction, or detector based on name"""
 	syst_lower = syst_name.lower()
 	
 	# Flux keywords
 	flux_keywords = ['flux', 'horn', 'beam', 'kminus', 'kplus', 'kzero', 
-					 'piminus', 'piplus', 'nucleon', 'expskin']
+					 'nucleon', 'expskin', 'pion']
 	
 	# Reinteraction keywords
 	reint_keywords = ['reint', 'fsi', 'absorption', 'charge_exchange', 
 					 'elastic', 'inelastic', 'pion_prod', 'geant4']
+	
+	# Detector keywords
+	detector_keywords = ['detvar', 'wire', 'recomb', 'sce', 'lifetime', 
+						 'diffusion', 'saturation', 'dedx', 'wiremod',
+						 'x_', 'yz_']
 	
 	# Check flux first
 	for keyword in flux_keywords:
@@ -155,6 +178,11 @@ def identify_systematic_type(syst_name):
 	for keyword in reint_keywords:
 		if keyword in syst_lower:
 			return 'reint'
+	
+	# Check detector
+	for keyword in detector_keywords:
+		if keyword in syst_lower:
+			return 'detector'
 	
 	# Default to cross section
 	return 'xsec'
@@ -198,7 +226,9 @@ if run_num in [1,3, 30]:
 	all_pars = flux_params+genie_params+other_xsec
 
 if run_num == 4: 
-	flux_params = []  # No flux systematics in run4b
+	flux_params = [
+		"flux_all"
+	] 
 
 	genie_params = [
 		"All_UBGenie"
@@ -216,13 +246,90 @@ if run_num == 4:
 		"NormNCCOH_UBGenie",
 		"ThetaDelta2NRad_UBGenie",
 		"Theta_Delta2Npi_UBGenie"
-		# Note: reinteraction systematics not included in run4b
 	]
 
-	all_pars = flux_params + genie_params + other_xsec
+	reint = [
+    	"reint_all"
+	]
+	
+	detector = [
+		"detvar_all"
+	]
+
+	# - RootinoFix_UBGenie        # Ignore? 
+	# - TunedCentralValue_UBGenie # Ignore?
+	# - ppfx_all                  # Ignore? 
+	# - splines_general_Spline    # Ignore?
+
+	all_pars = flux_params + genie_params + other_xsec + reint + detector
+
+def load_detector_variations(rfile, varname, detsys_params):
+	"""Load detector variation histograms and calculate fractional uncertainties"""
+	
+	if rfile is None or rfile.IsZombie():
+		print(f"  Warning: Invalid detector systematics file")
+		return None
+	
+	detector_hists = {}
+	
+	# Try to find a CV histogram to get binning
+	h_reference = None
+	for param in detsys_params:
+		cv_name = f"h{varname}__{param}__cv"
+		h_temp = rfile.Get(cv_name)
+		if h_temp and not h_temp.IsZombie():
+			h_reference = h_temp
+			break
+	
+	if h_reference is None:
+		print(f"  Warning: Could not find reference histogram for {varname}")
+		return None
+	
+	# Create combined fractional variance histogram
+	h_frac_var = h_reference.Clone(f"h{varname}__detector_frac_variance")
+	h_frac_var.Reset()
+	
+	# Process each detector parameter
+	n_loaded = 0
+	for param in detsys_params:
+		cv_name = f"h{varname}__{param}__cv"
+		var_name = f"h{varname}__{param}__var"
+		
+		h_cv = rfile.Get(cv_name)
+		h_var = rfile.Get(var_name)
+		
+		if not h_cv or h_cv.IsZombie():
+			print(f"    Skipping {param} - CV histogram not found")
+			continue
+		
+		if not h_var or h_var.IsZombie():
+			print(f"    Skipping {param} - variation histogram not found")
+			continue
+		
+		n_loaded += 1
+		print(f"    Loaded {param}")
+		
+		# Calculate fractional variance for this parameter
+		for ibin in range(0, h_frac_var.GetNbinsX() + 2):
+			cv_val = h_cv.GetBinContent(ibin)
+			var_val = h_var.GetBinContent(ibin)
+			
+			if cv_val > 0:
+				# Fractional difference: (var - cv) / cv
+				frac_diff = (var_val - cv_val) / cv_val
+				# Add squared fractional difference to variance
+				current_var = h_frac_var.GetBinContent(ibin)
+				h_frac_var.SetBinContent(ibin, current_var + frac_diff**2)
+	
+	print(f"  Loaded {n_loaded}/{len(detsys_params)} detector variations for {varname}")
+	
+	detector_hists['frac_variance'] = h_frac_var
+	detector_hists['n_params'] = n_loaded
+	
+	return detector_hists
 
 def make_hist_w_errors(rfile, varname, sample, parlist):
-	"""Load histograms and separate into flux, xsec, and reinteraction"""
+	"""Load histograms and separate into flux, xsec, reinteraction, and detector"""
 	hists = {}
 	
 	# Try to find the CV histogram with different naming patterns
@@ -250,6 +357,8 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
 	hvar_xsec.Reset()
 	hvar_reint = hcv.Clone(f"h{varname}__{sample}_reint_variance")
 	hvar_reint.Reset()
+	hvar_detector = hcv.Clone(f"h{varname}__{sample}_detector_variance")
+	hvar_detector.Reset()
 	hvar_tot = hcv.Clone(f"h{varname}__{sample}_totvariance")
 	hvar_tot.Reset()
 	
@@ -299,25 +408,13 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
 		
 		# Identify the type of systematic
 		syst_type = identify_systematic_type(parname)
-		
-		# Debug: Print categorization for first few parameters
-		if len(hists) <= 5:
-			print(f"    {parname} → {syst_type}")
-		
+				
 		# Add variance to appropriate category
 		for ibin in range(0, hvar_tot.GetXaxis().GetNbins()+1):
 			xvar = hvar.GetBinContent(ibin)
 			xmean = hmean.GetBinContent(ibin)
 			
-			# if xmean > 0:
-			# 	xfracvar = xvar/xmean
-			# else:
-			# 	xfracvar = 0.0
-
-			# cv_var = xfracvar * hcv.GetBinContent(ibin)
-
 			if xmean > 0:
-				# xfracvar = xvar/xmean
 				scale_factor = hcv.GetBinContent(ibin) / xmean
 				cv_var = xvar * scale_factor * scale_factor
 			else:
@@ -337,6 +434,9 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
 			elif syst_type == 'reint':
 				xvar_reint_bin = hvar_reint.GetBinContent(ibin)
 				hvar_reint.SetBinContent(ibin, xvar_reint_bin + cv_var)
+			elif syst_type == 'detector':
+				xvar_detector_bin = hvar_detector.GetBinContent(ibin)
+				hvar_detector.SetBinContent(ibin, xvar_detector_bin + cv_var)
 			
 			# Add to mean
 			xmean2 = hmeans2.GetBinContent(ibin)
@@ -351,7 +451,8 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
 	n_flux = sum(1 for p in parlist if identify_systematic_type(p) == 'flux')
 	n_xsec = sum(1 for p in parlist if identify_systematic_type(p) == 'xsec')
 	n_reint = sum(1 for p in parlist if identify_systematic_type(p) == 'reint')
-	print(f"  Systematic breakdown: {n_flux} flux, {n_xsec} xsec, {n_reint} reint (total {len(parlist)})")
+	n_detector = sum(1 for p in parlist if identify_systematic_type(p) == 'detector')
+	print(f"  Systematic breakdown: {n_flux} flux, {n_xsec} xsec, {n_reint} reint, {n_detector} detector (total {len(parlist)})")
 	
 	hists['cv'] = hcv
 	hists['mean2'] = hmeans2
@@ -359,6 +460,7 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
 	hists['fluxvar'] = hvar_flux
 	hists['xsecvar'] = hvar_xsec
 	hists['reintvar'] = hvar_reint
+	hists['detectorvar'] = hvar_detector
 	
 	return hists
 
@@ -492,6 +594,24 @@ for xsample_name, xfile_path in xsecflux_files.items():
 			xsecflux_hists[xsample_name][var] = hists_with_errors
 			print(f"  Loaded uncertainties for {xsample_name}, variable {var}")
 
+# Load detector variations for run 4b
+detsys_hists = {}
+if run_num == 4 and detsys_file is not None:
+	print(f"\nLoading detector variations from {detsys_file}")
+	if os.path.exists(detsys_file):
+		dfile = rt.TFile(detsys_file)
+		if not dfile.IsZombie():
+			for var in detsys_variables:
+				det_hists = load_detector_variations(dfile, var, detsys_params)
+				if det_hists:
+					detsys_hists[var] = det_hists
+					print(f"  Loaded detector variations for {var}")
+		else:
+			print(f"  Warning: Could not open detector file")
+	else:
+		print(f"  Warning: Detector file not found")
+
+
 # Create histograms for each variable
 for var_name, var_info in variables.items():
 	print(f"\n=== Creating {var_name} histogram ===")
@@ -511,12 +631,7 @@ for var_name, var_info in variables.items():
 		for sample in cat_info['samples']:
 			# Construct full cut string
 			full_cut = f"({base_cut}){cat_info['truth_cut']}{var_info['cut_suffix']}"
-			
-			# Debug: Print cut for cc_numu to verify it includes numuIncCC_passes_all_cuts
-			if cat_name == 'cc_numu':
-				print(f"\nDEBUG - CC numu full cut string:")
-				print(f"  {full_cut}")
-			
+						
 			# Create histogram name
 			hname = f'h_{var_name}_{cat_name}_{sample}'
 			hname_unscaled = f'h_{var_name}_{cat_name}_{sample}_unscaled'
@@ -595,12 +710,14 @@ for var_name, var_info in variables.items():
 	h_uncertainty_flux = None
 	h_uncertainty_xsec = None
 	h_uncertainty_reint = None
+	h_uncertainty_detector = None
 	
 	if h_total_mc is not None:
 		h_uncertainty_total = h_total_mc.Clone(f"h_uncertainty_total_{var_name}")
 		h_uncertainty_flux = h_total_mc.Clone(f"h_uncertainty_flux_{var_name}")
 		h_uncertainty_xsec = h_total_mc.Clone(f"h_uncertainty_xsec_{var_name}")
 		h_uncertainty_reint = h_total_mc.Clone(f"h_uncertainty_reint_{var_name}")
+		h_uncertainty_detector = h_total_mc.Clone(f"h_uncertainty_detector_{var_name}")
 		
 		# Map variable name
 		xsecflux_var = var_name_map.get(var_name, var_name)
@@ -615,14 +732,16 @@ for var_name, var_info in variables.items():
 				h_uncertainty_flux.SetBinError(ibin, 0.0)
 				h_uncertainty_xsec.SetBinError(ibin, 0.0)
 				h_uncertainty_reint.SetBinError(ibin, 0.0)
+				h_uncertainty_detector.SetBinError(ibin, 0.0)
 				continue
 			
 			# Initialize fractional variances
 			frac_var_flux = 0.0
 			frac_var_xsec = 0.0
 			frac_var_reint = 0.0
+			frac_var_detector = 0.0
 			
-			# Get fractional variances from each neutrino sample
+			# Get fractional variances from each neutrino sample (for xsecflux)
 			for xsample_name in ['nue', 'numu']:
 				try:
 					if xsample_name in xsecflux_hists and xsecflux_var in xsecflux_hists[xsample_name]:
@@ -636,9 +755,6 @@ for var_name, var_info in variables.items():
 							if 'fluxvar' in xsec_hists:
 								abs_var_flux = xsec_hists['fluxvar'].GetBinContent(ibin)
 								frac_var_flux += abs_var_flux / (cv_from_xsecflux ** 2)
-								# Debug: print flux variance for first bin
-								if ibin == 1 and abs_var_flux > 0:
-									print(f"  DEBUG: {xsample_name} bin {ibin}: abs_var_flux={abs_var_flux:.4e}, cv={cv_from_xsecflux:.4e}, frac_var_flux={frac_var_flux:.4e}")
 							if 'xsecvar' in xsec_hists:
 								abs_var_xsec = xsec_hists['xsecvar'].GetBinContent(ibin)
 								frac_var_xsec += abs_var_xsec / (cv_from_xsecflux ** 2)
@@ -648,26 +764,25 @@ for var_name, var_info in variables.items():
 				except (AttributeError, ReferenceError):
 					continue
 			
+			# Add detector fractional variance from detsys file
+			# Note: detector variations come from separate detsys file with CV and variation histograms
+			# Fractional variance is already calculated as ((var - cv) / cv)^2 and combined in quadrature
+			if xsecflux_var in detsys_hists and 'frac_variance' in detsys_hists[xsecflux_var]:
+				frac_var_detector = detsys_hists[xsecflux_var]['frac_variance'].GetBinContent(ibin)
+			
 			# Statistical fractional uncertainty: 1/sqrt(n_unscaled)
 			n_unscaled = h_total_mc_unscaled.GetBinContent(ibin)
 			frac_var_stat = (1.0 / n_unscaled) if n_unscaled > 0 else 0.0
 			
-			# Debug: Print variance breakdown for bin 1
-			if ibin == 1 and central > 0:
-				print(f"\n  DEBUG Variance Breakdown for bin {ibin}:")
-				print(f"    frac_var_stat:  {frac_var_stat:.6e}")
-				print(f"    frac_var_flux:  {frac_var_flux:.6e}")
-				print(f"    frac_var_xsec:  {frac_var_xsec:.6e}")
-				print(f"    frac_var_reint: {frac_var_reint:.6e}")
-			
 			# Total fractional variance (add in quadrature)
-			frac_var_total = frac_var_stat + frac_var_flux + frac_var_xsec + frac_var_reint
+			frac_var_total = frac_var_stat + frac_var_flux + frac_var_xsec + frac_var_reint + frac_var_detector
 			
 			# Convert fractional variances to absolute errors
 			abs_error_stat = central * sqrt(frac_var_stat)
 			abs_error_flux = central * sqrt(frac_var_flux)
 			abs_error_xsec = central * sqrt(frac_var_xsec)
 			abs_error_reint = central * sqrt(frac_var_reint)
+			abs_error_detector = central * sqrt(frac_var_detector)
 			abs_error_total = central * sqrt(frac_var_total)
 			
 			# Set bin errors
@@ -675,6 +790,7 @@ for var_name, var_info in variables.items():
 			h_uncertainty_flux.SetBinError(ibin, abs_error_flux)
 			h_uncertainty_xsec.SetBinError(ibin, abs_error_xsec)
 			h_uncertainty_reint.SetBinError(ibin, abs_error_reint)
+			h_uncertainty_detector.SetBinError(ibin, abs_error_detector)
 		
 		# Set style for total uncertainty band
 		h_uncertainty_total.SetFillColor(rt.kGray+1)
@@ -708,17 +824,10 @@ for var_name, var_info in variables.items():
 	
 	# Add overflow text for neutrino energy plot
 	if var_name == 'neutrino_energy' and var_info.get('has_overflow', False):
-		# overflow_text = rt.TText()
-		# overflow_text.SetTextSize(0.03)
-		# overflow_text.SetTextAlign(22)
-		# overflow_text.SetTextColor(rt.kBlack)
-		
 		hist_for_axis = hstack if hstack.GetHists() else hists['data']
 		last_bin = hist_for_axis.GetXaxis().GetNbins()
 		x_pos = hist_for_axis.GetXaxis().GetBinCenter(last_bin)
 		y_pos = -0.8
-		
-		# overflow_text.DrawText(x_pos, y_pos, "overflow")
 
 	# Create legend
 	legend = rt.TLegend(0.65, 0.50, 0.89, 0.89)
@@ -758,6 +867,7 @@ for var_name, var_info in variables.items():
 	h_frac_flux = None
 	h_frac_xsec = None
 	h_frac_reint = None
+	h_frac_detector = None
 	h_frac_total = None
 	
 	if h_total_mc is not None and h_uncertainty_total is not None:
@@ -765,12 +875,14 @@ for var_name, var_info in variables.items():
 		h_frac_flux = h_total_mc.Clone(f"h_frac_flux_{var_name}")
 		h_frac_xsec = h_total_mc.Clone(f"h_frac_xsec_{var_name}")
 		h_frac_reint = h_total_mc.Clone(f"h_frac_reint_{var_name}")
+		h_frac_detector = h_total_mc.Clone(f"h_frac_detector_{var_name}")
 		h_frac_total = h_total_mc.Clone(f"h_frac_total_{var_name}")
 		
 		h_frac_stat.Reset()
 		h_frac_flux.Reset()
 		h_frac_xsec.Reset()
 		h_frac_reint.Reset()
+		h_frac_detector.Reset()
 		h_frac_total.Reset()
 		
 		# Calculate fractional errors
@@ -789,39 +901,18 @@ for var_name, var_info in variables.items():
 				flux_frac = h_uncertainty_flux.GetBinError(ibin) / central
 				xsec_frac = h_uncertainty_xsec.GetBinError(ibin) / central
 				reint_frac = h_uncertainty_reint.GetBinError(ibin) / central
+				detector_frac = h_uncertainty_detector.GetBinError(ibin) / central
 				
 				# Total uncertainty (quadrature sum)
-				total_frac = sqrt(stat_frac**2 + flux_frac**2 + xsec_frac**2 + reint_frac**2)
+				total_frac = sqrt(stat_frac**2 + flux_frac**2 + xsec_frac**2 + reint_frac**2 + detector_frac**2)
 				
 				# Fill fractional error histograms
 				h_frac_stat.SetBinContent(ibin, stat_frac)
 				h_frac_flux.SetBinContent(ibin, flux_frac)
 				h_frac_xsec.SetBinContent(ibin, xsec_frac)
 				h_frac_reint.SetBinContent(ibin, reint_frac)
+				h_frac_detector.SetBinContent(ibin, detector_frac)
 				h_frac_total.SetBinContent(ibin, total_frac)
-		
-		# Debug: Print max fractional uncertainties
-		print(f"\n  Fractional Uncertainty Summary for {var_name}:")
-		print(f"    Max stat:   {h_frac_stat.GetMaximum():.4f}")
-		print(f"    Max flux:   {h_frac_flux.GetMaximum():.4f}")
-		print(f"    Max xsec:   {h_frac_xsec.GetMaximum():.4f}")
-		print(f"    Max reint:  {h_frac_reint.GetMaximum():.4f}")
-		print(f"    Max total:  {h_frac_total.GetMaximum():.4f}")
-		
-		# Verify no stacking - check a few bins
-		print(f"\n  Bin-by-bin check (first 3 bins with events):")
-		bins_checked = 0
-		for ibin in range(1, h_frac_total.GetNbinsX() + 1):
-			if h_total_mc.GetBinContent(ibin) > 0 and bins_checked < 3:
-				stat = h_frac_stat.GetBinContent(ibin)
-				flux = h_frac_flux.GetBinContent(ibin)
-				xsec = h_frac_xsec.GetBinContent(ibin)
-				reint = h_frac_reint.GetBinContent(ibin)
-				total = h_frac_total.GetBinContent(ibin)
-				sum_quad = sqrt(stat**2 + flux**2 + xsec**2 + reint**2)
-				print(f"    Bin {ibin}: stat={stat:.4f}, flux={flux:.4f}, xsec={xsec:.4f}, reint={reint:.4f}")
-				print(f"            total={total:.4f}, sqrt(sum^2)={sum_quad:.4f} (should match)")
-				bins_checked += 1
 		
 		# Set line styles (no filling, lines only)
 		h_frac_stat.SetLineColor(rt.kGray+2)
@@ -830,23 +921,29 @@ for var_name, var_info in variables.items():
 		h_frac_stat.SetFillStyle(0)
 		h_frac_stat.SetMarkerSize(0)
 		
-		h_frac_flux.SetLineColor(rt.kRed)
+		h_frac_flux.SetLineColor(rt.kGreen+2)
 		h_frac_flux.SetLineWidth(2)
 		h_frac_flux.SetLineStyle(1)
 		h_frac_flux.SetFillStyle(0)
 		h_frac_flux.SetMarkerSize(0)
 		
-		h_frac_xsec.SetLineColor(rt.kBlue)
+		h_frac_xsec.SetLineColor(rt.kRed)
 		h_frac_xsec.SetLineWidth(2)
 		h_frac_xsec.SetLineStyle(1)
 		h_frac_xsec.SetFillStyle(0)
 		h_frac_xsec.SetMarkerSize(0)
 		
-		h_frac_reint.SetLineColor(rt.kOrange+7)
+		h_frac_reint.SetLineColor(rt.kMagenta+1)
 		h_frac_reint.SetLineWidth(2)
 		h_frac_reint.SetLineStyle(1)
 		h_frac_reint.SetFillStyle(0)
 		h_frac_reint.SetMarkerSize(0)
+		
+		h_frac_detector.SetLineColor(rt.kBlue)
+		h_frac_detector.SetLineWidth(2)
+		h_frac_detector.SetLineStyle(1)
+		h_frac_detector.SetFillStyle(0)
+		h_frac_detector.SetMarkerSize(0)
 		
 		h_frac_total.SetLineColor(rt.kBlack)
 		h_frac_total.SetLineWidth(3)
@@ -865,7 +962,7 @@ for var_name, var_info in variables.items():
 		# Find max for y-axis range
 		max_val = max(h_frac_stat.GetMaximum(), h_frac_flux.GetMaximum(), 
 					  h_frac_xsec.GetMaximum(), h_frac_reint.GetMaximum(),
-					  h_frac_total.GetMaximum())
+					  h_frac_detector.GetMaximum(), h_frac_total.GetMaximum())
 		h_frac_total.SetMaximum(max_val * 1.2)
 		h_frac_total.SetMinimum(0.0)  # Start at 0
 		
@@ -875,6 +972,7 @@ for var_name, var_info in variables.items():
 		h_frac_flux.Draw("hist same")
 		h_frac_xsec.Draw("hist same")
 		h_frac_reint.Draw("hist same")
+		h_frac_detector.Draw("hist same")
 		
 		# Set axis properties
 		h_frac_total.GetXaxis().SetLabelSize(0.04)
@@ -884,7 +982,7 @@ for var_name, var_info in variables.items():
 		h_frac_total.GetYaxis().SetTitle("Fractional Uncertainty")
 		
 		# Add legend for fractional plot
-		leg_frac = rt.TLegend(0.15, 0.65, 0.40, 0.88)
+		leg_frac = rt.TLegend(0.15, 0.60, 0.40, 0.88)
 		leg_frac.SetTextSize(0.035)
 		leg_frac.SetFillStyle(0)
 		leg_frac.SetBorderSize(1)
@@ -893,43 +991,23 @@ for var_name, var_info in variables.items():
 		leg_frac.AddEntry(h_frac_flux, "Flux", "l")
 		leg_frac.AddEntry(h_frac_xsec, "Cross Section", "l")
 		leg_frac.AddEntry(h_frac_reint, "Reinteraction", "l")
-		# leg_frac.AddEntry(h_frac_total, "Total", "l")
+		leg_frac.AddEntry(h_frac_detector, "Detector", "l")
+		# leg_frac.AddEntry(h_frac_detector, "DetVar wiremodX", "l")
 		leg_frac.Draw()
 		
-		# canvas_frac.SetGridy(1)  # Removed horizontal grid lines
 		canvas_frac.Update()
 		canvas_frac.RedrawAxis()
 		
 		out.cd()
 		canvas_frac.Write()
-		
-		print(f"  Fractional error plot saved for {var_name}")
 
-	# Print summary
-	print(f"\n=== {var_name.upper()} Analysis Summary ===")
-	total_mc = sum(total_events[cat] for cat in total_events if cat != 'data')
-	print(f"Total MC: {total_mc:.1f}")
-	if 'data' in total_events:
-		print(f"Data: {total_events['data']:.1f}")
-		if total_mc > 0:
-			print(f"Data/MC ratio: {total_events['data']/total_mc:.2f}")
-
-	# CC Î½Î¼ purity
+	# CC νμ purity
 	cc_numu_events = total_events.get('cc_numu', 0)
-	if total_mc > 0:
-		print(f"CC Î½Î¼ purity: {cc_numu_events/total_mc*100:.1f}%")
 	
 	# Background breakdown
 	cosmic_events = total_events.get('cosmic', 0)
 	cc_nue_events = total_events.get('cc_nue', 0)
 	nc_events = total_events.get('nc_nue', 0) + total_events.get('nc_numu', 0)
-	
-	if total_mc > 0:
-		print(f"Cosmic background: {cosmic_events/total_mc*100:.1f}%")
-		print(f"Î½e CC background: {cc_nue_events/total_mc*100:.1f}%") 
-		print(f"NC background: {nc_events/total_mc*100:.1f}%")
-
-	print(f"Plot saved for {var_name}")
 
 print("\nSaved to", out_name)
 out.Close()
