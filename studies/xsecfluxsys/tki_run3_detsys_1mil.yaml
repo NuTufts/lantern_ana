@@ -18,15 +18,15 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-   - ../numu_cc_tki/output_tki_run3b_1mil/
-
+    - ../numu_cc_tki/output_tki_run3b_1mil/
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil
   mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:
     type: RootDataset
     tree: analysis_tree
     ismc: true
     process: true
     filepaths:
-      - mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260119_134204.root
+      - mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260122_154228.root
 
 # Producer configuration (producers run first)
 producers:
@@ -46,13 +46,13 @@ producers:
       event: eventindex_event
       central_value_dataset: mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil
       variation_rootfiles:
-        LYAtt:      ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYAtt_20260119_135942.root
-        LYDown:     ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYDown_20260119_141513.root
-        LYRayleigh: ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh_20260119_143121.root
-        wiremodX:   ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodX_20260119_144839.root
-        wiremodYZ:  ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ_20260119_150545.root
-        wiremodThetaYZ: ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ_20260119_154008.root
-        wiremodThetaXZ: ../numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ_20260119_152248.root
+        LYAtt:      /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYAtt_20260122_155704.root
+        LYDown:     /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYDown_20260122_160958.root
+        LYRayleigh: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh_20260122_162326.root
+        wiremodX:   /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodX_20260122_163737.root
+        wiremodYZ:  /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ_20260122_165222.root
+        wiremodThetaXZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ_20260122_170639.root
+        wiremodThetaYZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ_20260122_172122.root
       variation_treename: analysis_tree
       cut_formulas:
         pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"

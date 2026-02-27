@@ -1,7 +1,12 @@
-# run3b_1mil_tki_analysis.yaml
+# master_run3_dlgen2_to_ntuple_1mil.yaml
+
+# This is the master script that takes dlgen2 files for run3
+# and runs them thru my selection to make ntuples. 
+# Includes detector systematics for 1mil + 100k overlay (including 1mil CV file)
+# and EXT and 1e19 data for run3
 
 # Output directory
-output_dir: "./output_tki_run3b_1mil"
+output_dir: "./output_master_tki_run3"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -16,7 +21,9 @@ print_dependency_graph: true
 datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
 
+  # 1Mil Sample
   mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:
     type: RootDataset
     tree: EventTree
@@ -80,6 +87,46 @@ datasets:
     process: true
     filepaths:
      - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ.root
+
+  # 500K CV Sample
+  run3b_bnb_nu_overlay_500k_CV:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_CV.root
+  run3b_bnb_nu_overlay_500k_SCE:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_SCE.root
+  run3b_bnb_nu_overlay_500k_recomb2:
+    type: RootDataset
+    tree: EventTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_bnb_nu_overlay_500k_recomb2.root
+
+# EXT and data samples 
+  run3_extbnb_mcc9_v29e_hadded: # includes F, G1, G2, G2a
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - hadded_dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_F_G1_G2_G2a_extbnb.root
+  run3_data_bnb1e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root # dlgen2 file
+
 
 # Cut configuration
 cuts: {}
