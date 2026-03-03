@@ -1,0 +1,127 @@
+# Output directory
+output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run1/root_files/selection/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
+    - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+ 
+  run1_nu:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+
+  run1_nue:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_nueintrinsics.root
+
+  run1_extbnb:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: false
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run1_C1_extbnb.root
+
+  run1_data_5e19:
+    type: RootDataset
+    tree: EventTree
+    ismc: false
+    process: true
+    filepaths:
+    - dlgen2_reco_v2me05_ntuple_v5_mcc9_v28_wctagger_bnb5e19.root
+
+
+# Producer configuration (producers run first)
+producers:
+  # Basic physics quantities
+  trueNu:
+    type: trueNuPropertiesProducer
+    config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+  visible_energy:
+    type: VisibleEnergyProducer
+    config: {}
+  
+  ## Event index for uncertainties 
+  eventIndex: 
+    type: eventIndexProducer
+    config: {} 
+
+  ## MC event weight 
+  eventweight:
+    type: eventWeightProducer
+    config: {}
+
+  ## Reco vertex properties
+  vertex_properties:
+    type: VertexPropertiesProducer
+    config: {}
+  
+  ## True vertex properties 
+  true_vertex_properties: 
+    type: TrueVertexPropertiesProducer
+    config: {}
+
+  # nue signal definition
+  nueCCinc:
+    type: signalNueCCInclusive
+    config:
+      fv_params:
+        width: 0.0
+        apply_scc: false
+        usetruevtx: true
+
+  # Truth mode classification
+  truth_mode:
+    type: TruthModeProducer
+    config:
+      tag_params:
+        eKE: 0.0
+        muKE: 0.0
+        pKE: 0.0
+        piKE: 0.0
+        gKE: 0.0
+        ignore_gammas: true
+        condense_nuemodes: true
+        condense_numumodes: true
+        condense_ncmodes: true
+
+  ## Numu MMR Cuts
+  numuIncCC:
+    type: numuIncCCProducer
+    config: {}
+
+  ## Nue MMR Cuts
+  nueIncCC:
+    type: nueIncCCProducer
+    config: {}
+
+  ## Remove True Nue CC Producer 
+  remove_true_nue_cc_flag: 
+    type: RemoveTrueNueCCFlagProducer

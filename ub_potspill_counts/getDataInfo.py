@@ -529,7 +529,8 @@ if (args.run is None and args.defname is None and args.where is None and args.fi
     parser.print_help()
     sys.exit(0)
 
-logging.basicConfig(filename="%s/dbquery.log"%dbdir,level=logging.DEBUG,format='%(asctime)s '+str(os.getpid())+' ['+os.environ['USER']+'] %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+# logging.basicConfig(filename="%s/dbquery.log"%dbdir,level=logging.DEBUG,format='%(asctime)s '+str(os.getpid())+' ['+os.environ['USER']+'] %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
+logging.basicConfig(filename="%s/dbquery.log"%dbdir,level=logging.DEBUG,format='%(asctime)s '+str(os.getpid())+' ['+os.environ.get('USER', 'unknown')+'] %(message)s', datefmt='%m/%d/%Y %H:%M:%S')
 logging.debug(" ".join(sys.argv))
 
 res={}

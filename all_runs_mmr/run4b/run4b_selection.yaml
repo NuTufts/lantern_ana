@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/detsys/"
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/selection/pot_log/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -37,7 +37,7 @@ datasets:
   # run4b_bnb_nu_overlay:
   #   type: RootDataset
   #   tree: lantern/EventTree
-  #   pottree: lanter/potTree
+  #   pottree: lantern/potTree
   #   ismc: true
   #   process: true
   #   filepaths:
@@ -48,7 +48,7 @@ datasets:
   # run4b_bnb_nue_overlay:
   #   type: RootDataset
   #   tree: lantern/EventTree
-  #   pottree: lanter/potTree
+  #   pottree: lantern/potTree
   #   ismc: true
   #   process: true
   #   filepaths:
@@ -59,7 +59,7 @@ datasets:
   # run4b_dirt: 
   #   type: RootDataset
   #   tree: lantern/EventTree
-  #   pottree: lanter/potTree
+  #   pottree: lantern/potTree
   #   ismc: true
   #   process: true
   #   filepaths:
@@ -85,6 +85,15 @@ datasets:
   #   filepaths:
   #   - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
 
+  run4b_open_data:
+    type: RootDataset
+    tree: lantern/EventTree
+    pottree: lantern/potTree
+    ismc: false
+    process: false
+    filepaths:
+    - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+
   ## Detector systematics 
   # run4b_nu_cv:
   #   type: RootDataset
@@ -95,68 +104,68 @@ datasets:
   #   filepaths:
   #   - checkout_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_cv_surprise_reco2_hist_4d.root
 
-  run4b_nu_LYA:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lya_surprise_reco2_hist_4d.root
-
-  run4b_nu_LYD:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lyd_surprise_reco2_hist_4d.root
-
-  run4b_nu_LYR:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lyr_surprise_reco2_hist_4d.root
-
-  run4b_nu_recomb2:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_recomb2_surprise_reco2_hist_4d.root
-
-  run4b_nu_sce:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_sce_surprise_reco2_hist_4d.root
-
-  # run4b_nu_wiremodX:
+  # run4b_nu_LYA:
   #   type: RootDataset
   #   tree: lantern/EventTree_det
   #   pottree: lantern/potTree_det
   #   ismc: false
   #   process: true
   #   filepaths:
-  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_WMX_surprise_reco2_hist_4d.root
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lya_surprise_reco2_hist_4d.root
 
-  run4b_nu_wiremodYZ:
-    type: RootDataset
-    tree: lantern/EventTree_det
-    pottree: lantern/potTree_det
-    ismc: false
-    process: true
-    filepaths:
-    - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_WMYZ_surprise_reco2_hist_4d.root
+  # run4b_nu_LYD:
+  #   type: RootDataset
+  #   tree: lantern/EventTree_det
+  #   pottree: lantern/potTree_det
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lyd_surprise_reco2_hist_4d.root
+
+  # run4b_nu_LYR:
+  #   type: RootDataset
+  #   tree: lantern/EventTree_det
+  #   pottree: lantern/potTree_det
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_lyr_surprise_reco2_hist_4d.root
+
+  # run4b_nu_recomb2:
+  #   type: RootDataset
+  #   tree: lantern/EventTree_det
+  #   pottree: lantern/potTree_det
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_recomb2_surprise_reco2_hist_4d.root
+
+  # run4b_nu_sce:
+  #   type: RootDataset
+  #   tree: lantern/EventTree_det
+  #   pottree: lantern/potTree_det
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_sce_surprise_reco2_hist_4d.root
+
+  # # run4b_nu_wiremodX:
+  # #   type: RootDataset
+  # #   tree: lantern/EventTree_det
+  # #   pottree: lantern/potTree_det
+  # #   ismc: false
+  # #   process: true
+  # #   filepaths:
+  # #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_WMX_surprise_reco2_hist_4d.root
+
+  # run4b_nu_wiremodYZ:
+  #   type: RootDataset
+  #   tree: lantern/EventTree_det
+  #   pottree: lantern/potTree_det
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - merge_det_DetVar_Run45_v10_04_07_19_BNB_nu_overlay_WMYZ_surprise_reco2_hist_4d.root
 
 
 
@@ -182,25 +191,30 @@ producers:
     type: eventWeightProducer
     config: {}
 
-  # vertex properties
+  ## Reco vertex properties
   vertex_properties:
     type: VertexPropertiesProducer
     config: {}
   
+  ## True vertex properties 
+  true_vertex_properties: 
+    type: TrueVertexPropertiesProducer
+    config: {}
+
   # electron properties  
-  recoElectron:
-    type: RecoElectronPropertiesProducer
-    config:
-      electron_quality_cuts:
-        min_charge: 0.0
-        min_purity: 0.0
-        min_completeness: 0.0
+  # recoElectron:
+  #   type: RecoElectronPropertiesProducer
+  #   config:
+  #     electron_quality_cuts:
+  #       min_charge: 0.0
+  #       min_purity: 0.0
+  #       min_completeness: 0.0
   
   # muon track properties
-  recoMuonTrack:
-    type: RecoMuonTrackPropertiesProducer
-    config:
-      track_min_energy: 25.0
+  # recoMuonTrack:
+  #   type: RecoMuonTrackPropertiesProducer
+  #   config:
+  #     track_min_energy: 25.0
 
   # nue signal definition
   nueCCinc:

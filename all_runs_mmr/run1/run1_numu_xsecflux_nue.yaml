@@ -1,0 +1,133 @@
+
+# Output directory
+output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run1/root_files/xsecflux/logs/"
+
+# Maximum events to process (set to -1 for all events)
+max_events: -1
+
+# Filter out failed events from output tree
+filter_events: True
+
+# Enable producer-first mode
+producer_first_mode: True
+
+# Print producer dependency graph
+print_dependency_graph: true
+
+# Dataset configuration
+
+datasets:
+  folders:
+    - /cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run1/root_files/selection/
+  
+  run1_nue:      
+    type: RootDataset
+    tree: analysis_tree
+    pottree: lifetime_tree
+    ismc: true
+    process: true
+    filepaths:
+     - run1_nue_20260302_164813.root
+
+# Producer configuration (producers run first)
+producers:
+  
+  xsfluxweight:
+    type: ArboristXsecFluxSysProducer
+    config:
+      output_filename: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_bnb_nue.root"
+      run: eventIndex_run
+      subrun: eventIndex_subrun
+      event: eventIndex_event   
+      maxvalidweight: 1000.0
+      allow_missing_weights: True
+      tree: eventweight_tree
+      weight_tree_run: run
+      weight_tree_subrun: subrun
+      weight_tree_event: event
+      weight_tree_name: sys_weights
+      weight_branch_type: 0 # arborist file
+      rootfilepaths:
+        run1_nue: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_intrinsic_nue_run1.root
+      par_variations_to_include:
+        - expskin_FluxUnisim
+        - horncurrent_FluxUnisim
+        - nucleoninexsec_FluxUnisim
+        - nucleonqexsec_FluxUnisim
+        - nucleontotxsec_FluxUnisim
+        - pioninexsec_FluxUnisim
+        - pionqexsec_FluxUnisim
+        - piontotxsec_FluxUnisim
+        - kminus_PrimaryHadronNormalization
+        - kplus_PrimaryHadronFeynmanScaling
+        - kzero_PrimaryHadronSanfordWang
+        - piminus_PrimaryHadronSWCentralSplineVariation
+        - piplus_PrimaryHadronSWCentralSplineVariation
+        - All_UBGenie
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+        - reinteractions_piminus_Geant4
+        - reinteractions_piplus_Geant4
+        - reinteractions_proton_Geant4
+      xsec_params:
+        - All_UBGenie
+        - XSecShape_CCMEC_UBGenie
+        - RPA_CCQE_UBGenie
+        - AxFFCCQEshape_UBGenie
+        - VecFFCCQEshape_UBGenie
+        - DecayAngMEC_UBGenie
+        - xsr_scc_Fa3_SCC
+        - xsr_scc_Fv3_SCC
+        - NormCCCOH_UBGenie
+        - NormNCCOH_UBGenie
+        - ThetaDelta2NRad_UBGenie
+        - Theta_Delta2Npi_UBGenie
+      cut_formulas:
+        # mmr_cuts_nu: "{ntuple.vertex_properties_found}==1 and 
+        #             {ntuple.vertex_properties_infiducial}==1 and 
+        #             {ntuple.muon_properties_pid_score}>-0.9 and 
+        #             {ntuple.muon_properties_energy}>0.0 and
+        #             {ntuple.remove_true_nue_cc_flag}!=1
+        #             "
+        # mmr_cuts_nue: "{ntuple.vertex_properties_found}==1 and 
+        #             {ntuple.vertex_properties_infiducial}==1 and 
+        #             {ntuple.muon_properties_pid_score}>-0.9 and 
+        #             {ntuple.muon_properties_energy}>0.0
+        #             "
+        mmr_cuts_nu: "{ntuple.numuIncCC_passes_all_cuts}==1 and 
+                    {ntuple.remove_true_nue_cc_flag}!=1
+                    "
+        mmr_cuts_nue: "{ntuple.numuIncCC_passes_all_cuts}==1
+                    "
+      event_selection_critera: ['mmr_cuts_nue']
+      bin_config: 
+        visible_energy:
+          formula: visible_energy
+          numbins: 60
+          minvalue: 0.0
+          maxvalue: 3000.0
+          apply_to_datasets: [run1_nue]
+          criteria: []
+        reco_muon_momentum: 
+          formula: numuIncCC_reco_muon_momentum
+          numbins: 30
+          minvalue: 0.0
+          maxvalue: 1.5
+          apply_to_datasets: [run1_nue]
+          criteria: []
+        reco_cos_theta: 
+          formula: numuIncCC_reco_muon_costheta
+          numbins: 40
+          minvalue: -1
+          maxvalue: 1
+          apply_to_datasets: [run1_nue]
+          criteria: []
