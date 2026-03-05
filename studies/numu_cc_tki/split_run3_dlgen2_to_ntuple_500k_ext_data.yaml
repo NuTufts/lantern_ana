@@ -1,8 +1,8 @@
-# master_run3_dlgen2_to_ntuple_1mil.yaml
+#split_run3_dlgen2_to_ntuple_500k_ext_data.yaml
 
-# This is the master script that takes dlgen2 files for run3
+# This is one piece of the master script that takes dlgen2 files for run3
 # and runs them thru my selection to make ntuples. 
-# Includes detector systematics for 1mil + 500k overlay (including 1mil CV file)
+# Includes only detector systematics for 500k overlay
 # and EXT and 1e19 data for run3
 
 # Output directory
@@ -22,71 +22,6 @@ datasets:
   folders:
     - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
-
-  # 1Mil Sample
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYAtt:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYAtt.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYDown:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYDown.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_LYRayleigh.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodX:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodX.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodYZ.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaXZ.root
-
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ:
-    type: RootDataset
-    tree: EventTree
-    ismc: true
-    process: true
-    filepaths:
-     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v40a_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ.root
 
   # 500K CV Sample
   run3b_bnb_nu_overlay_500k_CV:
