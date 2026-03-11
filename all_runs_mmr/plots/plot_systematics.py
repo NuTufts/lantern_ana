@@ -25,7 +25,7 @@ lantern_dir = "/exp/uboone/app/users/imani/lantern_ana/"
 
 files_info = [
     {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run1_hists.root",          "label": "Run 1", "color": ROOT.kYellow+1},
-    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run3mil_hists.root",       "label": "Run 3", "color": ROOT.kRed},
+    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run3_hists.root",          "label": "Run 3", "color": ROOT.kRed},
     {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run4_combined_hists.root", "label": "Run 4", "color": ROOT.kBlue},
     {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run5_hists.root",          "label": "Run 5", "color": ROOT.kGreen+2},
 ]

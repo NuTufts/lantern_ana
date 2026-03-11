@@ -3,7 +3,7 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 1
+run_num = 4
 truth_mode = False  
 
 # lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
@@ -1046,9 +1046,10 @@ for var_name, var_info in variables.items():
 					h.SetBinError(ibin, 0.0)
 				continue
 
-			frac_var_flux      = 0.0
-			frac_var_xsec      = 0.0
-			frac_var_reint     = 0.0
+			abs_var_flux       = 0.0
+			abs_var_xsec       = 0.0
+			abs_var_reint      = 0.0
+			abs_var_params     = {pname: 0.0 for pname in h_uncertainty_params}
 			frac_var_detector  = 0.0
 			frac_var_params    = {pname: 0.0 for pname in h_uncertainty_params}
 
@@ -1059,28 +1060,45 @@ for var_name, var_info in variables.items():
 					        or xsecflux_var not in xsecflux_hists[xsample_name]):
 						continue
 					xsec_hists = xsecflux_hists[xsample_name][xsecflux_var]
-					cv_from_xsecflux = xsec_hists['cv'].GetBinContent(ibin) if 'cv' in xsec_hists else 0.0
-
-					if cv_from_xsecflux <= 0:
+					cv_xf = xsec_hists['cv'].GetBinContent(ibin) if 'cv' in xsec_hists else 0.0
+					
+					if cv_xf <= 0:
 						continue
 
-					cv2 = cv_from_xsecflux ** 2
+					# Scaled contribution of this xsample to total MC (targetpot units)
+					if xsample_name == 'numu':
+						cv_scaled = (hists.get('cc_numu', hists['nc_numu']).GetBinContent(ibin) * 0
+									+ (hists['cc_numu'].GetBinContent(ibin) if 'cc_numu' in hists else 0.0)
+									+ (hists['nc_numu'].GetBinContent(ibin) if 'nc_numu' in hists else 0.0))
+					else:  # 'nue'
+						cv_scaled = ((hists['cc_nue'].GetBinContent(ibin) if 'cc_nue' in hists else 0.0)
+									+ (hists['nc_nue'].GetBinContent(ibin) if 'nc_nue' in hists else 0.0))
+
+					# Weight converts xsecflux absolute variance → targetpot absolute variance
+					weight = (cv_scaled / cv_xf) ** 2
 
 					if 'fluxvar' in xsec_hists:
-						frac_var_flux  += xsec_hists['fluxvar'].GetBinContent(ibin)  / cv2
+						abs_var_flux  += xsec_hists['fluxvar'].GetBinContent(ibin)  * weight
 					if 'xsecvar' in xsec_hists:
-						frac_var_xsec  += xsec_hists['xsecvar'].GetBinContent(ibin)  / cv2
+						abs_var_xsec  += xsec_hists['xsecvar'].GetBinContent(ibin)  * weight
 					if 'reintvar' in xsec_hists:
-						frac_var_reint += xsec_hists['reintvar'].GetBinContent(ibin) / cv2
+						abs_var_reint += xsec_hists['reintvar'].GetBinContent(ibin) * weight
 
-					# Per-parameter fractional variances
+					# Per-parameter absolute variances
 					if 'param_vars' in xsec_hists:
 						for pname, h_pv in xsec_hists['param_vars'].items():
-							if pname in frac_var_params:
-								frac_var_params[pname] += h_pv.GetBinContent(ibin) / cv2
+							if pname in abs_var_params:
+								abs_var_params[pname] += h_pv.GetBinContent(ibin) * weight
 
 				except (AttributeError, ReferenceError):
 					continue
+
+			# Convert accumulated absolute variances → fractional variances
+			frac_var_flux  = abs_var_flux  / (central ** 2) if central > 0 else 0.0
+			frac_var_xsec  = abs_var_xsec  / (central ** 2) if central > 0 else 0.0
+			frac_var_reint = abs_var_reint / (central ** 2) if central > 0 else 0.0
+			for pname in frac_var_params:
+				frac_var_params[pname] = abs_var_params.get(pname, 0.0) / (central ** 2)
 
 			# Detector fractional variance from detsys file
 			if xsecflux_var in detsys_hists and 'frac_variance' in detsys_hists[xsecflux_var]:
