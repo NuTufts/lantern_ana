@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/selection/pot_log/"
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/selection/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -90,9 +90,9 @@ datasets:
     tree: lantern/EventTree
     pottree: lantern/potTree
     ismc: false
-    process: false
+    process: true
     filepaths:
-    - MCC9.10_Run4b_v10_04_07_11_BNB_beam_on_surprise_reco2_hist.root
+    - checkout_MCC9.10_Run4b_v10_04_07_20_BNB_beam_on_metapatch_retuple_retuple_hist_opendata_20700.root
 
   ## Detector systematics 
   # run4b_nu_cv:

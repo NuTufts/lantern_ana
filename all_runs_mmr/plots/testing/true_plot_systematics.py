@@ -39,12 +39,12 @@ EXTRACT_MODE = "total"
 PARAM_NAME   = "xsr_scc_Fa3_SCC"   # only used when EXTRACT_MODE == "param"
 
 uncertainty_types = ["flux", "stats", "xsec", "reint", "detector", "stat"]
-SYS_HIST_PATTERN  = "c_neutrino_energy_frac_{utype};1"
+SYS_HIST_PATTERN  = "c_true_neutrino_energy_frac_{utype};1"
 
 # Histogram names inside each systematic canvas.
 # stat uses the _draw histogram; all others use the _agg aggregate.
-SYS_AGG_PATTERN  = "h_frac_{utype}_neutrino_energy_agg"   # total/aggregate line
-SYS_DRAW_PATTERN = "h_frac_{utype}_neutrino_energy_draw"  # used for stat only
+SYS_AGG_PATTERN  = "h_frac_{utype}_true_neutrino_energy_agg"   # total/aggregate line
+SYS_DRAW_PATTERN = "h_frac_{utype}_true_neutrino_energy_draw"  # used for stat only
 
 # Human-readable names for canvas titles
 UTYPE_DISPLAY = {
@@ -58,14 +58,14 @@ UTYPE_DISPLAY = {
 
 # ── Purity / efficiency canvases ─────────────────────────────────────────────
 # Set to None to skip that section entirely.
-PURITY_CANVAS_NAME     = "c_neutrino_energy_purity;1"
-EFFICIENCY_CANVAS_NAME = "c_neutrino_energy_efficiency;1"
+PURITY_CANVAS_NAME     = "c_true_neutrino_energy_purity;1"
+EFFICIENCY_CANVAS_NAME = "c_true_neutrino_energy_efficiency;1"
 
 # ── Data / prediction ratio ───────────────────────────────────────────────────
 # Subplot canvas that already contains the precomputed ratio and its uncertainty.
-DATAPRED_CANVAS_NAME = "c_neutrino_energy;1"
+DATAPRED_CANVAS_NAME = "c_true_neutrino_energy;1"
 RATIO_HIST_NAME      = "h_ratio_neutrino_energy"      # central ratio values
-RATIO_UNC_HIST_NAME  = "h_ratio_unc_neutrino_energy"  # uncertainty envelope
+RATIO_UNC_HIST_NAME  = "h_ratio_unc_true_neutrino_energy"  # uncertainty envelope
 
 X_TITLE_RATIO = "True Neutrino Energy (GeV)"
 Y_TITLE_RATIO = "Data / Pred"
@@ -73,7 +73,7 @@ Y_MIN_RATIO   = 0.5
 Y_MAX_RATIO   = 1.5
 
 # ── Axis / style ─────────────────────────────────────────────────────────────
-X_TITLE_SYS  = "Reco Neutrino Energy (GeV)"
+X_TITLE_SYS  = "True Neutrino Energy (GeV)"
 Y_TITLE_SYS  = "Fractional Uncertainty"
 Y_MAX_SYS    = 0.2          # None → data-driven
 
