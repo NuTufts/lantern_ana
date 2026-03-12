@@ -355,7 +355,7 @@ if run_num in [4, 41, 42, 43, 44, 5]:
 	]
 	# detector_params from xsecflux file (distinct from detsys_params which come from detsys file)
 	xsecflux_detector_params = [
-		# "detvar_all"
+		"detvar_all"
 	]
 
 # Build a lookup: parname -> category, derived purely from the lists above
