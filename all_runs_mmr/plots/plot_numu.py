@@ -3,7 +3,7 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 4
+run_num = 5
 truth_mode = False  
 
 # lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
@@ -135,8 +135,8 @@ if run_num == 4:
 	files = {'4b': files_4b, '4c': files_4c, '4d': files_4d}
 
 	xsecflux_files = {
-		"numu_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nu.root",
-		"nue_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nue.root",
+		"numu_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nu.root",
+		"nue_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nue.root",
 		"numu_4c": f"{lantern_dir}/all_runs_mmr/run4c/root_files/xsecflux/xsecflux_numu_nu.root",
 		"nue_4c": f"{lantern_dir}/all_runs_mmr/run4c/root_files/xsecflux/xsecflux_numu_nue.root",
 		"numu_4d": f"{lantern_dir}/all_runs_mmr/run4d/root_files/xsecflux/xsecflux_numu_nu.root",
@@ -193,8 +193,8 @@ if run_num == 42:
 			"extbnb":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_extbnb_20260114_212008.root",
 			"data":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_data_20260114_212707.root"}
 	xsecflux_files = {
-		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nu.root",
-		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_run4b_numu_nue.root"
+		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nu.root",
+		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nue.root"
 		}
 	detsys_file = f"{lantern_dir}/all_runs_mmr/run4b/root_files/detsys_final/detsys_cv_run4b_nu_cv.root"
 	show_data = True 
@@ -355,7 +355,7 @@ if run_num in [4, 41, 42, 43, 44, 5]:
 	]
 	# detector_params from xsecflux file (distinct from detsys_params which come from detsys file)
 	xsecflux_detector_params = [
-		"detvar_all"
+		# "detvar_all"
 	]
 
 # Build a lookup: parname -> category, derived purely from the lists above
@@ -836,29 +836,44 @@ if run_num == 4:
 				print(f"  Warning: No valid xsecflux files found for {xsample_name}, variable {var}")
 
 else:
-	for xsample_name, xfile_path in xsecflux_files.items():
-		print(f"\nLoading xsecflux uncertainties from {xfile_path}")
-		if not os.path.exists(xfile_path):
-			print(f"  Warning: File not found, skipping")
-			continue
-
-		xfile = rt.TFile(xfile_path)
-		if xfile.IsZombie():
-			print(f"  Warning: Could not open file, skipping")
-			continue
-
+	for xsample_name in ['numu', 'nue']:
 		xsecflux_hists[xsample_name] = {}
-		xsample = xsecflux_sample_map.get(xsample_name, xsample_name)
 
 		for var in xsecflux_variables:
+			print(f"\nLoading xsecflux uncertainties for {xsample_name}, variable {var}")
+
+			xfile_path = xsecflux_files.get(xsample_name)
+
+			if not xfile_path or not os.path.exists(xfile_path):
+				print(f"  Warning: File not found for {xsample_name}, skipping")
+				continue
+
+			xfile = rt.TFile(xfile_path)
+			if xfile.IsZombie():
+				print(f"  Warning: Could not open file for {xsample_name}, skipping")
+				continue
+
+			xsample = xsecflux_sample_map[xsample_name]
 			hists_with_errors = make_hist_w_errors(
 				xfile, var, xsample,
 				flux_params, xsec_params, reint_params, _xsec_detector
 			)
-			if hists_with_errors:
-				xsecflux_hists[xsample_name][var] = hists_with_errors
-				print(f"  Loaded uncertainties for {xsample_name}, variable {var}")
+			if not hists_with_errors:
+				print(f"  Warning: Could not load histograms for {xsample_name}")
+				xfile.Close()
+				continue
 
+			# Detach histograms from file before closing
+			hists_with_errors['cv'].SetDirectory(0)
+			hists_with_errors['fluxvar'].SetDirectory(0)
+			hists_with_errors['xsecvar'].SetDirectory(0)
+			hists_with_errors['reintvar'].SetDirectory(0)
+			for pname, h in hists_with_errors['param_vars'].items():
+				h.SetDirectory(0)
+
+			xsecflux_hists[xsample_name][var] = hists_with_errors
+			print(f"  Successfully loaded uncertainties for {xsample_name}, variable {var}")
+			xfile.Close()
 
 # Load detector variations
 detsys_hists = {}
