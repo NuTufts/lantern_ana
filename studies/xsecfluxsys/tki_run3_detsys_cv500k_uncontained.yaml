@@ -1,4 +1,4 @@
-# numu_run1_test.yaml
+# tki_run3_detsys_cv500k.yaml
 
 # Output directory
 output_dir: "./output_tki_detsys_run3/"
@@ -52,7 +52,7 @@ producers:
       bin_config: 
         numuCC1piNpReco_delPTT:
           formula: numuCC1piNpReco_delPTT
-          numbins: 20
+          numbins: 25
           minvalue: -1.0
           maxvalue: 1.0
           applicable_variations:
@@ -60,7 +60,7 @@ producers:
            - 'recomb2'
         numuCC1piNpReco_delAlphaT:
           formula: numuCC1piNpReco_delAlphaT
-          numbins: 20
+          numbins: 10
           minvalue: 0.0
           maxvalue: 180.0
           applicable_variations:
@@ -68,9 +68,9 @@ producers:
            - 'recomb2'
         numuCC1piNpReco_pN:
           formula: numuCC1piNpReco_pN
-          numbins: 17
+          numbins: 25
           minvalue: 0.0
-          maxvalue: 1.7
+          maxvalue: 1.6
           applicable_variations:
            - 'SCE'
            - 'recomb2'
@@ -84,7 +84,10 @@ producers:
            - 'recomb2'
         numuCC1piNpReco_muKE:
           formula: numuCC1piNpReco_muKE
-          binedges: [0.0, 100.0, 200.0, 300.0, 400.0, 600.0, 1500.0]
+          #binedges: [0.0, 100.0, 200.0, 300.0, 400.0, 600.0, 1500.0]
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1500.0
           applicable_variations:
            - 'SCE'
            - 'recomb2'

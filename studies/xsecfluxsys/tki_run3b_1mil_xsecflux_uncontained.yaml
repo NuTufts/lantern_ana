@@ -1,7 +1,7 @@
-# tki_run3b_1mil_xsecflux.yaml
+# tki_run3b_1mil_xsecflux_uncontained.yaml
 
 # Output directory
-output_dir: "./output_tki_run3b_1mil_xsecflux/"
+output_dir: "./output_tki_run3b_1mil_xsecflux_uncontained/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -35,7 +35,7 @@ producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
-      output_filename: "./output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
+      output_filename: "./output_tki_run3b_1mil_xsecflux_uncontained/output_xsecflux_tki_run3b_1mil_uncontained.root"
       run: eventindex_run
       subrun: eventindex_subrun
       event: eventindex_event   
@@ -125,8 +125,10 @@ producers:
           criteria: []
         numuCC1piNpReco_muKE:
           formula: numuCC1piNpReco_muKE
-          numbins: 6
-          binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1500.0
+          #binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
           apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
           criteria: []
         numuCC1piNpReco_maxprotonKE:

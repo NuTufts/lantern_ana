@@ -1,7 +1,10 @@
-# tki_run3b_1mil_xsecflux.yaml
+# tki_run1_xsecflux_march2026_contained.yaml
+# latest run1 version of this script
+# NOTE: This makes the CONTAINED version of 
+# my selection systematics
 
 # Output directory
-output_dir: "./output_tki_run3b_1mil_xsecflux/"
+output_dir: "./systematics_output_run1_march2026_contained"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -20,14 +23,14 @@ print_dependency_graph: true
 datasets:
   folders:
     - ./../numu_cc_tki/output_tki_run3b_1mil/
-    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil
-  mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil:      
+    - /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_master_tki_run1
+  run1_bnb_nu_overlay_mcc9_v28_wctagger:      
     type: RootDataset
     tree: analysis_tree
     ismc: true
     process: true
     filepaths:
-     - mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_20260122_154228.root
+     - run1_bnb_nu_overlay_20260319_162746.root
 
 # Producer configuration (producers run first)
 producers:
@@ -35,7 +38,7 @@ producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
-      output_filename: "./output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
+      output_filename: "./systematics_output_run1_march2026_contained/output_xsecflux_tki_run1_march2026_contained.root"
       run: eventindex_run
       subrun: eventindex_subrun
       event: eventindex_event   
@@ -48,7 +51,7 @@ producers:
       weight_tree_name: sys_weights
       weight_branch_type: 0 # arborist file
       rootfilepaths:
-        mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run3.root
+        run1_bnb_nu_overlay_mcc9_v28_wctagger: /cluster/tufts/wongjiradlabnu/larbys/data/mcc9_eventweight_trees/arborist_v55_Jun20_withExtraGENIE_bnb_nu_run1_noNaNs.root
       par_variations_to_include:
         - expskin_FluxUnisim
         - horncurrent_FluxUnisim
@@ -92,7 +95,7 @@ producers:
         - ThetaDelta2NRad_UBGenie
         - Theta_Delta2Npi_UBGenie
       cut_formulas:
-        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1 and {ntuple.numuCC1piNpReco_event_is_contained}==2"
       event_selection_critera: ['pass_selection']
       bin_config:
         numuCC1piNpReco_delPTT:
@@ -100,48 +103,50 @@ producers:
           numbins: 25
           minvalue: -1.0
           maxvalue: 1.0
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_delAlphaT:
           formula: numuCC1piNpReco_delAlphaT
           numbins: 10
           minvalue: 0.0
           maxvalue: 180.0
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_pN:
           formula: numuCC1piNpReco_pN
           numbins: 25
           minvalue: 0.0
           maxvalue: 1.6
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_hadronicM:
           formula: numuCC1piNpReco_hadronicM
           numbins: 30
           minvalue: 1000.0
           maxvalue: 1600.0
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_muKE:
           formula: numuCC1piNpReco_muKE
-          numbins: 6
-          binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          numbins: 25
+          #binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
+          minvalue: 0.0
+          maxvalue: 1500.0
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_maxprotonKE:
           formula: numuCC1piNpReco_maxprotonKE
           numbins: 25
           minvalue: 0.0
           maxvalue: 500.0
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
         numuCC1piNpReco_pionKE:
           formula: numuCC1piNpReco_pionKE
           numbins: 25
           minvalue: 0.0
           maxvalue: 500.0
-          apply_to_datasets: ['mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil']
+          apply_to_datasets: ['run1_bnb_nu_overlay_mcc9_v28_wctagger']
           criteria: []
 
 

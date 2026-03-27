@@ -1,4 +1,5 @@
-# numu_run1_test.yaml
+# tki_run3_detsys_1mil_contained.yaml
+# includes containment cut
 
 # Output directory
 output_dir: "./output_numu_run3_1mil_detsys/"
@@ -55,7 +56,7 @@ producers:
         wiremodThetaYZ: /cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana/studies/numu_cc_tki/output_tki_run3b_1mil/mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_wiremodThetaYZ_20260122_172122.root
       variation_treename: analysis_tree
       cut_formulas:
-        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1"
+        pass_selection: "{ntuple.numuCC1piNpReco_is_target_1mu1piNproton}==1 and {ntuple.numuCC1piNpReco_event_is_contained}==2"
       event_selection_critera: ['pass_selection']
       bin_config: 
         numuCC1piNpReco_delPTT:
@@ -112,7 +113,10 @@ producers:
            - 'wiremodThetaYZ'
         numuCC1piNpReco_muKE:
           formula: numuCC1piNpReco_muKE
-          binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
+          #binedges: [0.0, 100.0, 200.0, 300.0,400.0,600.0,1500.0]
+          numbins: 25
+          minvalue: 0.0
+          maxvalue: 1500.0
           applicable_variations:
            - 'LYAtt'
            - 'LYDown'

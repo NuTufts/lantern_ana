@@ -6,7 +6,7 @@
 # and EXT and 1e19 data for run3
 
 # Output directory
-output_dir: "./output_split_tki_run3"
+output_dir: "./output_master_tki_run3"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1

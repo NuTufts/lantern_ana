@@ -60,7 +60,8 @@ datasets:
     ismc: false
     process: true
     filepaths:
-    - ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root # dlgen2 file
+    - dlgen2_reco_v2me06_ntuple_v7_mcc9_v28_wctagger_run3_bnb1e19.root
+    #- ntuple_mcc9_v28_wctagger_run3_bnb1e19_v2_me_06_03_prod.root # dlgen2 file
 
 
 # Cut configuration

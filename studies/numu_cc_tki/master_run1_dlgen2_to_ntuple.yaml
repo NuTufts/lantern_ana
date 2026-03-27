@@ -29,7 +29,8 @@ datasets:
     ismc: true
     process: true
     filepaths:
-     - dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root 
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+     #- dlgen2_reco_v2me05_gen2ntuple_v7_run3b_bnb_nu_overlay_nocrtremerge.root # run3
   run1_extbnb_mcc9_v29e: # C1 only
     type: RootDataset
     tree: EventTree
