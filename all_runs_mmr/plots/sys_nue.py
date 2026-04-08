@@ -24,10 +24,10 @@ ROOT.gStyle.SetOptStat(0)
 lantern_dir = "/exp/uboone/app/users/imani/lantern_ana/"
 
 files_info = [
-    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run1_hists.root",          "label": "Run 1", "color": ROOT.kYellow+1},
-    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run3mil_hists.root",       "label": "Run 3", "color": ROOT.kRed},
-    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run4_combined_hists.root", "label": "Run 4", "color": ROOT.kBlue},
-    {"path": f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run5_hists.root",          "label": "Run 5", "color": ROOT.kGreen+2},
+    {"path": f"{lantern_dir}/all_runs_mmr/plots/nue/nue_run1_hists.root",          "label": "Run 1", "color": ROOT.kYellow+1},
+    {"path": f"{lantern_dir}/all_runs_mmr/plots/nue/nue_run3_hists.root",          "label": "Run 3", "color": ROOT.kRed},
+    {"path": f"{lantern_dir}/all_runs_mmr/plots/nue/nue_run4_combined_hists.root", "label": "Run 4", "color": ROOT.kBlue},
+    {"path": f"{lantern_dir}/all_runs_mmr/plots/nue/nue_run5_hists.root",          "label": "Run 5", "color": ROOT.kGreen+2},
 ]
 
 # ── Systematic uncertainty extraction ────────────────────────────────────────
@@ -39,12 +39,12 @@ EXTRACT_MODE = "total"
 PARAM_NAME   = "xsr_scc_Fa3_SCC"   # only used when EXTRACT_MODE == "param"
 
 uncertainty_types = ["flux", "stats", "xsec", "reint", "detector", "stat"]
-SYS_HIST_PATTERN  = "c_true_neutrino_energy_frac_{utype};1"
+SYS_HIST_PATTERN  = "c_neutrino_energy_frac_{utype};1"
 
 # Histogram names inside each systematic canvas.
 # stat uses the _draw histogram; all others use the _agg aggregate.
-SYS_AGG_PATTERN  = "h_frac_{utype}_true_neutrino_energy_agg"   # total/aggregate line
-SYS_DRAW_PATTERN = "h_frac_{utype}_true_neutrino_energy_draw"  # used for stat only
+SYS_AGG_PATTERN  = "h_frac_{utype}_neutrino_energy_agg"   # total/aggregate line
+SYS_DRAW_PATTERN = "h_frac_{utype}_neutrino_energy_draw"  # used for stat only
 
 # Human-readable names for canvas titles
 UTYPE_DISPLAY = {
@@ -58,14 +58,14 @@ UTYPE_DISPLAY = {
 
 # ── Purity / efficiency canvases ─────────────────────────────────────────────
 # Set to None to skip that section entirely.
-PURITY_CANVAS_NAME     = "c_true_neutrino_energy_purity;1"
-EFFICIENCY_CANVAS_NAME = "c_true_neutrino_energy_efficiency;1"
+PURITY_CANVAS_NAME     = "c_neutrino_energy_purity;1"
+EFFICIENCY_CANVAS_NAME = "c_neutrino_energy_efficiency;1"
 
 # ── Data / prediction ratio ───────────────────────────────────────────────────
 # Subplot canvas that already contains the precomputed ratio and its uncertainty.
-DATAPRED_CANVAS_NAME = "c_true_neutrino_energy;1"
+DATAPRED_CANVAS_NAME = "c_neutrino_energy;1"
 RATIO_HIST_NAME      = "h_ratio_neutrino_energy"      # central ratio values
-RATIO_UNC_HIST_NAME  = "h_ratio_unc_true_neutrino_energy"  # uncertainty envelope
+RATIO_UNC_HIST_NAME  = "h_ratio_unc_neutrino_energy"  # uncertainty envelope
 
 X_TITLE_RATIO = "True Neutrino Energy (GeV)"
 Y_TITLE_RATIO = "Data / Pred"
@@ -73,20 +73,20 @@ Y_MIN_RATIO   = 0.5
 Y_MAX_RATIO   = 1.5
 
 # ── Axis / style ─────────────────────────────────────────────────────────────
-X_TITLE_SYS  = "True Neutrino Energy (GeV)"
+X_TITLE_SYS  = "Reco Nue Energy (GeV)"
 Y_TITLE_SYS  = "Fractional Uncertainty"
 Y_MAX_SYS    = 0.2          # None → data-driven
 
-X_TITLE_PUR  = "Reco Neutrino Energy (GeV)"
+X_TITLE_PUR  = "Reco Nue Energy (GeV)"
 Y_TITLE_PUR  = "Purity"
 Y_MAX_PUR    = 1.05         # None → data-driven
 
-X_TITLE_EFF  = "Reco Neutrino Energy (GeV)"
+X_TITLE_EFF  = "True Nue Energy (GeV)"
 Y_TITLE_EFF  = "Efficiency"
 Y_MAX_EFF    = 1.05         # None → data-driven
 
 # ── Output ────────────────────────────────────────────────────────────────────
-output_dir  = f"{lantern_dir}/all_runs_mmr/plots/numu/"
+output_dir  = f"{lantern_dir}/all_runs_mmr/plots/nue/"
 output_root = f"{output_dir}/systematic_comparison_by_type.root"
 
 
@@ -148,6 +148,20 @@ def find_hist_by_name(canvas, hist_name):
     print(f"    WARNING: '{hist_name}' not found in canvas '{canvas.GetName()}'")
     print(f"    Available: {available}")
     return None
+
+
+def merge_overflow(h):
+    """
+    Add the overflow bin's content and error into the last visible bin,
+    then zero the overflow bin.  Call this after cloning and before drawing.
+    """
+    n = h.GetNbinsX()
+    last_content  = h.GetBinContent(n) + h.GetBinContent(n + 1)
+    last_error    = (h.GetBinError(n)**2 + h.GetBinError(n + 1)**2) ** 0.5
+    h.SetBinContent(n,     last_content)
+    h.SetBinError(n,       last_error)
+    h.SetBinContent(n + 1, 0.0)
+    h.SetBinError(n + 1,   0.0)
 
 
 def extract_hist_from_canvas(canvas, mode, param_name=None):
@@ -213,21 +227,29 @@ def load_hists_from_canvas_name(canvas_name, extract_fn, label_suffix=""):
     return histograms
 
 
+def extract_average_from_latex(canvas):
+    """
+    Scan all primitives in *canvas* for a TLatex object whose text contains
+    a trailing float (e.g. "Average Purity: 0.847" or "Average Efficiency: 0.234").
+    Returns the float, or None if no matching TLatex is found.
+    """
+    import re
+    for prim in canvas.GetListOfPrimitives():
+        if prim.InheritsFrom("TLatex"):
+            m = re.search(r"[-+]?\d*\.\d+", prim.GetTitle())
+            if m:
+                return float(m.group())
+    return None
+
+
 def integral_average(hist):
     """
-    Compute average purity or efficiency as:
-        total_signal_integral / total_all_integral
-    mirroring:
-        avg = hists['cc_numu'].Integral() / h_total_mc.Integral()
-
-    For a purity/efficiency histogram the signal integral is the area under
-    the ratio curve, and total_all is the number of filled bins (each bin
-    contributes weight 1).  This gives the mean ratio weighted by bin width.
-    Returns float or None if no filled bins.
+    Fallback average: simple mean of per-bin ratio values over filled bins.
+    Used only when the canvas does not contain pre-stored integral components.
     """
     n_filled     = sum(1 for b in range(1, hist.GetNbinsX() + 1)
                        if hist.GetBinContent(b) > 0)
-    total_signal = hist.Integral()   # sum of bin contents (the ratio values)
+    total_signal = hist.Integral()
     if n_filled == 0:
         return None
     return total_signal / n_filled
@@ -235,13 +257,17 @@ def integral_average(hist):
 
 def make_overlay_canvas(histograms, canvas_name, canvas_title,
                         x_title, y_title, y_max=None,
-                        draw_mode="HIST"):
+                        draw_mode="HIST", averages=None):
     """
     Build and return a styled TCanvas overlaying all histograms in *histograms*.
     *histograms* is a list of (TH1, file_info) pairs.
 
     draw_mode : "HIST"   → solid lines (systematics)
                 "PE"     → dots with error bars (purity / efficiency)
+    averages  : optional list of floats (one per histogram) providing pre-computed
+                event-weighted averages for the legend.  When None, falls back to
+                integral_average(hist).  Pass when the canvas stores _numer_int /
+                _denom_int histograms written by plot_nue_hists.py.
     """
     canvas = ROOT.TCanvas(canvas_name, canvas_title, 800, 600)
     canvas.SetLeftMargin(0.12)
@@ -267,7 +293,8 @@ def make_overlay_canvas(histograms, canvas_name, canvas_title,
             hist.SetLineWidth(2)
 
             # Compute average and append to legend label
-            avg = integral_average(hist)
+            avg = (averages[i] if averages is not None and averages[i] is not None
+                   else integral_average(hist))
             avg_str = f"{avg:.3f}" if avg is not None else "n/a"
             legend_label = f"{file_info['label']} ({avg_str})"
             legend.AddEntry(hist, legend_label, "lep")
@@ -627,15 +654,36 @@ if PURITY_CANVAS_NAME is not None:
         PURITY_CANVAS_NAME, _extract_pur, label_suffix="purity"
     )
 
+    # Merge overflow bin into the last visible bin for each run
+    for h, _ in histograms:
+        merge_overflow(h)
+
+    # Read the average directly from the TLatex already on each run's canvas.
+    pur_averages = []
+    for file_info in [fi for fi in files_info
+                      if any(fi is fi2 for _, fi2 in histograms)]:
+        tfile = ROOT.TFile.Open(file_info["path"])
+        avg = None
+        if tfile and not tfile.IsZombie():
+            obj = tfile.Get(PURITY_CANVAS_NAME)
+            if obj and obj.InheritsFrom("TCanvas"):
+                avg = extract_average_from_latex(obj)
+                if avg is None:
+                    print(f"  NOTE: no TLatex average found in purity canvas for "
+                          f"{file_info['label']} — falling back to bin-mean average")
+            tfile.Close()
+        pur_averages.append(avg)
+
     if histograms:
         canvas, legend, ref_line = make_overlay_canvas(
             histograms,
             canvas_name  = "c_comparison_purity",
-            canvas_title = "CC Inclusive Numu Purity",
+            canvas_title = "CC Inclusive Nue Purity",
             x_title      = X_TITLE_PUR,
             y_title      = Y_TITLE_PUR,
             y_max        = Y_MAX_PUR,
             draw_mode    = "PE",
+            averages     = pur_averages,
         )
         out_file.cd()
         canvas.Write()
@@ -658,15 +706,36 @@ if EFFICIENCY_CANVAS_NAME is not None:
         EFFICIENCY_CANVAS_NAME, _extract_eff, label_suffix="efficiency"
     )
 
+    # Merge overflow bin into the last visible bin for each run
+    for h, _ in histograms:
+        merge_overflow(h)
+
+    # Read the average directly from the TLatex already on each run's canvas.
+    eff_averages = []
+    for file_info in [fi for fi in files_info
+                      if any(fi is fi2 for _, fi2 in histograms)]:
+        tfile = ROOT.TFile.Open(file_info["path"])
+        avg = None
+        if tfile and not tfile.IsZombie():
+            obj = tfile.Get(EFFICIENCY_CANVAS_NAME)
+            if obj and obj.InheritsFrom("TCanvas"):
+                avg = extract_average_from_latex(obj)
+                if avg is None:
+                    print(f"  NOTE: no TLatex average found in efficiency canvas for "
+                          f"{file_info['label']} — falling back to bin-mean average")
+            tfile.Close()
+        eff_averages.append(avg)
+
     if histograms:
         canvas, legend, ref_line = make_overlay_canvas(
             histograms,
             canvas_name  = "c_comparison_efficiency",
-            canvas_title = "CC Inclusive Numu Efficiency",
+            canvas_title = "CC Inclusive Nue Efficiency",
             x_title      = X_TITLE_EFF,
             y_title      = Y_TITLE_EFF,
             y_max        = Y_MAX_EFF,
             draw_mode    = "PE",
+            averages     = eff_averages,
         )
         out_file.cd()
         canvas.Write()

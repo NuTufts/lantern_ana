@@ -3,11 +3,18 @@ import ROOT as rt
 import array
 from math import sqrt
 
-run_num = 5
+run_num = 3
 truth_mode = False  
 
 # lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
 lantern_dir = "/exp/uboone/app/users/imani/lantern_ana/"
+
+show_cut_flow = False
+cut_flow_cuts = [
+    ("numuIncCC_cut1_vertex_fiducial",        "1"),
+    ("numuIncCC_cut2_cosmic_rejection",        "1,2"),
+    ("numuIncCC_cut3_has_muon",         	 "All"),
+]
 
 ## Run 1 
 if run_num == 1: 
@@ -16,10 +23,20 @@ if run_num == 1:
 			"nue":targetpot/9.662529168587103e+22,
 			"extbnb":(176153.0)/(433446.0),
 			"data":1.0}
-	files = {"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nu_20260302_163929.root",
-			"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nue_20260302_164813.root", 
-			"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_extbnb_20260302_165918.root",
-			"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_data_5e19_20260302_170325.root"}
+	# files = {"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nu_20260302_163929.root",
+	# 		"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nue_20260302_164813.root", 
+	# 		# "extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_extbnb_20260302_165918.root",
+	# 		"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_extbnb_20260302_165918.root",
+	# 		"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_data_5e19_20260302_170325.root"}
+	# files = {"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v2/run1_nu_20260401_161131.root",
+	# 		"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v2/run1_nue_20260401_161611.root", 
+	# 		"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v2/run1_extbnb_20260401_162212.root",
+	# 		"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v2/run1_data_5e19_20260401_162423.root"}
+	files = {"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nu_20260406_205159.root",
+			"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_nue_20260406_205611.root", 
+			"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_extbnb_20260406_210137.root",
+			"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection/run1_data_5e19_20260406_210335.root"}
+
 	xsecflux_files = {
 		"nue": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_bnb_nue.root",
 		"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_bnb_nu.root"
@@ -37,13 +54,19 @@ if run_num == 1:
 ## Run 3 (one million MC)
 if run_num == 3: 
 	targetpot = 8.806e18
-	scaling = {"numu":targetpot/1.346689484233034e+21,
+	scaling = {
+			"numu":targetpot/1.346689484233034e+21,
+			# "numu":targetpot/1.3173031592171678e+21, #surpise 
 			"nue":targetpot/2.891774385462469e+22,
-			"extbnb": (2263559.0)/(19214565.0),
+			# "extbnb": (2263559.0)/(19214565.0),
+			"extbnb": (2263559.0)/(150523663.0),
 			"data":1.0}
-	files = {"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3mil_nu_20260211_143930.root",
+	files = {
+			"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3mil_nu_20260211_143930.root",
+			# "numu": f"{lantern_dir}/all_runs_mmr/run3_surprise/root_files/selection/run3surp_nu_20260324_175839.root",
 			"nue":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3mil_nue_20260123_181343.root", 
-			"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3b_extbnb_20260112_160141.root",
+			# "extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3b_extbnb_20260112_160141.root",
+			"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3_extbnb_20260401_140944.root",
 			"data":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection/run3mil_data_20260126_180100.root"}
 	xsecflux_files = {
 		"nue": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nue.root",
@@ -111,25 +134,25 @@ if run_num == 4:
 	}
 	
 	files_4b = {
-		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_bnb_nu_overlay_20260210_180525.root",
-		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_bnb_nue_overlay_20260114_205851.root",
-		"extbnb": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_extbnb_20260114_212008.root",
-		# "data": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_data_20260114_212707.root"
-		"data":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_open_data_20260305_183735.root"
+		"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_nu_20260406_211655.root",
+		"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_nue_20260406_215410.root",
+		"extbnb": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_extbnb_20260406_220555.root",
+		# "data": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_data_20260406_221150.root"
+		"data":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_open_data_20260406_221504.root"
 	}
 	
 	files_4c = {
-		"numu": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_nu_20260210_183615.root",
-		"nue": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_nue_20260210_185504.root",
-		"extbnb": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_extbnb_20260210_190529.root",
-		"data": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_data_20260210_192923.root"
+		"numu": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_nu_20260406_211847.root",
+		"nue": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_nue_20260406_213242.root",
+		"extbnb": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_extbnb_20260406_215448.root",
+		"data": f"{lantern_dir}/all_runs_mmr/run4c/root_files/selection/run4c_data_20260406_221702.root"
 	}
 	
 	files_4d = {
-		"numu": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_nu_20260210_184026.root",
-		"nue": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_nue_20260210_191735.root",
-		"extbnb": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_extbnb_20260210_193818.root",
-		"data": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_data_20260210_201556.root"
+		"numu": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_nu_20260406_212137.root",
+		"nue": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_nue_20260406_214755.root",
+		"extbnb": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_extbnb_20260406_225937.root",
+		"data": f"{lantern_dir}/all_runs_mmr/run4d/root_files/selection/run4d_data_20260406_233631.root"
 	}
 	
 	files = {'4b': files_4b, '4c': files_4c, '4d': files_4d}
@@ -309,6 +332,8 @@ if run_num in [1, 3]:
 		"kminus_PrimaryHadronNormalization",
 		"kplus_PrimaryHadronFeynmanScaling",
 		"kzero_PrimaryHadronSanfordWang",
+		"piminus_PrimaryHadronSWCentralSplineVariation",
+		"piplus_PrimaryHadronSWCentralSplineVariation"
 	]
 	xsec_params = [
 		"All_UBGenie",
@@ -323,8 +348,6 @@ if run_num in [1, 3]:
 		"NormNCCOH_UBGenie",
 		"ThetaDelta2NRad_UBGenie",
 		"Theta_Delta2Npi_UBGenie", 
-		"piminus_PrimaryHadronSWCentralSplineVariation",
-		"piplus_PrimaryHadronSWCentralSplineVariation"
 	]
 	reint_params = [
 		"reinteractions_piminus_Geant4",
@@ -347,8 +370,8 @@ if run_num in [4, 41, 42, 43, 44, 5]:
 		"xsr_scc_Fv3_SCC",
 		"NormCCCOH_UBGenie",
 		"NormNCCOH_UBGenie",
-		"ThetaDelta2NRad_UBGenie",
-		"Theta_Delta2Npi_UBGenie"
+		"ThetaDelta2NRad_UBGenie", # <0.01
+		"Theta_Delta2Npi_UBGenie" # <0.01
 	]
 	reint_params = [
 		"reint_all"
@@ -622,7 +645,7 @@ if truth_mode:
     base_cut = ("(numuIncCC_true_nu_pdg==14 && nueIncCC_true_ccnc==0"
                 " && true_vertex_properties_dwall > 3.0)")
 else:
-    base_cut = "(numuIncCC_passes_all_cuts==1)"
+    base_cut = "(nueIncCC_passes_all_cuts==1)"
 
 # Define sample categories with ROOT standard colors
 categories = {
@@ -635,7 +658,7 @@ categories = {
 	},
 	'nc_nue': {
 		'samples': ['nue'],
-		'truth_cut': f' && (numuIncCC_is_nc_interaction==1)',
+		'truth_cut': f' && (numuIncCC_is_cc_interaction==0)',
 		'color': rt.kViolet-1,
 		'fill_style': 1001,
 		'legend': 'NC nue'
@@ -649,7 +672,7 @@ categories = {
 	},
 	'nc_numu': {
 		'samples': ['numu'],
-		'truth_cut': f' && (numuIncCC_is_nc_interaction==1)', 
+		'truth_cut': f' && (numuIncCC_is_cc_interaction==0)', 
 		'color': rt.kGreen+1,
 		'fill_style': 1001,
 		'legend': 'NC numu'
@@ -1704,6 +1727,199 @@ for var_name, var_info in variables.items():
 	cosmic_events  = total_events.get('cosmic', 0)
 	cc_nue_events  = total_events.get('cc_nue', 0)
 	nc_events      = total_events.get('nc_nue', 0) + total_events.get('nc_numu', 0)
+
+# ---------------------------------------------------------------------------
+# Cut flow efficiency and purity plot
+# ---------------------------------------------------------------------------
+if show_cut_flow:
+	print("\n=== Creating cut flow efficiency/purity plot ===")
+
+	truth_cut_eff = "(nueIncCC_true_ccnc==0 && true_vertex_properties_dwall>3.0)"
+
+	# --- Fixed efficiency denominator: true CC nue in FV ---
+	h_cf_denom = rt.TH1D("h_cf_denom", "", 1, 0, 1)
+	h_cf_denom.Sumw2()
+
+	if run_num == 4:
+		h_cf_denom_tmp = rt.TH1D("h_cf_denom_tmp", "", 1, 0, 1)
+		h_cf_denom_tmp.Sumw2()
+		for run_label in run4_labels:
+			h_cf_denom_tmp.Reset()
+			trees[run_label]['numu'].Draw(
+				"0.5>>h_cf_denom_tmp",
+				f"({truth_cut_eff})*eventweight_weight", "goff")
+			h_cf_denom_tmp.Scale(scaling[run_label]['numu'])
+			h_cf_denom.Add(h_cf_denom_tmp)
+	else:
+		trees['numu'].Draw(
+			"0.5>>h_cf_denom",
+			f"({truth_cut_eff})*eventweight_weight", "goff")
+		h_cf_denom.Scale(scaling['numu'])
+
+	n_true_total = h_cf_denom.GetBinContent(1)
+	print(f"  Efficiency denominator (true CC numu in FV): {n_true_total:.2f}")
+
+	# --- Per-cut calculations ---
+	efficiencies = []
+	purities     = []
+
+	cumulative_cuts = []
+	for cut_branch, cut_label in cut_flow_cuts:
+		cumulative_cuts.append(f"({cut_branch}==1)")
+		cut_str  = " && ".join(cumulative_cuts)
+		nue_veto = " && (remove_true_nue_cc_flag==0)"
+
+		# Purity numerator: CC nue from nue sample passing reco cut
+		h_sig = rt.TH1D(f"h_cf_sig_{cut_branch}",  "", 1, 0, 1)
+		h_sig.Sumw2()
+
+		# Efficiency numerator: CC nue passing reco cut AND truth cut
+		h_sig_eff = rt.TH1D(f"h_cf_sigeff_{cut_branch}", "", 1, 0, 1)
+		h_sig_eff.Sumw2()
+
+		# Purity denominator: all MC (nue + numu + extbnb) passing reco cut
+		h_tot = rt.TH1D(f"h_cf_tot_{cut_branch}", "", 1, 0, 1)
+		h_tot.Sumw2()
+
+		cc_cut      = f"({cut_str}) && (numuIncCC_is_cc_interaction==1)"
+		cc_cut_eff  = f"({cut_str}) && (numuIncCC_is_cc_interaction==1) && ({truth_cut_eff})"
+
+		if run_num == 4:
+			h_sig_tmp     = rt.TH1D("h_cf_sig_tmp",     "", 1, 0, 1); h_sig_tmp.Sumw2()
+			h_sig_eff_tmp = rt.TH1D("h_cf_sigeff_tmp",  "", 1, 0, 1); h_sig_eff_tmp.Sumw2()
+			h_tot_tmp     = rt.TH1D("h_cf_tot_tmp",     "", 1, 0, 1); h_tot_tmp.Sumw2()
+
+			for run_label in run4_labels:
+				h_sig_tmp.Reset()
+				h_sig_eff_tmp.Reset()
+				trees[run_label]['numu'].Draw(
+					f"0.5>>h_cf_sig_tmp",
+					f"({cc_cut})*eventweight_weight", "goff")
+				trees[run_label]['numu'].Draw(
+					f"0.5>>h_cf_sigeff_tmp",
+					f"({cc_cut_eff})*eventweight_weight", "goff")
+				h_sig_tmp.Scale(scaling[run_label]['numu'])
+				h_sig_eff_tmp.Scale(scaling[run_label]['numu'])
+				h_sig.Add(h_sig_tmp)
+				h_sig_eff.Add(h_sig_eff_tmp)
+
+				for sample in ['nue', 'numu', 'extbnb']:
+					h_tot_tmp.Reset()
+					veto = nue_veto if sample == 'numu' else ""
+					trees[run_label][sample].Draw(
+						f"0.5>>h_cf_tot_tmp",
+						f"({cut_str}{veto})*eventweight_weight", "goff")
+					h_tot_tmp.Scale(scaling[run_label][sample])
+					h_tot.Add(h_tot_tmp)
+		else:
+			trees['numu'].Draw(
+				f"0.5>>h_cf_sig_{cut_branch}",
+				f"({cc_cut})*eventweight_weight", "goff")
+			trees['numu'].Draw(
+				f"0.5>>h_cf_sigeff_{cut_branch}",
+				f"({cc_cut_eff})*eventweight_weight", "goff")
+			h_sig.Scale(scaling['numu'])
+			h_sig_eff.Scale(scaling['numu'])
+
+			for sample in ['nue', 'numu', 'extbnb']:
+				h_tmp = rt.TH1D(f"h_cf_tot_{cut_branch}_{sample}", "", 1, 0, 1)
+				h_tmp.Sumw2()
+				veto = nue_veto if sample == 'numu' else ""
+				trees[sample].Draw(
+					f"0.5>>h_cf_tot_{cut_branch}_{sample}",
+					f"({cut_str}{veto})*eventweight_weight", "goff")
+				h_tmp.Scale(scaling[sample])
+				h_tot.Add(h_tmp)
+
+		n_sig     = h_sig.GetBinContent(1)
+		n_sig_eff = h_sig_eff.GetBinContent(1)
+		n_tot     = h_tot.GetBinContent(1)
+
+		eff = n_sig_eff / n_true_total if n_true_total > 0 else 0.0
+		pur = n_sig     / n_tot        if n_tot > 0        else 0.0
+
+		efficiencies.append(eff)
+		purities.append(pur)
+		print(f"  {cut_label.replace(chr(10), ' ')}: "
+		      f"eff={eff:.3f}  pur={pur:.3f}  "
+		      f"sig={n_sig:.1f}  tot={n_tot:.1f}")
+
+	# --- Build labeled histograms ---
+	n_cuts = len(cut_flow_cuts)
+
+	h_eff_cf = rt.TH1D("h_numu_cutflow_efficiency", "", n_cuts, 0, n_cuts)
+	h_pur_cf = rt.TH1D("h_numu_cutflow_purity",     "", n_cuts, 0, n_cuts)
+
+	for i, (eff, pur) in enumerate(zip(efficiencies, purities)):
+		h_eff_cf.SetBinContent(i + 1, eff)
+		h_pur_cf.SetBinContent(i + 1, pur)
+
+	for i, (_, cut_label) in enumerate(cut_flow_cuts):
+		label_single_line = cut_label.replace('\n', ' ')
+		h_eff_cf.GetXaxis().SetBinLabel(i + 1, label_single_line)
+		h_pur_cf.GetXaxis().SetBinLabel(i + 1, label_single_line)
+
+	# --- Style ---
+	h_eff_cf.SetLineColor(rt.kRed + 1)
+	h_eff_cf.SetLineWidth(3)
+	h_eff_cf.SetMarkerStyle(21)
+	h_eff_cf.SetMarkerColor(rt.kRed + 1)
+	h_eff_cf.SetMarkerSize(1.3)
+
+	h_pur_cf.SetLineColor(rt.kBlue + 1)
+	h_pur_cf.SetLineWidth(3)
+	h_pur_cf.SetMarkerStyle(20)
+	h_pur_cf.SetMarkerColor(rt.kBlue + 1)
+	h_pur_cf.SetMarkerSize(1.3)
+
+	# --- Canvas ---
+	canvas_cf = rt.TCanvas("c_numu_cutflow", "Cut Flow Efficiency and Purity", 1200, 650)
+	canvas_cf.Draw()
+	canvas_cf.cd()
+	canvas_cf.SetBottomMargin(0.22)
+	canvas_cf.SetLeftMargin(0.10)
+	canvas_cf.SetRightMargin(0.05)
+	canvas_cf.SetTickx(1)
+	canvas_cf.SetTicky(1)
+
+	h_eff_cf.SetTitle(f"{plot_title};; Efficiency & Purity")
+	h_eff_cf.SetMinimum(0.0)
+	h_eff_cf.SetMaximum(1.15)
+	h_eff_cf.GetXaxis().SetLabelSize(0.048)
+	h_eff_cf.GetXaxis().LabelsOption("v")
+	h_eff_cf.GetXaxis().SetLabelOffset(0.005)
+	h_eff_cf.GetYaxis().SetLabelSize(0.040)
+	h_eff_cf.GetYaxis().SetTitleSize(0.042)
+	h_eff_cf.GetYaxis().SetTitleOffset(1.0)
+
+	h_eff_cf.Draw("LP")
+	h_pur_cf.Draw("LP same")
+
+	# Annotate each point with its value
+	text_cf = rt.TLatex()
+	text_cf.SetTextSize(0.028)
+	text_cf.SetTextAlign(21)  # centre-bottom
+	for i, (eff, pur) in enumerate(zip(efficiencies, purities)):
+		x = i + 0.5
+		text_cf.SetTextColor(rt.kRed + 1)
+		text_cf.DrawLatex(x, eff + 0.03, f"{eff:.2f}")
+		text_cf.SetTextColor(rt.kBlue + 1)
+		text_cf.DrawLatex(x, pur + 0.03, f"{pur:.2f}")
+
+	leg_cf = rt.TLegend(0.12, 0.88, 0.42, 0.96)
+	leg_cf.SetNColumns(2)
+	leg_cf.SetTextSize(0.036)
+	leg_cf.SetFillStyle(0)
+	leg_cf.SetBorderSize(1)
+	leg_cf.AddEntry(h_eff_cf, "Efficiency", "lp")
+	leg_cf.AddEntry(h_pur_cf, "Purity",     "lp")
+	leg_cf.Draw()
+
+	canvas_cf.Update()
+	canvas_cf.RedrawAxis()
+	out.cd()
+	canvas_cf.Write()
+	print("  Cut flow plot saved.")
 
 print("\nSaved to", out_name)
 out.Close()

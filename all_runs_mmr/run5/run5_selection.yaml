@@ -1,5 +1,3 @@
-# numu_cc_analysis_config.yaml
-
 # Output directory
 output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/selection/"
 
@@ -88,31 +86,11 @@ producers:
   eventweight:
     type: eventWeightProducer
     config: {}
-
-  ## Reco vertex properties
-  vertex_properties:
-    type: VertexPropertiesProducer
-    config: {}
   
   ## True vertex properties 
   true_vertex_properties: 
     type: TrueVertexPropertiesProducer
     config: {}
-
-  # electron properties  
-  # recoElectron:
-  #   type: RecoElectronPropertiesProducer
-  #   config:
-  #     electron_quality_cuts:
-  #       min_charge: 0.0
-  #       min_purity: 0.0
-  #       min_completeness: 0.0
-  
-  # muon track properties
-  # recoMuonTrack:
-  #   type: RecoMuonTrackPropertiesProducer
-  #   config:
-  #     track_min_energy: 25.0
 
   # nue signal definition
   nueCCinc:
@@ -151,15 +129,3 @@ producers:
   ## Remove True Nue CC Producer 
   remove_true_nue_cc_flag: 
     type: RemoveTrueNueCCFlagProducer
-    # applyto: # Nu overlay (doesn't work)
-    #   - run3b_bnb_nue_overlay
-    
-
-# Cut configuration
-# cuts: 
-#   remove_true_nue_cc:
-#     applyto:
-#      - run4b_v10_04_07_20_BNB_nu_overlay_retuple
-
-# cut_logic: "(not {remove_true_nue_cc})"
-

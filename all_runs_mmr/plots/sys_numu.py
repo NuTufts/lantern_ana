@@ -67,7 +67,7 @@ DATAPRED_CANVAS_NAME = "c_neutrino_energy;1"
 RATIO_HIST_NAME      = "h_ratio_neutrino_energy"      # central ratio values
 RATIO_UNC_HIST_NAME  = "h_ratio_unc_neutrino_energy"  # uncertainty envelope
 
-X_TITLE_RATIO = "True Neutrino Energy (GeV)"
+X_TITLE_RATIO = "True Numu Energy (GeV)"
 Y_TITLE_RATIO = "Data / Pred"
 Y_MIN_RATIO   = 0.5
 Y_MAX_RATIO   = 1.5
@@ -81,7 +81,7 @@ X_TITLE_PUR  = "Reco Neutrino Energy (GeV)"
 Y_TITLE_PUR  = "Purity"
 Y_MAX_PUR    = 1.05         # None → data-driven
 
-X_TITLE_EFF  = "Reco Neutrino Energy (GeV)"
+X_TITLE_EFF  = "True Neutrino Energy (GeV)"
 Y_TITLE_EFF  = "Efficiency"
 Y_MAX_EFF    = 1.05         # None → data-driven
 

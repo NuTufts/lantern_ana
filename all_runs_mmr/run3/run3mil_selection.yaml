@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/all_runs_mmr/run3mil/root_files/selection/"
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run3/root_files/selection_v2/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -21,9 +21,11 @@ datasets:
     
     - /cluster/tufts/wongjiradlabnu/mrosen25/gen2ntuple/submissions/output/
     - /cluster/tufts/wongjiradlabnu/nutufts/data/ntuples/
+    - /exp/uboone/data/users/imani/ntuples/run3/
+
 
   # same as CV?  
-  run3mil_nu:
+  run3_nu:
     type: RootDataset
     tree: EventTree
     pottree: potTree
@@ -110,14 +112,14 @@ datasets:
   # #   filepaths:
   # #    - dlgen2_reco_v2me05_ntuple_v7_mcc9_run3b_bnb_intrinsic_nue_overlay_nocrtremerge.root
 
-  # run3mil_nue:
-  #   type: RootDataset
-  #   tree: EventTree
-  #   pottree: potTree
-  #   ismc: true
-  #   process: true
-  #   filepaths:
-  #    - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
+  run3_nue:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
 
 
   # ## 100k CV Sample
@@ -200,17 +202,26 @@ datasets:
   #    - dlgen2_reco_v2me06_ntuple_v7_mcc9_v40a_dl_run3b_intrinsic_nue_overlay_wiremodThetaYZ.root
 
 
-
-  run3b_extbnb:
+  # run3b_extbnb:
+  #   type: RootDataset
+  #   tree: EventTree
+  #   pottree: potTree
+  #   ismc: false
+  #   process: true
+  #   filepaths:
+  #   - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_G2_extbnb.root
+  
+  run3_extbnb:
     type: RootDataset
     tree: EventTree
     pottree: potTree
     ismc: false
     process: true
     filepaths:
-    - dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_G2_extbnb.root
-  
-  run3mil_data:
+     - hadded_dlgen2_reco_v2me06_ntuple_v5_mcc9_v29e_dl_run3_F_G1_G2_G2a_extbnb.root
+
+
+  run3_data:
     type: RootDataset
     tree: EventTree
     pottree: potTree

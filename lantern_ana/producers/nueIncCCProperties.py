@@ -57,7 +57,6 @@ class nueIncCCProducer(ProducerBaseClass):
             'cut6_electron_confidence': array('i', [0]),    # Cut 6: High electron confidence
             'passes_all_cuts': array('i', [0]),             # Combined selection
             'is_charge_current': array('i', [0]),           # CC vs NC flag
-            'is_neutral_current': array('i', [0])           # NC flag (inverse of CC)
         }
         
         # Additional diagnostic variables
@@ -71,16 +70,17 @@ class nueIncCCProducer(ProducerBaseClass):
             'largest_electron_is_primary': array('i', [0]), # Is largest electron primary?
             'reco_nu_energy': array('f', [-1.0]),
             'reco_electron_momentum': array('f', [-1.0]),   # Momentum magnitude of largest electron
-            'reco_electron_costheta': array('f', [-999.0])  # Cos theta of largest electron w.r.t. beam
+            'reco_electron_costheta': array('f', [-999.0]),  # Cos theta of largest electron w.r.t. beam
+            'is_fully_contained': array('i', [0]),
         }
-        
+
         # Truth information (for MC)
         self.truth_variables = {
             'true_nu_pdg': array('i', [0]),                 # True neutrino PDG
             'true_ccnc': array('i', [-1]),                 # True CC/NC (0=CC, 1=NC)
             'true_interaction_mode': array('i', [-1])       # True interaction mode
         }
-    
+
     def prepareStorage(self, output: Any) -> None:
         """Set up branches in the output ROOT TTree."""
         
@@ -120,7 +120,7 @@ class nueIncCCProducer(ProducerBaseClass):
         self.diagnostic_variables['reco_nu_energy'][0] = -1.0
         self.diagnostic_variables['reco_electron_momentum'][0] = -1.0
         self.diagnostic_variables['reco_electron_costheta'][0] = -999.0
-        
+        self.diagnostic_variables['is_fully_contained'][0] = 0
         # Reset truth variables
         self.truth_variables['true_nu_pdg'][0] = 0
         self.truth_variables['true_ccnc'][0] = -1
@@ -176,19 +176,22 @@ class nueIncCCProducer(ProducerBaseClass):
         
         # ===== CUT 4: At least one LArPID-identified electron shower attached to neutrino candidate =====
         cut4_pass, electron_info = self._evaluate_cut4_has_electron(electron_candidates)
-        self.cut_variables['cut4_has_electron'][0] = int(cut4_pass)
-        
+        cut4_pass = cut3_pass and cut4_pass  
+        self.cut_variables['cut4_has_electron'][0] = int(cut4_pass)        
+
         # ===== EXTRACT ELECTRON MOMENTUM AND COS THETA =====
         self._extract_electron_kinematics(ntuple, electron_info)
         
         # ===== CUT 5: No tracks have high LArPID muon score (max log(muon score) < −3.7) =====
         cut5_pass = self._evaluate_cut5_low_muon_score(ntuple)
+        cut5_pass = cut4_pass and cut5_pass
         self.cut_variables['cut5_low_muon_score'][0] = int(cut5_pass)
         
         # ===== CUT 6: Largest electron has high confidence =====
         cut6_pass = self._evaluate_cut6_electron_confidence(electron_candidates, electron_info)
-        self.cut_variables['cut6_electron_confidence'][0] = int(cut6_pass)
-        
+        cut6_pass = cut5_pass and cut6_pass
+        self.cut_variables['cut6_electron_confidence'][0] = int(cut6_pass)   
+
         # ===== COMBINED SELECTION =====
         all_cuts_pass = cut1_pass and cut2_pass and cut3_pass and cut4_pass and cut5_pass and cut6_pass
         self.cut_variables['passes_all_cuts'][0] = int(all_cuts_pass)
@@ -236,7 +239,14 @@ class nueIncCCProducer(ProducerBaseClass):
         # Get fraction of hits that overlap with tagged cosmic rays
         cosmic_fraction = getattr(ntuple, 'vtxFracHitsOnCosmic', 1.0)
         self.diagnostic_variables['cosmic_hit_fraction'][0] = cosmic_fraction
-        
+
+        # Fully contained: all prong hits inside fiducial volume (vtxContainment == 2)
+        self.diagnostic_variables['is_fully_contained'] = array('i', [0])  # add to __init__
+        # then in processEvent after vtx_containment is read:
+        self.diagnostic_variables['is_fully_contained'][0] = int(
+            getattr(ntuple, 'vtxContainment', -1) == 2
+        )
+
         # Pass if not ALL hits overlap with cosmics (cosmic_fraction < 1.0)
         return cosmic_fraction < (self._cosmic_fraction_threshold - 1e-6) 
     
@@ -261,7 +271,7 @@ class nueIncCCProducer(ProducerBaseClass):
             
             # Check if track is identified as muon (PDG = 13)
             track_pid = getattr(ntuple, 'trackPID', [0])[i]
-            if abs(track_pid) == 13:
+            if track_pid == 13:
                 n_muon_tracks += 1
         
         self.diagnostic_variables['n_muon_tracks'][0] = n_muon_tracks
@@ -289,6 +299,8 @@ class nueIncCCProducer(ProducerBaseClass):
         
         for idx in electron_idx_list:
             if idx in electron_data:
+                if idx >= 100:      # skip track-based candidates (idx+100 convention)
+                    continue
                 shower_data = electron_data[idx]
                 shower_energy = shower_data.get('showerQ', 0.0)  # Using charge as energy proxy
                 shower_process = shower_data.get('process', -1)
@@ -304,7 +316,7 @@ class nueIncCCProducer(ProducerBaseClass):
                     })
                     
                     # Check if this is the largest primary electron
-                    if shower_process == 0 and shower_energy > largest_primary_electron_energy:
+                    if shower_process == 0 and shower_energy > largest_primary_electron_energy and idx < 100:
                         largest_primary_electron_energy = shower_energy
                         largest_primary_electron_idx = idx
         
@@ -363,7 +375,7 @@ class nueIncCCProducer(ProducerBaseClass):
     def _evaluate_cut5_low_muon_score(self, ntuple) -> bool:
         """
         Cut 5: No tracks attached to neutrino candidate have a high LArPID muon score.
-        Requirement: max log(muon score) < −3.7
+        Requirement: max log(muon score) < -3.7
         
         Returns True if all track muon scores are below threshold.
         """
@@ -393,7 +405,7 @@ class nueIncCCProducer(ProducerBaseClass):
     def _evaluate_cut6_electron_confidence(self, electron_candidates, electron_info) -> bool:
         """
         Cut 6: The largest identified electron was classified by LArPID as an electron with high confidence.
-        Requirement: log(electron score) − (log(pion score) + log(photon score))/2 > 7.1
+        Requirement: log(electron score) - (log(pion score) + log(photon score))/2 > 7.1
         
         Uses electron candidates from get_primary_electron_candidates function.
         Returns True if electron confidence is above threshold.
@@ -402,7 +414,8 @@ class nueIncCCProducer(ProducerBaseClass):
         largest_primary_idx = electron_info['largest_primary_idx']
         electron_data = electron_info['electron_data']
         
-        if largest_primary_idx < 0 or largest_primary_idx not in electron_data:
+        # if largest_primary_idx < 0 or largest_primary_idx not in electron_data:
+        if largest_primary_idx < 0 or largest_primary_idx >= 100:
             # No primary electron found
             return False
         
@@ -441,7 +454,6 @@ class nueIncCCProducer(ProducerBaseClass):
             if self.truth_variables['true_ccnc'][0] != -1:
                 true_ccnc = self.truth_variables['true_ccnc'][0]
                 self.cut_variables['is_charge_current'][0] = int(true_ccnc == 0)
-                self.cut_variables['is_neutral_current'][0] = int(true_ccnc == 1)
                 return
         except:
             pass
@@ -457,7 +469,6 @@ class nueIncCCProducer(ProducerBaseClass):
         is_cc = has_muon or has_electron
         
         self.cut_variables['is_charge_current'][0] = int(is_cc)
-        self.cut_variables['is_neutral_current'][0] = int(not is_cc)
     
     def _get_results(self) -> Dict[str, Any]:
         """Convert array values to a results dictionary."""
