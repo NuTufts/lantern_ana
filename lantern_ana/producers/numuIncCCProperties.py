@@ -58,7 +58,6 @@ class numuIncCCProducer(ProducerBaseClass):
 
             # Cut 3: Muon identification
             'cut3_has_muon': array('i', [0]),          # Cut 3 pass flag
-            'has_muon_track': array('i', [0]),
             'n_muon_tracks': array('i', [0]),
             'max_muon_score': array('f', [-200.0]),
             'max_muon_charge': array('f', [0.0]),
@@ -105,7 +104,6 @@ class numuIncCCProducer(ProducerBaseClass):
 
         # Cut 3 defaults
         self._vars['cut3_has_muon'][0] = 0
-        self._vars['has_muon_track'][0] = 0
         self._vars['n_muon_tracks'][0] = 0
         self._vars['max_muon_score'][0] = -200.0
         self._vars['max_muon_charge'][0] = 0.0
@@ -275,8 +273,6 @@ class numuIncCCProducer(ProducerBaseClass):
 
         # Muon presence: PID classification only
         has_muon = n_muon_tracks > 0
-        self._vars['has_muon_track'][0] = int(has_muon)
-
         cut3_pass = has_muon
         self._vars['cut3_has_muon'][0] = int(cut3_pass)
 
@@ -349,7 +345,6 @@ class numuIncCCProducer(ProducerBaseClass):
             'vertex_in_fv': self._vars['vertex_in_fv'][0],
             'vtx_cosmic_fraction': self._vars['vtx_cosmic_fraction'][0],
             'is_fully_contained': self._vars['is_fully_contained'][0],
-            'has_muon_track': self._vars['has_muon_track'][0],
             'n_muon_tracks': self._vars['n_muon_tracks'][0],
             'max_muon_score': self._vars['max_muon_score'][0],
             'is_cc_interaction': self._vars['is_cc_interaction'][0],

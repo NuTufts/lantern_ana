@@ -87,7 +87,7 @@ Y_MAX_EFF    = 1.05         # None → data-driven
 
 # ── Output ────────────────────────────────────────────────────────────────────
 output_dir  = f"{lantern_dir}/all_runs_mmr/plots/numu/"
-output_root = f"{output_dir}/systematic_comparison_by_type.root"
+output_root = f"{output_dir}/sys_comp_numu.root"
 
 
 # ══════════════════════════════════════════════════════════════════════════════

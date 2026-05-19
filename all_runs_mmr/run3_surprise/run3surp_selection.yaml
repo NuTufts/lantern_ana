@@ -18,18 +18,28 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /pnfs/uboone/persistent/users/uboonepro/surprise/temp/
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run3_full_samples/wc_processed/BNB/
 
-  run3surp_nu:
+  # run3surp_nu:
+  #   type: RootDataset
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
+  #   ismc: true
+  #   process: true
+  #   filepaths:
+  #    - checkout_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3.root
+  #   friendtrees: 
+  #     nuselection/NeutrinoSelectionFilter: checkout_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3.root
+
+  run3_nu:
     type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
+    tree: EventTree
+    pottree: potTree
     ismc: true
     process: true
     filepaths:
-     - checkout_temp_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3_all.root
-    friendtrees: 
-      nuselection/NeutrinoSelectionFilter: checkout_temp_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3_all.root
+     - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
+
 
 
 producers:
@@ -53,31 +63,11 @@ producers:
   eventweight:
     type: eventWeightProducer
     config: {}
-
-  ## Reco vertex properties
-  vertex_properties:
-    type: VertexPropertiesProducer
-    config: {}
   
   ## True vertex properties 
   true_vertex_properties: 
     type: TrueVertexPropertiesProducer
     config: {}
-
-  # electron properties  
-  # recoElectron:
-  #   type: RecoElectronPropertiesProducer
-  #   config:
-  #     electron_quality_cuts:
-  #       min_charge: 0.0
-  #       min_purity: 0.0
-  #       min_completeness: 0.0
-  
-  # muon track properties
-  # recoMuonTrack:
-  #   type: RecoMuonTrackPropertiesProducer
-  #   config:
-  #     track_min_energy: 25.0
 
   # nue signal definition
   nueCCinc:

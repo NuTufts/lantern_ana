@@ -1,6 +1,6 @@
 
 # Output directory
-output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/"
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -18,7 +18,7 @@ print_dependency_graph: true
 datasets:
   folders:
     - /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/selection/
-    - /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/
+    - /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/
 
   run5_nu_cv:
     type: RootDataset
@@ -26,7 +26,8 @@ datasets:
     ismc: true
     process: true
     filepaths:
-      - run5_nu_cv_20260211_005127.root
+      - run5_nu_cv_20260408_130124.root
+      # - run5_nu_cv_20260211_005127.root
 
 # Producer configuration (producers run first)
 producers:
@@ -48,15 +49,22 @@ producers:
       event: eventIndex_event
       central_value_dataset: run5_nu_cv
       variation_rootfiles:
-        LYAtt:      /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYA_20260211_010758.root
-        LYDown:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYD_20260211_011546.root
-        LYRayleigh: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYR_20260211_012302.root
-        wiremodX:   /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_WMX_20260211_014101.root
-        wiremodYZ:  /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_WMYZ_20260211_014836.root
-        # wiremodThetaYZ: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/xxx.root
-        # wiremodThetaXZ: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/xxx.root
-        SCE:         /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_sce_20260211_013407.root
-        recomb2:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_recomb2_20260211_012903.root
+        # LYAtt:      /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYA_20260211_010758.root
+        # LYDown:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYD_20260211_011546.root
+        # LYRayleigh: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_LYR_20260211_012302.root
+        # wiremodX:   /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_WMX_20260211_014101.root
+        # wiremodYZ:  /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_WMYZ_20260211_014836.root
+        # # wiremodThetaYZ: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/xxx.root
+        # # wiremodThetaXZ: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/xxx.root
+        # SCE:         /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_sce_20260211_013407.root
+        # recomb2:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys/run5_nu_recomb2_20260211_012903.root
+        LYAtt:      /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_LYA_20260408_134659.root
+        LYDown:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_LYD_20260408_144814.root
+        LYRayleigh: /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_LYR_20260408_145347.root
+        wiremodX:   /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_WMX_20260408_154710.root
+        wiremodYZ:  /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_WMYZ_20260408_160256.root
+        SCE:         /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_sce_20260408_151147.root
+        recomb2:     /exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run5/root_files/detsys_v2/run5_nu_recomb2_20260408_150751.root
       variation_treename: analysis_tree
       cut_formulas:
       cut_formulas:
@@ -82,21 +90,21 @@ producers:
           #  - 'wiremodThetaYZ'
            - 'SCE'
            - 'recomb2'
-        reco_neutrino_energy: 
-          formula: vertex_properties_recoEnuMeV
-          numbins: 60
-          minvalue: 0.0
-          maxvalue: 3000.0
-          applicable_variations:
-           - 'LYAtt'
-           - 'LYDown'
-           - 'LYRayleigh'
-           - 'wiremodX'
-           - 'wiremodYZ'
-          #  - 'wiremodThetaXZ'
-          #  - 'wiremodThetaYZ'
-           - 'SCE'
-           - 'recomb2'
+        # reco_neutrino_energy: 
+        #   formula: vertex_properties_recoEnuMeV
+        #   numbins: 60
+        #   minvalue: 0.0
+        #   maxvalue: 3000.0
+        #   applicable_variations:
+        #    - 'LYAtt'
+        #    - 'LYDown'
+        #    - 'LYRayleigh'
+        #    - 'wiremodX'
+        #    - 'wiremodYZ'
+        #   #  - 'wiremodThetaXZ'
+        #   #  - 'wiremodThetaYZ'
+        #    - 'SCE'
+        #    - 'recomb2'
         reco_muon_momentum: 
           formula: numuIncCC_reco_muon_momentum
           numbins: 30

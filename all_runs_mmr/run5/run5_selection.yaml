@@ -83,23 +83,23 @@ producers:
     config: {} 
 
   ## MC event weight 
-  eventweight:
-    type: eventWeightProducer
-    config: {}
+  # eventweight:
+  #   type: eventWeightProducer
+  #   config: {}
   
   ## True vertex properties 
   true_vertex_properties: 
     type: TrueVertexPropertiesProducer
     config: {}
 
-  # nue signal definition
-  nueCCinc:
-    type: signalNueCCInclusive
-    config:
-      fv_params:
-        width: 0.0
-        apply_scc: false
-        usetruevtx: true
+  # # nue signal definition
+  # nueCCinc:
+  #   type: signalNueCCInclusive
+  #   config:
+  #     fv_params:
+  #       width: 0.0
+  #       apply_scc: false
+  #       usetruevtx: true
 
   # Truth mode classification
   truth_mode:

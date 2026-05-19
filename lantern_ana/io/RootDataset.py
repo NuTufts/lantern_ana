@@ -31,7 +31,8 @@ class RootDataset(Dataset):
         self._filepaths = config.get('filepaths', [])
         self._ismc = config.get('ismc', False)
         self._islantern = config.get('islantern', True)
-        self._potTreeName = config.get('pottree','potTree')        
+        self._potTreeName = config.get('pottree','potTree')
+        self._potBranch   = config.get('pot_branch', 'totGoodPOT')
         self._tree = None
         self._num_entries = 0
         self._pot = 0.0
@@ -76,7 +77,7 @@ class RootDataset(Dataset):
                     if pot_tree:
                         for i in range(pot_tree.GetEntries()):
                             pot_tree.GetEntry(i)
-                            self._pot += pot_tree.totGoodPOT
+                            self._pot += getattr(pot_tree, self._potBranch)
 
         self._num_entries = self._tree.GetEntries()       
 
