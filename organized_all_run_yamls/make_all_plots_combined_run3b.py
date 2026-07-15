@@ -1,3 +1,6 @@
+# makes run3 plots with overlay, EXT, and data
+# and systematics plots: detvar (1mil + 500k) and xsecflux
+
 import os, sys
 import ROOT as rt
 import array
@@ -12,12 +15,17 @@ run_num = 3  # Run 3b configuration
 # Directory paths
 lantern_dir = "/cluster/tufts/wongjiradlabnu/pabrat01/lantern_ana"
 
-# Target POT for scaling
-targetpot = 4.4e19
+# Input files for data and EXT
+data_file = f"{lantern_dir}/studies/numu_cc_tki/output_split_tki_run3/run3_data_bnb1e19_20260303_201104.root"
+ext_file = f"{lantern_dir}/studies/numu_cc_tki/output_split_tki_run3/run3_extbnb_mcc9_v29e_hadded_20260303_200450.root"
 
-# Scaling factors (for xsecflux systematics which are at different POT)
-xsecflux_pot = 8.98323351831587e+20
-scaling_xsecflux = targetpot / xsecflux_pot
+# POT values for Run3b
+targetpot = 8.806e18  # Run 3b target POT
+bnbnu_pot = 1.346689484233034e21  # Total BNB nu POT
+
+# Scaling factors
+overlay_weight = targetpot / bnbnu_pot  # targetpot / bnbnu_pot
+ext_weight = 0.02033225369  # pre-calculated EXT weight per bin
 
 # XsecFlux systematics file
 xsecflux_file = f"{lantern_dir}/studies/xsecfluxsys/output_tki_run3b_1mil_xsecflux/output_xsecflux_tki_run3b_1mil.root"
@@ -45,6 +53,10 @@ var_properties = {
     'maxprotonKE': {'title': 'Max Proton Kinetic Energy (GeV)', 'xmin': 0.0, 'xmax': 1.0},
     'pionKE': {'title': 'Pion Kinetic Energy (GeV)', 'xmin': 0.0, 'xmax': 1.0}
 }
+
+# Selection cuts (NO containment requirement since detsys files don't have it)
+base_cut = "(numuCC1piNpReco_is_target_1mu1piNproton==1)"
+truth_cut = " && (numuCC1piNp_is_target_cc_numu_1pi_nproton==1)"
 
 # =============================================================================
 # SYSTEMATICS PARAMETERS
@@ -303,6 +315,78 @@ def make_hist_w_errors(rfile, varname, sample, parlist):
     
     return hists
 
+
+def load_data_ext_histograms(data_file, ext_file, var, h_template, ext_weight):
+    """Load data and EXT histograms from ROOT files with pre-calculated weights
+    
+    Args:
+        h_template: Template histogram to get binning from (the detsys CV histogram)
+    """
+    
+    hists = {}
+    
+    # Create histograms with same binning as template (detsys CV)
+    nbins = h_template.GetNbinsX()
+    xmin = h_template.GetXaxis().GetXmin()
+    xmax = h_template.GetXaxis().GetXmax()
+    
+    h_data = rt.TH1D(f"h_data_{var}", h_template.GetTitle(), nbins, xmin, xmax)
+    h_ext = rt.TH1D(f"h_ext_{var}", h_template.GetTitle(), nbins, xmin, xmax)
+    
+    # Load data
+    if os.path.exists(data_file):
+        rfile_data = rt.TFile(data_file)
+        if not rfile_data.IsZombie():
+            tree_data = rfile_data.Get("analysis_tree")
+            if tree_data and not tree_data.IsZombie():
+                var_name = f"numuCC1piNpReco_{var}"
+                # Draw to a temporary histogram name, then fill our histogram
+                tree_data.Draw(f"{var_name}>>h_data_temp_{var}({nbins},{xmin},{xmax})", base_cut, "goff")
+                h_data_temp = rt.gDirectory.Get(f"h_data_temp_{var}")
+                if h_data_temp:
+                    for ibin in range(0, nbins+2):
+                        h_data.SetBinContent(ibin, h_data_temp.GetBinContent(ibin))
+                    print(f"  Loaded data: {h_data.Integral():.0f} events")
+                else:
+                    print(f"  Warning: Could not create data histogram")
+            else:
+                print(f"  Warning: Could not find data tree")
+        else:
+            print(f"  Warning: Could not open data file")
+    else:
+        print(f"  Warning: Data file not found")
+    
+    # Load EXT with pre-calculated weight
+    if os.path.exists(ext_file):
+        rfile_ext = rt.TFile(ext_file)
+        if not rfile_ext.IsZombie():
+            tree_ext = rfile_ext.Get("analysis_tree")
+            if tree_ext and not tree_ext.IsZombie():
+                var_name = f"numuCC1piNpReco_{var}"
+                # Draw to a temporary histogram name, then fill our histogram
+                tree_ext.Draw(f"{var_name}>>h_ext_temp_{var}({nbins},{xmin},{xmax})", base_cut, "goff")
+                h_ext_temp = rt.gDirectory.Get(f"h_ext_temp_{var}")
+                if h_ext_temp:
+                    for ibin in range(0, nbins+2):
+                        h_ext.SetBinContent(ibin, h_ext_temp.GetBinContent(ibin))
+                    
+                    # Scale with pre-calculated weight
+                    h_ext.Scale(ext_weight)
+                    print(f"  Loaded EXT: {h_ext.Integral():.2f} events (scaled with weight={ext_weight})")
+                else:
+                    print(f"  Warning: Could not create EXT histogram")
+            else:
+                print(f"  Warning: Could not find EXT tree")
+        else:
+            print(f"  Warning: Could not open EXT file")
+    else:
+        print(f"  Warning: EXT file not found")
+    
+    hists['data'] = h_data
+    hists['ext'] = h_ext
+    
+    return hists
+
 # =============================================================================
 # MAIN SCRIPT
 # =============================================================================
@@ -372,8 +456,9 @@ for var in variables:
     print(f"Creating plots for {var}")
     print(f"{'='*80}")
     
-    # Get CV histogram from detsys file (already has correct selection applied)
-    # Use first detsys file (1mil) which has the CVCV histogram
+    var_props = var_properties.get(var, {'title': var, 'xmin': 0, 'xmax': 1})
+    
+    # Get CV histogram from detsys file (MC overlay)
     if dfiles and len(dfiles) > 0:
         h_cv = dfiles[0].Get(f"hnumuCC1piNpReco_{var}__CVCV")
         
@@ -383,10 +468,20 @@ for var in variables:
         
         # Clone for our use
         h_total_mc = h_cv.Clone(f"h_{var}_total_mc")
-        print(f"  Loaded CV: {h_total_mc.Integral():.2f} events")
+        
+        # Scale with pre-calculated overlay weight (targetpot / bnbnu_pot)
+        h_total_mc.Scale(overlay_weight)
+        print(f"  Loaded MC CV: {h_total_mc.Integral():.2f} events (scaled with weight={overlay_weight})")
     else:
         print(f"  Error: No detsys files available")
         continue
+    
+    # Load data and EXT (pass CV histogram as template for binning)
+    data_ext_hists = load_data_ext_histograms(data_file, ext_file, var, h_total_mc, ext_weight)
+    h_data = data_ext_hists['data']
+    h_ext = data_ext_hists['ext']
+    
+    print(f"  DEBUG after loading: h_data has {h_data.Integral():.0f} events, h_ext has {h_ext.Integral():.2f} events")
     
     # Create uncertainty histograms
     h_uncertainty_total = h_total_mc.Clone(f"h_uncertainty_total_{var}")
@@ -434,7 +529,7 @@ for var in variables:
         if var in detsys_hists and 'frac_variance' in detsys_hists[var]:
             frac_var_detector = detsys_hists[var]['frac_variance'].GetBinContent(ibin)
         
-        # Statistical fractional uncertainty (use CV bin content as "unscaled")
+        # Statistical fractional uncertainty
         frac_var_stat = (1.0 / central) if central > 0 else 0.0
         
         # Total fractional variance (add in quadrature)
@@ -460,18 +555,31 @@ for var in variables:
     canvas.SetTickx(1)
     canvas.SetTicky(1)
     
-    # Set histogram style
+    print(f"  DEBUG before stacking: h_data has {h_data.Integral():.0f} events")
+    
+    # Create stack for backgrounds (EXT)
+    hstack = rt.THStack(f"hs_{var}", "")
+    
+    # Add EXT to stack
+    h_ext.SetFillColor(rt.kGray)
+    h_ext.SetFillStyle(1001)
+    h_ext.SetLineColor(rt.kGray)
+    hstack.Add(h_ext)
+    
+    # Add MC overlay to stack
     h_total_mc.SetFillColor(rt.kAzure+1)
     h_total_mc.SetFillStyle(1001)
     h_total_mc.SetLineColor(rt.kAzure+1)
     h_total_mc.SetLineWidth(1)
+    hstack.Add(h_total_mc)
     
-    var_props = var_properties.get(var, {'title': var, 'xmin': 0, 'xmax': 1})
-    h_total_mc.SetTitle(f"{plot_title}; {var_props['title']}; Events Per {targetpot:.1e} POT")
-    h_total_mc.SetMaximum(h_total_mc.GetMaximum() * 1.5)
-    h_total_mc.Draw("hist")
+    # Draw stack
+    hstack.SetTitle(f"{plot_title}; {var_props['title']}; Events Per {targetpot:.1e} POT")
+    max_val = max(hstack.GetMaximum(), h_data.GetMaximum())
+    hstack.SetMaximum(max_val * 1.5)
+    hstack.Draw("hist")
     
-    # Draw uncertainty band
+    # Draw uncertainty band on top of MC
     h_uncertainty_total.SetFillColor(rt.kGray+1)
     h_uncertainty_total.SetFillStyle(3002)
     h_uncertainty_total.SetLineColor(rt.kGray+1)
@@ -479,12 +587,29 @@ for var in variables:
     h_uncertainty_total.SetMarkerSize(0)
     h_uncertainty_total.Draw("E2same")
     
+    # Draw data points - make them VERY visible for debugging
+    h_data.SetLineColor(rt.kRed)
+    h_data.SetLineWidth(3)
+    h_data.SetMarkerStyle(20)
+    h_data.SetMarkerColor(rt.kRed)
+    h_data.SetMarkerSize(2.0)  # Make points HUGE
+    
+    # Debug: print data info
+    print(f"  DEBUG: Data has {h_data.Integral():.0f} events, max bin = {h_data.GetMaximum():.2f}")
+    
+    if h_data.Integral() > 0:
+        h_data.Draw("E1Psame")  # Add "P" to force drawing points
+    else:
+        print(f"  WARNING: No data events to draw!")
+    
     # Create legend
-    legend = rt.TLegend(0.65, 0.65, 0.89, 0.89)
+    legend = rt.TLegend(0.65, 0.60, 0.89, 0.89)
     legend.SetTextSize(0.03)
     legend.SetFillStyle(0)
     legend.SetBorderSize(1)
+    legend.AddEntry(h_data, f"Data ({h_data.Integral():.0f}) - RED", "lep")
     legend.AddEntry(h_total_mc, f"CC #nu_{{#mu}} overlay ({h_total_mc.Integral():.1f})", "f")
+    legend.AddEntry(h_ext, f"EXT ({h_ext.Integral():.1f})", "f")
     legend.AddEntry(h_uncertainty_total, "Sys. unc.", "f")
     legend.Draw()
     
@@ -606,7 +731,7 @@ for var in variables:
     out.cd()
     canvas_frac.Write()
     
-    print(f"  Created plots for {var}: {h_total_mc.Integral():.2f} events")
+    print(f"  Created plots for {var}: MC={h_total_mc.Integral():.2f}, Data={h_data.Integral():.0f}, EXT={h_ext.Integral():.2f}")
 
 print(f"\nSaved to {out_name}")
 out.Close()
