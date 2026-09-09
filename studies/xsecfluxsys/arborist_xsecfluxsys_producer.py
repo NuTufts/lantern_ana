@@ -141,6 +141,7 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 'formula':vardict['formula'],
                 'samples':vardict['apply_to_datasets'],
                 'criteria':vardict['criteria'],
+                'criteria_overrides':vardict.get('criteria_overrides', {}),
                 'numbins':vardict['numbins'],
                 'sample_hists':{},
                 'ibin_start':ibin_global,
@@ -209,16 +210,19 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
         # Evaluate all the selection formulas
         select_results = {}
         for cutname,cutformula in self.cut_formulas.items():
-            placeholders = re.findall(r'\{([^}]+)\}', cutformula)
-            clean_expression = cutformula
-            namespace = {}
+            try:
+                placeholders = re.findall(r'\{([^}]+)\}', cutformula)
+                clean_expression = cutformula
+                namespace = {}
 
-            for placeholder in placeholders:
-                var_name = placeholder.replace('.', '_').replace('[', '_').replace(']', '')
-                clean_expression = clean_expression.replace(f"{{{placeholder}}}", var_name)
-                namespace[var_name] = eval(placeholder)
+                for placeholder in placeholders:
+                    var_name = placeholder.replace('.', '_').replace('[', '_').replace(']', '')
+                    clean_expression = clean_expression.replace(f"{{{placeholder}}}", var_name)
+                    namespace[var_name] = eval(placeholder)
 
-            select_results[cutname] = eval(clean_expression, namespace)
+                select_results[cutname] = eval(clean_expression, namespace)
+            except Exception:
+                select_results[cutname] = False
 
         passes = True
         for cutname in self.event_selection_critera:
@@ -247,6 +251,13 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
                 bin_indices.append(-1)
                 continue
 
+            # Check per-bin criteria; dataset-specific override takes precedence
+            overrides = varinfo.get('criteria_overrides', {})
+            bin_criteria = overrides.get(datasetname, varinfo.get('criteria', []))
+            if bin_criteria and not all(select_results.get(c, False) for c in bin_criteria):
+                bin_indices.append(-1)
+                continue
+
             # Get observable value and find bin
             varformula = varinfo['formula']
             x = eval(f'ntuple.{varformula}')
@@ -260,6 +271,12 @@ class ArboristXsecFluxSysProducer(ProducerBaseClass):
             # Get bin index
             ibin = hists['cv'].GetXaxis().FindBin(x)
             bin_indices.append(ibin)
+
+        # Skip events that don't fill any bin — all-negative bin_indices
+        # would send useless events to the C++ accumulator and can corrupt
+        # per-bin variance results depending on how the C++ handles -1 indices.
+        if not any(b >= 0 for b in bin_indices):
+            return {}
 
         # Initialize storage for this sample if needed
         if datasetname not in self._passing_events:

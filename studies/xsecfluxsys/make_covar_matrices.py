@@ -1,7 +1,7 @@
 import os,sys
 import ROOT as rt
 
-def load_xsecflux_file( input_rootfile ):
+def load_xsecflux_file( input_rootfile, verbose=False ):
   """"
   KEY: TH1D	hvisible_energy_run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_cv;1	
   KEY: TH1D	hvisible_energy_run4a4c4d5_v10_04_07_13_BNB_nu_overlay_surprise_N;1	
@@ -31,7 +31,8 @@ def load_xsecflux_file( input_rootfile ):
     key = str(keys.At(ikey))
     keyinfo = key.split(" ")
     histname = keyinfo[1].strip()
-    print(f"=== [{ikey}] {histname} ===")
+    if verbose:
+      print(f"=== [{ikey}] {histname} ===")
     hkeylist.append( histname )
 
     # parse the hist name h[varname]__[samplename]__[parname]{'','_mean','_variance','_badweights'}\
@@ -53,12 +54,13 @@ def load_xsecflux_file( input_rootfile ):
       else:
         histtype = "universes"
       h = rfile.Get(histname)
-      print("  variable name: ",varname)
-      print("  sample name: ",samplename)
-      print("  par name: ",parname)
-      print("  hist type: ",histtype)
-      print("  hist: ",h)
-      print("  type(h): ",type(h))
+      if verbose:
+        print("  variable name: ",varname)
+        print("  sample name: ",samplename)
+        print("  par name: ",parname)
+        print("  hist type: ",histtype)
+        print("  hist: ",h)
+        print("  type(h): ",type(h))
 
       hists[(varname,samplename,parname,histtype)] = {"name":histname,"h":h}
       if histtype=="universes":
@@ -73,23 +75,34 @@ def load_xsecflux_file( input_rootfile ):
         samplelist.append(samplename)
 
     else:
-      print("skip")
+      if verbose:
+        print("skip")
 
   # Get the CV and MC num histograms
   cvhists = {}
   mcNhists = {}
   for var in varlist:
     for sample in samplelist:
+      has_universes = any((var,sample,par,"universes") in hists for par in parlist)
       hname_cv  = f"h{var}_{sample}_cv"
-      hcv = rinput.Get(hname_cv)
-      if hcv is not None:
+      hcv = rfile.Get(hname_cv)
+      if hcv and not hcv.IsZombie() and hcv.Integral() == 0:
+        hcv = rfile.Get(hname_cv + ";1")
+      if hcv and not hcv.IsZombie():
         cvhists[(var,sample)] = hcv
+      elif has_universes:
+        print(f"WARNING: CV histogram not found or null: {hname_cv}")
       hname_n  = f"h{var}_{sample}_N"
-      hN = rinput.Get(hname_n)
-      if hN is not None:
+      hN = rfile.Get(hname_n)
+      if hN and not hN.IsZombie():
         mcNhists[(var,sample)] = hN
 
       
+  print("=== CV histogram diagnostics ===")
+  for (var,sample), hcv in cvhists.items():
+    integral = hcv.Integral()
+    print(f"  cvhist ({var}, {sample}): integral={integral:.4g}, nbins={hcv.GetNbinsX()}")
+
   samplelist.sort()
   varlist.sort()
   parlist.sort()
@@ -97,7 +110,7 @@ def load_xsecflux_file( input_rootfile ):
   hist_dict = {"samples":samplelist,"params":parlist,"variables":varlist,"num_universe":param_nuniverses,"num_bins":var_nbins,"hists":hists,"cvhists":cvhists,"mcNhists":mcNhists}
   return hist_dict
 
-def form_covariance_matrices( hist_dict, root_outputfile ):
+def form_covariance_matrices( hist_dict, root_outputfile, verbose=False ):
 
   """
   We use the histograms we've formed and stored in self.var_bininfo to form covariance matrice
@@ -106,7 +119,8 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
 
   root_outputfile.cd()
 
-  print("Form Covariance Matrices ...")
+  if verbose:
+    print("Form Covariance Matrices ...")
   # get list of datasets with MC variations
   sample_list = hist_dict['samples']
   par_list = hist_dict['params']
@@ -116,10 +130,14 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
   cvhists = hist_dict["cvhists"]
         
   # index all observable bins
+  # only include (sample, var) pairs that actually have universe histograms
   globalindex = 0
   bin_list = []
   for sample in sample_list:
     for var in var_list:
+      has_universes = any((var,sample,par,"universes") in hists for par in par_list)
+      if not has_universes:
+        continue
       numbins = nbins_per_variable[var]
       for ii in range(numbins):
           bin_list.append( (globalindex,sample,var,ii) )
@@ -135,6 +153,12 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
     hcovar = rt.TH2D(hcovar_name,f"covar for {par}",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
     hfrac_covar_name = f"hfrac_covar_{par}"
     hfrac_covar = rt.TH2D(hfrac_covar_name,f"fractional covar for {par}",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
+    for ibin, (_globalidx, sample, var, _localidx) in enumerate(bin_list):
+      label = f"{var},{sample}"
+      hcovar.GetXaxis().SetBinLabel(ibin+1, label)
+      hcovar.GetYaxis().SetBinLabel(ibin+1, label)
+      hfrac_covar.GetXaxis().SetBinLabel(ibin+1, label)
+      hfrac_covar.GetYaxis().SetBinLabel(ibin+1, label)
     for ibin in range(num_global_bins):
       for jbin in range(ibin,num_global_bins):
         ibin_info = bin_list[ibin]
@@ -150,6 +174,8 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
         jsample = jbin_info[1]
         ivariable = ibin_info[2]
         jvariable = jbin_info[2]
+        if (ivariable,isample,par,"universes") not in hists or (jvariable,jsample,par,"universes") not in hists:
+          continue
         ihout = hists[(ivariable,isample,par,"universes")]['h']
         jhout = hists[(jvariable,jsample,par,"universes")]['h']
         ihmean = hists[(ivariable,isample,par,"mean")]['h']
@@ -165,13 +191,13 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
 
         covar = 0.0
         if i_nvariations==2:
-            var_i = ihout.GetBinContent(ibin+1,1)-ihout.GetBinContent(ibin+1,2)
-            var_j = jhout.GetBinContent(jbin+1,1)-jhout.GetBinContent(jbin+1,2)
+            var_i = ihout.GetBinContent(ilocalindex+1,1)-ihout.GetBinContent(ilocalindex+1,2)
+            var_j = jhout.GetBinContent(jlocalindex+1,1)-jhout.GetBinContent(jlocalindex+1,2)
             covar = var_i*var_j
         elif i_nvariations>2:
             for ii in range(i_nvariations):
-                var_i = ihout.GetBinContent(ibin+1,ii)-ihmean.GetBinContent(ibin+1)
-                var_j = jhout.GetBinContent(jbin+1,ii)-jhmean.GetBinContent(jbin+1)
+                var_i = ihout.GetBinContent(ilocalindex+1,ii+1)-ihmean.GetBinContent(ilocalindex+1)
+                var_j = jhout.GetBinContent(jlocalindex+1,ii+1)-jhmean.GetBinContent(jlocalindex+1)
                 covar += (var_i*var_j)/float(i_nvariations)
 
         frac_covar = 0.0
@@ -184,10 +210,6 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
             hcovar.SetBinContent(jbin+1,ibin+1,covar)
             hfrac_covar.SetBinContent(jbin+1,ibin+1,frac_covar)
 
-        i_label = f"{ivariable},{isample}"
-        j_label = f"{jvariable},{jsample}"
-        hcovar.GetXaxis().SetBinLabel(ibin+1,i_label)
-        hcovar.GetYaxis().SetBinLabel(jbin+1,j_label)
     covar_hists[par] = hcovar
     frac_covar_hists[par] = hfrac_covar
     hcovar.Write()
@@ -215,9 +237,15 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
   # lets total things up
   hcovar_total_xsecflux = rt.TH2D("hcovar_total_xsecflux",f"covar for all xsec and flux",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
   hfrac_covar_total_xsecflux = rt.TH2D("hfrac_covar_total_xsecflux",f"frac_covar for all xsec and flux",num_global_bins,0,num_global_bins,num_global_bins,0,num_global_bins)
+  for ibin, (_globalidx, sample, var, _localidx) in enumerate(bin_list):
+    label = f"{var},{sample}"
+    hcovar_total_xsecflux.GetXaxis().SetBinLabel(ibin+1, label)
+    hcovar_total_xsecflux.GetYaxis().SetBinLabel(ibin+1, label)
+    hfrac_covar_total_xsecflux.GetXaxis().SetBinLabel(ibin+1, label)
+    hfrac_covar_total_xsecflux.GetYaxis().SetBinLabel(ibin+1, label)
   for par,hcovar in covar_hists.items():
     hcovar_total_xsecflux.Add( hcovar )
-    hfrac_covar_total_xsecflux.Add( hcovar )
+    hfrac_covar_total_xsecflux.Add( frac_covar_hists[par] )
   hfrac_covar_total_xsecflux.Divide( hNN )
   hcovar_total_xsecflux.Write()
   hfrac_covar_total_xsecflux.Write()
@@ -226,15 +254,21 @@ def form_covariance_matrices( hist_dict, root_outputfile ):
 
 if __name__=="__main__":
 
-  # test
-  #input_rootfilename = "../numu_cc_inclusive/output_numu_run4a_surprise/xsecflux_numu_cc_inclusive_run4a_surprise.root"
-  input_rootfilename = "../numu_cc_inclusive/output_numu_run3b_1mil/output_xsecflux_numu_cc_inclusive_run3b_1mil.root"
+  verbose = "--verbose" in sys.argv or "-v" in sys.argv
+  args = [a for a in sys.argv[1:] if a not in ("--verbose", "-v")]
+
+  if len(args) == 1:
+    input_rootfilename = args[0]
+  else:
+    input_rootfilename = "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_allchannels_run4b.root"
+
   rinput = rt.TFile(input_rootfilename)
 
-  output_rootfile = "test_covariance.root"
+  output_rootfile = "output_covariance_run4b_allchannels.root"
   rout = rt.TFile(output_rootfile,'recreate')
 
-  histdata = load_xsecflux_file( rinput )
-  form_covariance_matrices( histdata, rout )
+  histdata = load_xsecflux_file( rinput, verbose=verbose )
+  form_covariance_matrices( histdata, rout, verbose=verbose )
 
   rout.Close()
+  print(f"Output written to: {output_rootfile}")

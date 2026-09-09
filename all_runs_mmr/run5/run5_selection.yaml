@@ -126,6 +126,16 @@ producers:
     type: nueIncCCProducer
     config: {}
 
-  ## Remove True Nue CC Producer 
-  remove_true_nue_cc_flag: 
+  ## Remove True Nue CC Producer
+  remove_true_nue_cc_flag:
     type: RemoveTrueNueCCFlagProducer
+
+  ## Final State Particles Reco & Truth
+  finalStateParticles:
+    type: finalStateParticlesProducer
+    config: {}
+
+  ## Pi0 invariant mass (reco from shower directions; truth from decay photons)
+  pi0Properties:
+    type: pi0PropertiesProducer
+    config: {}

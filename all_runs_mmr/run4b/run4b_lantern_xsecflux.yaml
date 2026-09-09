@@ -1,18 +1,21 @@
-# run4b_numu_xsecflux.yaml
+# run4b_lantern_xsecflux.yaml
 #
-# Produces xsec+flux systematic uncertainty histograms for the numu analysis
-# channels (inclusive CC, pi0, 0p, Np) from the run4b BNB nu overlay sample.
+# Produces xsec+flux systematic uncertainty histograms for all numu FSP
+# channels (inclusive CC, pi0, 0p, Np) from BOTH the run4b BNB nu overlay
+# and nue overlay samples in a single pass.
 #
-# Key fix: uses numuIncCC_reco_nu_energy (20 bins, 0-2 GeV) to match the
-# neutrino_energy spectrum in plot_numu.py, enabling a direct comparison with
-# the covariance matrix diagonal (which also uses numuIncCC_reco_nu_energy via
-# xsecflux_allchannels_run4b.root).
+# Nu overlay (run4b_nu):  numu-passing events with remove_true_nue_cc_flag!=1,
+#   excluding intrinsic nue CC to avoid double-counting with the nue overlay.
+# Nue overlay (run4b_nue): intrinsic nue CC events passing numu selection,
+#   providing the nue CC background systematic for all FSP channels.
+# Per-dataset criteria_overrides in bin_config apply the correct flag cut
+#   to run4b_nu while letting run4b_nue use the looser pass_any gate.
 #
-# Output: xsecflux_numu_nu.root
+# Output: xsecflux_numu_combined_run4b.root
 #
-# In plot_numu.py, update:
-#   xsecflux_variables = ['reco_nu_energy_numu']
-#   'xsecflux_var': 'reco_nu_energy_numu'  (in the neutrino_energy variable dict)
+# In plot_numu.py, point both xsecflux_files entries for run4b to this file:
+#   "numu_4b": ".../xsecflux_numu_combined_run4b.root"
+#   "nue_4b":  ".../xsecflux_numu_combined_run4b.root"
 
 output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/xsecflux/logs/"
 
@@ -34,11 +37,20 @@ datasets:
     filepaths:
       - run4b_nu_20260706_170915.root
 
+  run4b_nue:
+    type: RootDataset
+    tree: analysis_tree
+    pottree: lifetime_tree
+    ismc: true
+    process: true
+    filepaths:
+      - run4b_nue_20260706_175100.root
+
 producers:
   xsfluxweight:
     type: ArboristXsecFluxSysProducer
     config:
-      output_filename: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nu.root"
+      output_filename: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_combined_run4b.root"
       run: eventIndex_run
       subrun: eventIndex_subrun
       event: eventIndex_event
@@ -50,7 +62,8 @@ producers:
       weight_tree_event: "evt"
       weight_branch_type: 1   # surprise files
       rootfilepaths:
-        run4b_nu: "/pnfs/uboone/persistent/users/uboonepro/surprise/retuple/BNB/MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root"
+        run4b_nu:  "/pnfs/uboone/persistent/users/uboonepro/surprise/retuple/BNB/MCC9.10_Run4b_v10_04_07_20_BNB_nu_overlay_retuple_retuple_hist.root"
+        run4b_nue: "/pnfs/uboone/persistent/users/uboonepro/surprise/run4b_full_samples/BNB/MCC9.10_Run4b_v10_04_07_09_BNB_nue_overlay_surprise_reco2_hist.root"
       par_variations_to_include:
         - reint_all
         - Theta_Delta2Npi_UBGenie
@@ -72,17 +85,22 @@ producers:
         - splines_general_Spline
 
       # -----------------------------------------------------------------
-      # Cut formulas — same logic as run4b_all_channels_xsecflux.yaml
-      # but scoped to the numu FSP channels only.
+      # Cut formulas
+      #
+      # pass_any: global gate — admits all numu-passing events from both
+      #   datasets (no flag cut so nue overlay events are processed too).
+      # mmr_numu: nu overlay numu signal, flag cut removes true nue CC
+      #   contamination from the nu file.
+      # reco_nu_energy_numu uses criteria_overrides so run4b_nu gets
+      #   mmr_numu (flag cut) and run4b_nue gets pass_any (no flag cut).
       # -----------------------------------------------------------------
       cut_formulas:
 
-        # Global gate: pass numu inclusive selection
+        # Global gate: all numu-passing events from either sample
         pass_any: >-
           {ntuple.numuIncCC_passes_all_cuts}==1
-          and {ntuple.remove_true_nue_cc_flag}!=1
 
-        # Numu inclusive CC
+        # Numu inclusive CC with flag cut (nu overlay)
         mmr_numu: >-
           {ntuple.numuIncCC_passes_all_cuts}==1
           and {ntuple.remove_true_nue_cc_flag}!=1
@@ -116,12 +134,19 @@ producers:
       # -----------------------------------------------------------------
       # Bin configuration
       #
-      # reco_nu_energy_* — numuIncCC_reco_nu_energy in GeV, 20 bins 0-2 GeV.
-      #   Matches the neutrino_energy spectrum in plot_numu.py (20 bins, 0-2 GeV)
-      #   so xsecflux uncertainties can be applied bin-for-bin without rescaling.
+      # reco_nu_energy_numu — numuIncCC_reco_nu_energy, 20 bins 0-2 GeV.
+      #   Covers BOTH run4b_nu and run4b_nue using criteria_overrides:
+      #     run4b_nu  → mmr_numu (flag cut, excludes true nue CC)
+      #     run4b_nue → pass_any (no flag cut, all nue CC bkg included)
+      #   This produces hreco_nu_energy_numu_run4b_nu_* and
+      #   hreco_nu_energy_numu_run4b_nue_* in the same ROOT file without
+      #   double-counting nue CC events.
       #
-      # visible_energy — calorimetric sum, 60 bins 0-3000 MeV.
-      #   Kept for backward compatibility with the original xsecflux_numu_nu.root.
+      # reco_nu_energy_{pi0,0p,Np} — nu overlay only, flag cut applied via
+      #   mmr_{pi0,0p,Np}. plot_numu.py reads only reco_nu_energy_numu for
+      #   all FSP channels; these entries exist for standalone checks.
+      #
+      # visible_energy — nu overlay only, for backward compatibility.
       # -----------------------------------------------------------------
       bin_config:
 
@@ -130,8 +155,10 @@ producers:
           numbins: 20
           minvalue: 0.0
           maxvalue: 2.0
-          apply_to_datasets: [run4b_nu]
-          criteria: ['mmr_numu']
+          apply_to_datasets: [run4b_nu, run4b_nue]
+          criteria: ['pass_any']
+          criteria_overrides:
+            run4b_nu: ['mmr_numu']
 
         reco_nu_energy_pi0:
           formula: numuIncCC_reco_nu_energy

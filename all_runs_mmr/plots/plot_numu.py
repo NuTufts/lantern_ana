@@ -4,8 +4,26 @@ import array
 import ctypes
 from math import sqrt
 
+################################################
+# final state particles (inc, pi0, 0p, 1p, Np)
+fsp_channel = "pi0"
 
-def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, debug=False):
+# List of runs (1,3,4,5)
+# runs = [1,3,4,5]
+runs = [4]
+
+use_truth = True 
+
+use_surprise_numu = False 
+
+use_fully_contained = False 
+
+plot_nue = False
+
+################################################
+
+def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, debug=False,
+              fsp_channel='inc'):
 
 	dprint = print if debug else lambda *args, **kwargs: None
 	# lantern_dir = "/cluster/tufts/wongjiradlabnu/zimani01/lantern/lantern_ana/"
@@ -20,21 +38,17 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 
 	## Run 1 
 	if run_num == 1: 
-		USE_SURPRISE_NUMU = False
 		targetpot = 4.4e19
 		scaling = {
-				# "numu":targetpot/4.675690535431973e+20,
-				"numu":targetpot/5.928455889220508e+20, #surprise file POT 
+				"numu":targetpot/4.675690535431973e+20,
 				"nue":targetpot/9.662529168587103e+22,
 				"extbnb":(176153.0)/(433446.0),
 				"data":1.0}
 		files = {
-				# "numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v5/run1_nu_20260409_203907.root",
-				"numu": f"{lantern_dir}/all_runs_mmr/run1_surprise/root_files/selection/run1_nu_20260518_233024.root",
-				"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v5/run1_nue_20260409_204220.root", 
-				"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v5/run1_extbnb_20260409_204632.root",
-				"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_v5/run1_data_5e19_20260409_204824.root"}
-
+				"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_testing_v4/run1_nu_20260601_152723.root",
+				"nue":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_testing_v4/run1_nue_20260601_153328.root", 
+				"extbnb":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_testing_v4/run1_extbnb_20260601_154124.root",
+				"data":f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_testing_v4/run1_data_5e19_20260601_154504.root"}
 		xsecflux_files = {
 			"nue": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_bnb_nue.root",
 			"numu": f"{lantern_dir}/all_runs_mmr/run1/root_files/xsecflux/xsecflux_run1_numu_bnb_nu.root"
@@ -42,34 +56,37 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		detsys_file = f"{lantern_dir}/all_runs_mmr/run3/root_files/detsys_final/combined_run3mil_nu_CV.root"
 		show_data = True 
 		data_legend = "Run1 5e19 Data"
-		plot_title = "Run 1: CC Inclusive Numu"
+		title_run      = "Run 1:"
+		title_channel  = "CC Inclusive Numu"
+		title_modifier = ""
 		out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run1_hists.root"
 		xsecflux_sample_map = {
 			'numu': 'run1_nu',
 			'nue': 'run1_nue'
 		}
-		if USE_SURPRISE_NUMU:
+		if use_surprise_numu:
 			scaling['numu'] = targetpot/5.928455889220508e+20
 			xsecflux_files['numu'] = f"{lantern_dir}/all_runs_mmr/run1_surprise/root_files/xsecflux/xsecflux_numu_nu.root"
 			xsecflux_sample_map['numu'] = 'run1surp_nu'
-			files['numu'] = f"{lantern_dir}/all_runs_mmr/run1_surprise/root_files/selection/run1surp_nu_20260507_213935.root"
-			plot_title += " (Surprise Numu)"
+			# files['numu'] = f"{lantern_dir}/all_runs_mmr/run1_surprise/root_files/selection/run1surp_nu_20260507_213935.root"
+			files['numu'] = f"{lantern_dir}/all_runs_mmr/run1/root_files/selection_testing_v4/run1surp_nu_weightSplineTimesTune_20260601_230604.root"
+			title_modifier += " (Surprise Numu)"
+			out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run1_hists_surpriseNU.root"
 
 	## Run 3 (one million MC)
 	if run_num == 3: 
-		USE_SURPRISE_NUMU = False
 		targetpot = 8.806e18
 		scaling = {
 				"numu":targetpot/1.346689484233034e+21,
-				"nue":targetpot/1.346689484233034e+21,
+				"nue":targetpot/2.891774385462469e+22,
 				# "extbnb": (2263559.0)/(19214565.0),
 				"extbnb": (2263559.0)/(150523663.0),
 				"data":1.0}
 		files = {
-				"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v2/run3_nu_20260408_135518.root",
-				"nue":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v2/run3_nue_CV_20260409_140944.root", 
-				"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v2/run3_extbnb_20260408_143338.root",
-				"data":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v2/run3_data_20260409_142513.root"}
+				"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v3/run3_nu_20260724_160048.root",
+				"nue":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v3/run3_nue_20260724_162721.root", 
+				"extbnb":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v3/run3_extbnb_20260724_163050.root",
+				"data":f"{lantern_dir}/all_runs_mmr/run3/root_files/selection_v3/run3_data_20260724_164310.root"}
 		xsecflux_files = {
 			"nue": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nue.root",
 			"numu": f"{lantern_dir}/all_runs_mmr/run3/root_files/xsecflux/xsecflux_run3mil_numu_bnb_nu.root"
@@ -78,40 +95,47 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		detsys_variables = ['visible_energy', 'reco_neutrino_energy', 'reco_muon_momentum', 'reco_cos_theta']
 		show_data = True 
 		data_legend = "Run3 1e19 Data"
-		plot_title = "Run 3: CC Inclusive Numu"
+		title_run      = "Run 3:"
+		title_channel  = "CC Inclusive Numu"
+		title_modifier = ""
 		out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run3_hists.root"
 		xsecflux_variables = ['visible_energy', 'reco_muon_momentum', 'reco_cos_theta']
 		xsecflux_sample_map = {
 			'nue': 'run3mil_nue',
 			'numu': 'run3mil_nu'  
 		}
-		if USE_SURPRISE_NUMU:
+		if use_surprise_numu:
 			scaling['numu'] = targetpot/8.628601378515997e+20
 			xsecflux_sample_map['numu'] = 'run3surp_nu'
 			xsecflux_files['numu'] = f"{lantern_dir}/all_runs_mmr/run3_surprise/root_files/xsecflux/xsecflux_numu_nu.root"
-			files['numu'] = f"{lantern_dir}/all_runs_mmr/run3_surprise/root_files/selection/run3surp_nu_20260507_213849.root"
-			plot_title += " (Surprise Numu)"
-
+			files['numu'] = f"{lantern_dir}/all_runs_mmr/run3_surprise/root_files/selection_v2/run3surp_nu_20260727_122115.root"
+			title_modifier += " (Surprise Numu)"
+			out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run3_hists_surpriseNU.root"
 
 	## Combined Run 4 (4b + 4c + 4d)
 	if run_num == 4:
 		# Calculate total target POT from all sub-runs
-		# run4bpot = 1.45e+20
-		# run4cpot = 9.106e+19
-		# run4dpot = 5.015e+19
-		# targetpot = run4bpot + run4cpot + run4dpot
-		targetpot = 3.936e+19
-		run4bpot = targetpot
-		run4cpot = targetpot
-		run4dpot = targetpot
+		run4bpot = 1.45e+20
+		run4cpot = 9.106e+19
+		run4dpot = 5.015e+19
+		targetpot = run4bpot + run4cpot + run4dpot
+		# targetpot = 1.45e+20
+		# # targetpot = 3.936e+19
+		# run4bpot = targetpot
+		# run4cpot = targetpot
+		# run4dpot = targetpot
 
-		## Lantern POTs
+		# ## Lantern POTs
 		run4bpot_nu = 7.881656209241413e+20
-		# run4cpot_nu = 2.8777157789184374e+20
+		run4cpot_nu = 2.8777157789184374e+20
 		run4dpot_nu = 4.029820515210945e+20
 
 		## Wirecell 
-		run4cpot_nu = 4.6945731836947293798400e+20
+		# run4cpot_nu = 4.6945731836947293798400e+20
+
+		# targetpot = 
+
+		run4bpot = 3.936e+19
 
 		scaling_4b = {
 			"numu": run4bpot/run4bpot_nu,
@@ -138,7 +162,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		}
 	
 		# Set to use a single sub-run or combine all three.
-		run4_single_dataset = 43
+		run4_single_dataset = 42
 		if run4_single_dataset == 42: 
 			run4_labels = ['4b']
 		elif run4_single_dataset == 43:
@@ -155,11 +179,10 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		}
 	
 		files_4b = {
-			"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_nu_20260406_211655.root",
-			"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_nue_20260406_215410.root",
-			"extbnb": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_extbnb_20260406_220555.root",
-			# "data": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_data_20260406_221150.root"
-			"data":f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection/run4b_open_data_20260406_221504.root"
+			"extbnb": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection_v8/run4b_extbnb_20260722_175349.root",
+			"numu": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection_v8/run4b_nu_20260722_164523.root",
+			"nue": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection_v8/run4b_nue_20260722_173017.root",
+			"data": f"{lantern_dir}/all_runs_mmr/run4b/root_files/selection_v8/run4b_open_data_20260722_181058.root"
 		}
 	
 		files_4c = {
@@ -179,8 +202,10 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		files = {'4b': files_4b, '4c': files_4c, '4d': files_4d}
 
 		xsecflux_files = {
+			# "numu_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_combined_run4b.root",
+			# "nue_4b":  f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_combined_run4b.root",
 			"numu_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nu.root",
-			"nue_4b": f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nue.root",
+			"nue_4b":  f"{lantern_dir}/all_runs_mmr/run4b/root_files/xsecflux/xsecflux_numu_nue.root",
 			"numu_4c": f"{lantern_dir}/all_runs_mmr/run4c/root_files/xsecflux/xsecflux_numu_nu.root",
 			"nue_4c": f"{lantern_dir}/all_runs_mmr/run4c/root_files/xsecflux/xsecflux_numu_nue.root",
 			"numu_4d": f"{lantern_dir}/all_runs_mmr/run4d/root_files/xsecflux/xsecflux_numu_nu.root",
@@ -197,7 +222,9 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 	
 		show_data = True
 		data_legend = f"Run4b Open Data"
-		plot_title = "Run 4: CC Inclusive Numu"
+		title_run      = "Run 4:"
+		title_channel  = "CC Inclusive Numu"
+		title_modifier = ""
 		out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run4_combined_hists.root"
 		
 	## Run 4a
@@ -218,7 +245,9 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		detsys_file = f"{lantern_dir}/all_runs_mmr/run4b/root_files/detsys_final/detsys_cv_run4b_nu_cv.root"
 		show_data = True 
 		data_legend = "Run4a Data"
-		plot_title = "Run 4a: CC Inclusive Numu"
+		title_run      = "Run 4a:"
+		title_channel  = "CC Inclusive Numu"
+		title_modifier = ""
 		out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run4a_hists.root"
 		xsecflux_sample_map = {
 			'nue': 'run4a_nue',
@@ -244,7 +273,9 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		detsys_file = f"{lantern_dir}/all_runs_mmr/run5/root_files/detsys_v2/detsys_cv_run5_nu_cv.root"
 		show_data = True 
 		data_legend = "Run4b Open Data"
-		plot_title = "Run 5: CC Inclusive Numu"
+		title_run      = "Run 5:"
+		title_channel  = "CC Inclusive Numu"
+		title_modifier = ""
 		out_name = f"{lantern_dir}/all_runs_mmr/plots/numu/numu_run5_hists.root"
 		xsecflux_sample_map = {
 			'nue': 'run5_nue',
@@ -265,7 +296,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 	# Systematic parameter lists 
 	# ---------------------------------------------------------------------------
 
-	if run_num in [1, 3] and not USE_SURPRISE_NUMU:
+	if run_num in [1, 3] and not use_surprise_numu:
 		flux_params = [
 			"expskin_FluxUnisim",
 			"horncurrent_FluxUnisim",
@@ -301,7 +332,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			"reinteractions_proton_Geant4"
 		]
 
-	if run_num in [4, 41, 42, 43, 44, 5] or USE_SURPRISE_NUMU: 
+	if run_num in [4, 41, 42, 43, 44, 5] or use_surprise_numu: 
 		flux_params = [
 			"flux_all"
 		]
@@ -575,6 +606,46 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			nentries = trees[sample].GetEntries()
 			dprint(f"sample={sample} has {nentries} entries")
 
+	# ---------------------------------------------------------------------------
+	# FSP channel cut
+	# ---------------------------------------------------------------------------
+	_valid_channels = ('inc', 'pi0', '0p', '1p', 'Np')
+	if fsp_channel not in _valid_channels:
+		raise ValueError(f"fsp_channel must be one of {_valid_channels}, got '{fsp_channel}'")
+
+	if fsp_channel == 'pi0':
+		# Select events where the pi0Properties producer found >= 2 PID==22 showers.
+		# reco_inv_mass > 0 is the sentinel for this: it is filled whenever two
+		# valid photon directions exist, with no box cuts applied.
+		fsp_reco_cut  = "(pi0Properties_reco_inv_mass > 0)"
+		# Require >= 2 true photons that are not from eBrem/annihilation,
+		# have E > 20 MeV, and deposit energy inside the WireCell fiducial.
+		fsp_truth_cut = "(pi0Properties_true_n_photons_fid_ecut >= 2)"
+		fsp_label     = "Pi0"
+	elif fsp_channel == '0p':
+		fsp_reco_cut  = ("(Sum$(finalStateParticles_reco_shower_pid==2212)==0"
+		                 " && Sum$(finalStateParticles_reco_track_pid==2212)==0)")
+		fsp_truth_cut = "(Sum$(finalStateParticles_true_fsp_pdg==2212)==0)"
+		fsp_label     = "0p"
+	elif fsp_channel == '1p':
+		fsp_reco_cut  = ("(Sum$(finalStateParticles_reco_shower_pid==2212)"
+		                 " + Sum$(finalStateParticles_reco_track_pid==2212)==1)")
+		fsp_truth_cut = "(Sum$(finalStateParticles_true_fsp_pdg==2212)==1)"
+		fsp_label     = "1p"
+	elif fsp_channel == 'Np':
+		fsp_reco_cut  = ("(Sum$(finalStateParticles_reco_shower_pid==2212)>0"
+		                 " || Sum$(finalStateParticles_reco_track_pid==2212)>0)")
+		fsp_truth_cut = "(Sum$(finalStateParticles_true_fsp_pdg==2212)>0)"
+		fsp_label     = "Np"
+	else:
+		fsp_reco_cut  = ""
+		fsp_truth_cut = ""
+		fsp_label     = ""
+
+	if fsp_label:
+		title_channel = f"{fsp_channel} channel"
+		out_name = out_name.replace('.root', f'_{fsp_channel}.root')
+
 	## Create output directory if it doesn't exist
 	out_dir = os.path.dirname(out_name)
 	if out_dir and not os.path.exists(out_dir):
@@ -587,14 +658,27 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 
 	# Use the combined cut from the producer
 	if truth_mode:
-		# Select true CC νμ in fiducial volume; no reco requirement
-		base_cut = ("(numuIncCC_true_nu_pdg==14 && nueIncCC_true_ccnc==0"
-					" && true_vertex_properties_dwall > 3.0)")
+		if fsp_channel == 'pi0':
+			# Match pi0_invmass_plot: dwall only, no flavor/CC requirement.
+			# The inv-mass cut (> 0) is applied via cut_suffix on the variable.
+			base_cut = "(true_vertex_properties_dwall > 3.0)"
+			if fsp_truth_cut:
+					base_cut += f" && {fsp_truth_cut}"
+		else:
+			# Select true CC νμ in fiducial volume; no reco requirement
+			base_cut = ("(numuIncCC_true_nu_pdg==14 && nueIncCC_true_ccnc==0"
+						" && true_vertex_properties_dwall > 3.0)")
+			if fsp_truth_cut:
+				base_cut += f" && {fsp_truth_cut}"
 	else:
 		base_cut = "(numuIncCC_passes_all_cuts==1)"
-		if fully_contained:
-			plot_title += " FC Only"
-			base_cut += " && (numuIncCC_is_fully_contained==1)"
+		if fsp_reco_cut:
+			base_cut += f" && {fsp_reco_cut}"
+	if fully_contained:
+		title_modifier += " FC Only"
+		fc_branch = "numuIncCC_true_is_fully_contained" if truth_mode else "numuIncCC_is_fully_contained"
+		base_cut += f" && ({fc_branch}==1)"
+	plot_title = f"{title_run} {title_channel}{title_modifier}"
 
 	# Define sample categories with ROOT standard colors
 	categories = {
@@ -644,6 +728,75 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 	if not show_data:
 		del categories['data']
 
+	# ---------------------------------------------------------------------------
+	# Pi0-channel category override
+	# For fsp_channel=='pi0', replace the generic CC/NC numu categories with
+	# four physics-motivated categories that distinguish whether the true
+	# final state contains a pi0 (PDG 111) or not:
+	#   CC π0  — CC interaction, true pi0 present  (main signal topology)
+	#   NC π0  — NC interaction, true pi0 present  (second topology)
+	#   CC no-π0 — CC without true pi0 (charge-exchange, mis-ID background)
+	#   NC no-π0 — NC without true pi0
+	# The nue sample is kept as a single combined background.
+	# ---------------------------------------------------------------------------
+	if fsp_channel == 'pi0':
+		_pi0_cut    = '(pi0Properties_true_n_photons_fid_ecut >= 2)'
+		_no_pi0_cut = '(pi0Properties_true_n_photons_fid_ecut < 2)'
+		_is_cc      = '(numuIncCC_is_cc_interaction==1)'
+		_is_nc      = '(numuIncCC_is_cc_interaction==0)'
+
+		categories = {
+			'cosmic': {
+				'samples':    ['extbnb'],
+				'truth_cut':  ' ',
+				'color':      rt.kGray+2,
+				'fill_style': 1001,
+				'legend':     'BNB EXT',
+			},
+			'cc_pi0': {
+				'samples':    ['numu'],
+				'truth_cut':  f' && {_is_cc} && {_pi0_cut}',
+				'color':      rt.kAzure+1,
+				'fill_style': 1001,
+				'legend':     'CC #pi^{0}',
+			},
+			'nc_pi0': {
+				'samples':    ['numu'],
+				'truth_cut':  f' && {_is_nc} && {_pi0_cut}',
+				'color':      rt.kGreen+1,
+				'fill_style': 1001,
+				'legend':     'NC #pi^{0}',
+			},
+			'cc_no_pi0': {
+				'samples':    ['numu'],
+				'truth_cut':  f' && {_is_cc} && {_no_pi0_cut}',
+				'color':      rt.kOrange+1,
+				'fill_style': 1001,
+				'legend':     'CC no-#pi^{0}',
+			},
+			'nc_no_pi0': {
+				'samples':    ['numu'],
+				'truth_cut':  f' && {_is_nc} && {_no_pi0_cut}',
+				'color':      rt.kYellow+1,
+				'fill_style': 1001,
+				'legend':     'NC no-#pi^{0}',
+			},
+			'nue_bkg': {
+				'samples':    ['nue'],
+				'truth_cut':  ' ',
+				'color':      rt.kRed-4,
+				'fill_style': 1001,
+				'legend':     '#nu_{e} bkg',
+			},
+		}
+		if show_data:
+			categories['data'] = {
+				'samples':   ['data'],
+				'truth_cut': '',
+				'color':     rt.kBlack,
+				'legend':    data_legend,
+			}
+
 	legend_POT_string = " Events Per " + str(targetpot) + " POT"
 
 	# ---------------------------------------------------------------------------
@@ -689,7 +842,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 	if truth_mode:
 		# Replace reco neutrino energy with the true version
 		variables.pop('neutrino_energy', None)
-		variables['true_neutrino_energy'] = {
+		variables['neutrino_energy'] = {
 			'var':          'numuIncCC_true_nu_energy',
 			'true_var':     'numuIncCC_true_nu_energy',
 			'xsecflux_var': 'visible_energy',
@@ -701,8 +854,32 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			'has_overflow': True,
 			'show_ratio':   False,   # no data to ratio against in truth mode
 		}
-		# Suffix the output file so truth-mode plots don't overwrite reco ones
-		out_name = out_name.replace('.root', '_truthmode.root')
+
+	if fsp_channel == 'pi0':
+		# Di-photon invariant mass from the two leading PID==22 showers.
+		# M² = (E1+E2)² − |p1+p2|²  (no box cuts applied in the producer).
+		# Reco variable in MeV; true variable from pi0 decay-photon four-vectors (MC only).
+		pi0_mass_reco_var = 'pi0Properties_reco_inv_mass'
+		pi0_mass_true_var = 'pi0Properties_true_inv_mass'
+		pi0_mass_cut      = f'&& ({pi0_mass_reco_var}>0)'
+
+		variables['pi0_inv_mass'] = {
+			'var':          pi0_mass_reco_var if not truth_mode else pi0_mass_true_var,
+			'true_var':     pi0_mass_true_var,
+			'xsecflux_var': None,
+			'nbins': 17,
+			'xmin':  0.0,
+			'xmax':  340.0,
+			'title': plot_title + '; Reconstructed #pi^{0} Invariant Mass (MeV); ' + legend_POT_string,
+			'cut_suffix': '' if truth_mode else pi0_mass_cut,
+			'has_overflow': True,
+			'show_ratio': True and show_data and not truth_mode,
+		}
+
+		if truth_mode:
+			variables['pi0_inv_mass']['title'] = plot_title + '; True #pi^{0} Invariant Mass (MeV); ' + legend_POT_string
+			variables['pi0_inv_mass']['cut_suffix'] = f'&& ({pi0_mass_true_var}>0)'
+			variables['pi0_inv_mass']['show_ratio'] = False
 
 	# ---------------------------------------------------------------------------
 	# Load xsecflux uncertainties
@@ -873,6 +1050,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 
 		show_ratio = var_info.get('show_ratio', False) and show_data
 		chi_rebin  = True   # rebin x2 before chi2 test to avoid low-stats bin warnings; set False to disable
+		show_chi2  = False   # set False to hide chi²/ndf label on plot
 
 		# Canvas with optional ratio panel
 		if show_ratio:
@@ -985,7 +1163,10 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 					hist.SetLineWidth(1)
 
 		# Build MC stack
-		stack_order = ['cosmic', 'nc_nue', 'cc_nue', 'nc_numu', 'cc_numu']
+		if fsp_channel == 'pi0':
+			stack_order = ['cosmic', 'nue_bkg', 'nc_no_pi0', 'cc_no_pi0', 'nc_pi0', 'cc_pi0']
+		else:
+			stack_order = ['cosmic', 'nc_nue', 'cc_nue', 'nc_numu', 'cc_numu']
 		hstack = rt.THStack(f"hs_{var_name}", "")
 
 		h_total_mc          = None
@@ -1060,14 +1241,16 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 						if cv_xf <= 0:
 							continue
 
-						# Scaled contribution of this xsample to total MC (targetpot units)
-						if xsample_name == 'numu':
-							cv_scaled = (hists.get('cc_numu', hists['nc_numu']).GetBinContent(ibin) * 0
-										+ (hists['cc_numu'].GetBinContent(ibin) if 'cc_numu' in hists else 0.0)
-										+ (hists['nc_numu'].GetBinContent(ibin) if 'nc_numu' in hists else 0.0))
-						else:  # 'nue'
-							cv_scaled = ((hists['cc_nue'].GetBinContent(ibin) if 'cc_nue' in hists else 0.0)
-										+ (hists['nc_nue'].GetBinContent(ibin) if 'nc_nue' in hists else 0.0))
+						# Scaled contribution of this xsample to total MC (targetpot units).
+						# Sum all categories whose samples list includes this xsample_name,
+						# excluding the data category.
+						cv_scaled = sum(
+							hists[cat].GetBinContent(ibin)
+							for cat, info in categories.items()
+							if cat != 'data'
+							and xsample_name in info['samples']
+							and cat in hists
+						)
 
 						# Weight converts xsecflux absolute variance → targetpot absolute variance
 						weight = (cv_scaled / cv_xf) ** 2
@@ -1178,7 +1361,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		for cat_name in stack_order:
 			if cat_name in hists and cat_name in categories:
 				legend.AddEntry(hists[cat_name], categories[cat_name]['legend'], "f")
-		if 'data' in hists:
+		if 'data' in hists and not truth_mode:
 			legend.AddEntry(hists['data'], categories['data']['legend'], "lep")
 		if h_uncertainty_total is not None:
 			legend.AddEntry(h_uncertainty_total, "Sys. uncertainty", "f")
@@ -1202,7 +1385,8 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			chi2_latex.SetTextFont(42)
 			chi2_latex.SetTextAlign(22)
 			chi2_y = 0.34 if show_ratio else 0.47
-			chi2_latex.DrawLatex(0.77, chi2_y, f"\chi^2 = {chi2_ndf:.2f}")
+			if show_chi2:
+				chi2_latex.DrawLatex(0.77, chi2_y, f"\chi^2 = {chi2_ndf:.2f}")
 
 		# Ratio panel
 		if show_ratio and 'data' in hists and h_total_mc is not None:
@@ -1228,7 +1412,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			h_ratio.SetMinimum(0.5)
 			h_ratio.SetMaximum(1.5)
 			h_ratio.GetXaxis().SetTitle(x_axis_title)
-			h_ratio.GetYaxis().SetTitle("Data / MC")
+			h_ratio.GetYaxis().SetTitle("Data / Pred")
 			h_ratio.GetXaxis().SetLabelSize(0.09)
 			h_ratio.GetXaxis().SetTitleSize(0.1)
 			h_ratio.GetXaxis().SetTitleOffset(1.1)
@@ -1568,11 +1752,26 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		# -----------------------------------------------------------------------
 		dprint(f"\n=== Creating purity and efficiency plots for {var_name} ===")
 
-		if 'cc_numu' in hists and h_total_mc is not None:
-			h_purity = hists['cc_numu'].Clone(f"h_purity_{var_name}")
+		# Define which category represents "signal" for purity purposes.
+		# In the pi0 channel the signal is all true-pi0 events (CC + NC).
+		if fsp_channel == 'pi0':
+			_signal_cats  = ['cc_pi0', 'nc_pi0']
+			_purity_label = '#pi^{0} Purity'
+		else:
+			_signal_cats  = ['cc_numu']
+			_purity_label = 'CC #nu_{#mu} Purity'
 
+		_signal_hists = [hists[c] for c in _signal_cats if c in hists]
+
+		if _signal_hists and h_total_mc is not None:
+			h_purity = _signal_hists[0].Clone(f"h_purity_{var_name}")
+			if len(_signal_hists) > 1:
+				for _sh in _signal_hists[1:]:
+					h_purity.Add(_sh)
+
+			total_signal = h_purity.Integral()
 			for ibin in range(0, h_purity.GetNbinsX() + 2):
-				signal = hists['cc_numu'].GetBinContent(ibin)
+				signal = h_purity.GetBinContent(ibin)
 				total  = h_total_mc.GetBinContent(ibin)
 				if total > 0:
 					purity = signal / total
@@ -1591,7 +1790,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			canvas_purity.SetTickx(1)
 			canvas_purity.SetTicky(1)
 
-			h_purity.SetTitle(f"{plot_title}; {x_axis_title}; CC #nu_{{#mu}} Purity")
+			h_purity.SetTitle(f"{plot_title}; {x_axis_title}; ")
 			h_purity.SetLineColor(rt.kBlue+1)
 			h_purity.SetLineWidth(3)
 			h_purity.SetMarkerStyle(20)
@@ -1606,7 +1805,6 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			line_purity.SetLineColor(rt.kGray+2)
 			line_purity.Draw("same")
 
-			total_signal = hists['cc_numu'].Integral()
 			total_all    = h_total_mc.Integral()
 			avg_purity   = total_signal / total_all if total_all > 0 else 0.0
 
@@ -1675,7 +1873,7 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			canvas_eff.SetTicky(1)
 
 			x_axis_title_eff = x_axis_title.replace("Reconstructed", "True")
-			h_efficiency.SetTitle(f"{plot_title}; {x_axis_title_eff}; CC #nu_{{#mu}} Efficiency")
+			h_efficiency.SetTitle(f"{plot_title}; {x_axis_title_eff}; ")
 			h_efficiency.SetLineColor(rt.kRed+1)
 			h_efficiency.SetLineWidth(3)
 			h_efficiency.SetMarkerStyle(21)
@@ -1705,10 +1903,15 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			dprint(f"  Average efficiency: {avg_efficiency:.3f}")
 
 		# Summary
-		cc_numu_events = total_events.get('cc_numu', 0)
+		if fsp_channel == 'pi0':
+			cc_numu_events = total_events.get('cc_pi0', 0) + total_events.get('nc_pi0', 0)
+			cc_nue_events  = total_events.get('nue_bkg', 0)
+			nc_events      = total_events.get('nc_no_pi0', 0)
+		else:
+			cc_numu_events = total_events.get('cc_numu', 0)
+			cc_nue_events  = total_events.get('cc_nue', 0)
+			nc_events      = total_events.get('nc_nue', 0) + total_events.get('nc_numu', 0)
 		cosmic_events  = total_events.get('cosmic', 0)
-		cc_nue_events  = total_events.get('cc_nue', 0)
-		nc_events      = total_events.get('nc_nue', 0) + total_events.get('nc_numu', 0)
 
 	# ---------------------------------------------------------------------------
 	# Cut flow efficiency and purity plot
@@ -1853,7 +2056,8 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			if fully_contained or show_pc:
 				h_fc = rt.TH1D(f"h_numu_cf_fc_{cut_branch}", "", 1, 0, 1)
 				h_fc.Sumw2()
-				fc_str = f"{cut_str} && (numuIncCC_is_fully_contained==1)"
+				fc_branch = "numuIncCC_true_is_fully_contained" if truth_mode else "numuIncCC_is_fully_contained"
+				fc_str = f"{cut_str} && ({fc_branch}==1)"
 				if run_num == 4:
 					for run_label in run4_labels:
 						for sample in ['nue', 'numu', 'extbnb']:
@@ -1883,8 +2087,8 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		# --- Build labeled histograms ---
 		n_cuts = len(cut_flow_cuts)
 
-		h_eff_cf = rt.TH1D("h_numu_cutflow_efficiency", "", n_cuts, 0, n_cuts)
-		h_pur_cf = rt.TH1D("h_numu_cutflow_purity",     "", n_cuts, 0, n_cuts)
+		h_eff_cf = rt.TH1D("h_numu_cutflow_efficiency", "", n_cuts, -0.5, n_cuts - 0.5)
+		h_pur_cf = rt.TH1D("h_numu_cutflow_purity",     "", n_cuts, -0.5, n_cuts - 0.5)
 
 		eff_errs = []
 		pur_errs = []
@@ -1903,41 +2107,54 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 			h_eff_cf.GetXaxis().SetBinLabel(i + 1, label_single_line)
 			h_pur_cf.GetXaxis().SetBinLabel(i + 1, label_single_line)
 
-		# --- Style ---
-		h_eff_cf.SetLineColor(rt.kRed + 1)
-		h_eff_cf.SetLineWidth(3)
-		h_eff_cf.SetMarkerStyle(21)
-		h_eff_cf.SetMarkerColor(rt.kRed + 1)
-		h_eff_cf.SetMarkerSize(1.3)
+		# --- Build TGraphErrors for straight point-to-point lines ---
+		xs     = array.array('d', range(n_cuts))
+		xerrs  = array.array('d', [0.0] * n_cuts)
+		g_eff_cf = rt.TGraphErrors(n_cuts, xs, array.array('d', efficiencies), xerrs, array.array('d', eff_errs))
+		g_pur_cf = rt.TGraphErrors(n_cuts, xs, array.array('d', purities),     xerrs, array.array('d', pur_errs))
 
-		h_pur_cf.SetLineColor(rt.kBlue + 1)
-		h_pur_cf.SetLineWidth(3)
-		h_pur_cf.SetMarkerStyle(20)
-		h_pur_cf.SetMarkerColor(rt.kBlue + 1)
-		h_pur_cf.SetMarkerSize(1.3)
+		# --- Style ---
+		g_eff_cf.SetLineColor(rt.kRed + 1)
+		g_eff_cf.SetLineWidth(3)
+		g_eff_cf.SetMarkerStyle(21)
+		g_eff_cf.SetMarkerColor(rt.kRed + 1)
+		g_eff_cf.SetMarkerSize(1.3)
+
+		g_pur_cf.SetLineColor(rt.kBlue + 1)
+		g_pur_cf.SetLineWidth(3)
+		g_pur_cf.SetMarkerStyle(20)
+		g_pur_cf.SetMarkerColor(rt.kBlue + 1)
+		g_pur_cf.SetMarkerSize(1.3)
 
 		# --- Canvas ---
 		canvas_cf = rt.TCanvas(f"c_numu_cutflow_{run_num}", "Cut Flow Efficiency and Purity", 1200, 650)
 		canvas_cf.Draw()
 		canvas_cf.cd()
-		canvas_cf.SetBottomMargin(0.22)
+		canvas_cf.SetBottomMargin(0.15)
 		canvas_cf.SetLeftMargin(0.10)
 		canvas_cf.SetRightMargin(0.05)
-		canvas_cf.SetTickx(1)
-		canvas_cf.SetTicky(1)
 
-		h_eff_cf.SetTitle(f"{plot_title} Cut Flow;Cuts;Efficiency & Purity")
+		# h_eff_cf used only as axis frame with bin labels
+		h_eff_cf.SetTitle(f";Cuts;Efficiency & Purity")
 		h_eff_cf.SetMinimum(0.0)
 		h_eff_cf.SetMaximum(1.15)
-		h_eff_cf.GetXaxis().SetLabelSize(0.048)
-		h_eff_cf.GetXaxis().LabelsOption("v")
-		h_eff_cf.GetXaxis().SetLabelOffset(0.005)
+		h_eff_cf.GetXaxis().SetLabelSize(0.042)
+		h_eff_cf.GetXaxis().SetLabelOffset(0.008)
+		h_eff_cf.GetXaxis().SetTickLength(0)
 		h_eff_cf.GetYaxis().SetLabelSize(0.040)
 		h_eff_cf.GetYaxis().SetTitleSize(0.042)
 		h_eff_cf.GetYaxis().SetTitleOffset(1.0)
 
-		h_eff_cf.Draw("LP E")
-		h_pur_cf.Draw("LP E same")
+		h_eff_cf.Draw("AXIS")
+		g_eff_cf.Draw("PL same")
+		g_pur_cf.Draw("PL same")
+
+		title_cf = rt.TLatex()
+		title_cf.SetNDC()
+		title_cf.SetTextSize(0.045)
+		title_cf.SetTextAlign(21)
+		title_cf.SetTextFont(42)
+		title_cf.DrawLatex(0.525, 0.93, f"Run {run_num}: CC Inclusive Numu Selection Cuts")
 
 		# Annotate each point above the error bar top
 		text_cf = rt.TLatex()
@@ -1945,17 +2162,18 @@ def run_plots(run_num, truth_mode=False, fully_contained=False, show_pc=True, de
 		text_cf.SetTextAlign(21)  # centre-bottom
 		text_cf.SetTextColor(rt.kBlack)
 		for i, (eff, pur, e_err, p_err) in enumerate(zip(efficiencies, purities, eff_errs, pur_errs)):
-			x = i + 0.5
+			x = i
 			text_cf.DrawLatex(x, eff + e_err + 0.03, f"{eff:.2f}")
 			text_cf.DrawLatex(x, pur + p_err + 0.03, f"{pur:.2f}")
 
-		leg_cf = rt.TLegend(0.12, 0.88, 0.42, 0.96)
+		leg_cf = rt.TLegend(0.12, 0.20, 0.42, 0.27)
 		leg_cf.SetNColumns(2)
 		leg_cf.SetTextSize(0.036)
-		leg_cf.SetFillStyle(0)
-		leg_cf.SetBorderSize(1)
-		leg_cf.AddEntry(h_eff_cf, "Efficiency", "lp")
-		leg_cf.AddEntry(h_pur_cf, "Purity",     "lp")
+		leg_cf.SetFillStyle(1001)
+		leg_cf.SetFillColor(rt.kWhite)
+		leg_cf.SetBorderSize(0)
+		leg_cf.AddEntry(g_eff_cf, "Efficiency", "lp")
+		leg_cf.AddEntry(g_pur_cf, "Purity",     "lp")
 		leg_cf.Draw()
 
 		canvas_cf.Update()
@@ -2092,6 +2310,27 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose debug output")
 	args = parser.parse_args()
-	# for n in [1, 3, 4, 5]:
-	for n in [4]:
-		run_plots(n, truth_mode = False, fully_contained = False, show_pc = True, debug = args.verbose)
+
+	run_string = " Default"
+	if use_truth: 
+		run_string = " Truth"
+	if use_fully_contained:
+		run_string += " Fully_contained"
+	print(f"Selection:{run_string}")
+
+	for n in runs:
+		run_plots(n, truth_mode = use_truth, fully_contained = use_fully_contained,
+		show_pc = True, fsp_channel=fsp_channel, debug = args.verbose)
+
+	if plot_nue:
+		print("\nRunning nue plots...")
+		import sys as _sys, os as _os
+		_script_dir = _os.path.dirname(_os.path.abspath(__file__))
+		if _script_dir not in _sys.path:
+			_sys.path.insert(0, _script_dir)
+		import plot_nue
+		_nue_fsp_map = {'inc': 'inc', 'pi0': 'pi0', '0p': '0p', '1p': '1p', 'Np': 'Np'}
+		_nue_fsp = _nue_fsp_map.get(fsp_channel, 'inc')
+		for n in runs:
+			plot_nue.run_plots(n, truth_mode=use_truth, fully_contained=use_fully_contained,
+							show_pc=True, fsp_channel=_nue_fsp, debug=args.verbose)

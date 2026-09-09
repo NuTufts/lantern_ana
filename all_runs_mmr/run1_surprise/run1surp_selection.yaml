@@ -1,7 +1,7 @@
 # numu_cc_analysis_config.yaml
 
 # Output directory
-output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run3_surprise/root_files/selection_v2/"
+output_dir: "/exp/uboone/app/users/imani/lantern_ana/all_runs_mmr/run1_surprise/root_files/selection/"
 
 # Maximum events to process (set to -1 for all events)
 max_events: -1
@@ -18,29 +18,31 @@ print_dependency_graph: true
 # Dataset configuration
 datasets:
   folders:
-    - /pnfs/uboone/persistent/users/uboonepro/surprise/run3_full_samples/wc_processed/BNB/
+    ## Surprise 
+    - /pnfs/uboone/persistent/users/uboonepro/surprise/run1_full_samples/wc_processed/BNB/
+    ## dlgen2 
+    - /exp/uboone/data/users/imani/ntuples/run1/
 
-  ## USE weight tree 
-
-  run3surp_nu:
-    type: RootDataset
-    tree: lantern/EventTree
-    pottree: lantern/potTree
-    ismc: true
-    process: true
-    filepaths:
-     - checkout_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3.root
-    friendtrees: 
-      nuselection/NeutrinoSelectionFilter: checkout_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_3.root
-
-  # run3_nu:
+  # run1surp_nu:
   #   type: RootDataset
-  #   tree: EventTree
-  #   pottree: potTree
+  #   tree: lantern/EventTree
+  #   pottree: lantern/potTree
   #   ismc: true
   #   process: true
   #   filepaths:
-  #    - dlgen2_reco_v2me06_ntuple_v7_altCVnuWeights_mcc9_v29e_dl_run3b_bnb_nu_overlay_1mil_CV.root
+  #    - checkout_wc_train_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_1.root
+  #   friendtrees: 
+  #     nuselection/NeutrinoSelectionFilter: checkout_wc_train_MCC9.10_Run123_v10_04_07_20_BNB_nu_overlay_surprise_reco2_hist_1.root
+
+  run1_nu:
+    type: RootDataset
+    tree: EventTree
+    pottree: potTree
+    ismc: true
+    process: true
+    filepaths:
+     - dlgen2_reco_v2me06_ntuple_v5_mcc9_v28_wctagger_bnboverlay.root
+
 
 
 producers:
@@ -48,20 +50,22 @@ producers:
   trueNu:
     type: trueNuPropertiesProducer
     config: {}
+  eventweight:
+    type: eventWeightProducer
+    config: {}
   visible_energy:
     type: VisibleEnergyProducer
     config: {}
-
-  ## Event index for uncertainties
-  eventIndex:
+  
+  ## Event index for uncertainties 
+  eventIndex: 
     type: eventIndexProducer
-    config: {}
+    config: {} 
 
-  ## MC event weight (weightSplineTimesTune from nuselection friend tree)
+  ## MC event weight 
   eventweight:
     type: eventWeightProducer
-    config:
-      weight_branch: weightSplineTimesTune
+    config: {}
   
   ## True vertex properties 
   true_vertex_properties: 
@@ -102,16 +106,6 @@ producers:
     type: nueIncCCProducer
     config: {}
 
-  ## Remove True Nue CC Producer
-  remove_true_nue_cc_flag:
+  ## Remove True Nue CC Producer 
+  remove_true_nue_cc_flag: 
     type: RemoveTrueNueCCFlagProducer
-
-  ## Final State Particles Reco & Truth
-  finalStateParticles:
-    type: finalStateParticlesProducer
-    config: {}
-
-  ## Pi0 invariant mass (reco from shower directions; truth from decay photons)
-  pi0Properties:
-    type: pi0PropertiesProducer
-    config: {}

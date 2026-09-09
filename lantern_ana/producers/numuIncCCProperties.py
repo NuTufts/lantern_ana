@@ -15,6 +15,7 @@ import ROOT
 from lantern_ana.producers.producerBaseClass import ProducerBaseClass
 from lantern_ana.producers.producer_factory import register
 from lantern_ana.cuts.fiducial_cuts import fiducial_cut
+from lantern_ana.utils import is_inside_tpc
 
 @register
 class numuIncCCProducer(ProducerBaseClass):
@@ -65,6 +66,7 @@ class numuIncCCProducer(ProducerBaseClass):
 
             # Containment
             'is_fully_contained': array('i', [0]),     # vtxContainment == 2
+            'true_is_fully_contained': array('i', [0]),  # all primary visible particle endpoints inside TPC
 
             # Reconstructed muon kinematics
             'reco_muon_momentum': array('f', [-1.0]),     # GeV/c
@@ -111,6 +113,7 @@ class numuIncCCProducer(ProducerBaseClass):
 
         # Containment default
         self._vars['is_fully_contained'][0] = 0
+        self._vars['true_is_fully_contained'][0] = 0
 
         # Muon kinematics defaults
         self._vars['reco_muon_momentum'][0] = -1.0
@@ -230,6 +233,9 @@ class numuIncCCProducer(ProducerBaseClass):
             self._vars['is_fully_contained'][0] = 0
             self._vars['cut2_cosmic_rejection'][0] = 0
 
+        # Truth fully contained: all primary visible particle endpoints inside TPC
+        self._vars['true_is_fully_contained'][0] = self._check_true_fully_contained(ntuple, params)
+
         # =================================================================
         # CUT 3: At least one track attached to the candidate neutrino vertex
         #        was identified by LArPID as a muon (PDG == 13 only)
@@ -345,6 +351,7 @@ class numuIncCCProducer(ProducerBaseClass):
             'vertex_in_fv': self._vars['vertex_in_fv'][0],
             'vtx_cosmic_fraction': self._vars['vtx_cosmic_fraction'][0],
             'is_fully_contained': self._vars['is_fully_contained'][0],
+            'true_is_fully_contained': self._vars['true_is_fully_contained'][0],
             'n_muon_tracks': self._vars['n_muon_tracks'][0],
             'max_muon_score': self._vars['max_muon_score'][0],
             'is_cc_interaction': self._vars['is_cc_interaction'][0],
@@ -359,6 +366,29 @@ class numuIncCCProducer(ProducerBaseClass):
             'reco_muon_length': self._vars['reco_muon_length'][0],
             'passes_all_cuts': self._vars['passes_all_cuts'][0]
         }
+
+    def _check_true_fully_contained(self, ntuple, params) -> int:
+        """Return 1 if all primary visible final-state particle endpoints are inside the TPC."""
+        ismc = params.get('ismc', False)
+        if not ismc:
+            return 0
+        if not hasattr(ntuple, 'nTrueSimParts') or ntuple.nTrueSimParts == 0:
+            return 0
+
+        # Neutral/invisible particles whose endpoints we don't check
+        invisible_pdgs = {12, -12, 14, -14, 16, -16, 2112}
+
+        for i in range(ntuple.nTrueSimParts):
+            if ntuple.trueSimPartProcess[i] != 0:  # skip non-primary
+                continue
+            if ntuple.trueSimPartPDG[i] in invisible_pdgs:
+                continue
+            end_pos = (ntuple.trueSimPartEndX[i],
+                       ntuple.trueSimPartEndY[i],
+                       ntuple.trueSimPartEndZ[i])
+            if not is_inside_tpc(end_pos):
+                return 0
+        return 1
 
     def finalize(self):
         """Nothing to do after event loop."""

@@ -20,7 +20,8 @@ class eventWeightProducer(ProducerBaseClass):
         self.goodweight  = array('i', [1])
         
         self.use_friendtree = config.get('use_friendtree',False)
-        self.weight_branch  = config.get('weight_branch', 'xsecWeight' )        
+        self.weight_branch  = config.get('weight_branch', 'xsecWeight' )
+        self.apply_to_datasets = config.get('apply_to_datasets', [])
 
     def setDefaultValues(self):
         super().setDefaultValues()
@@ -39,6 +40,9 @@ class eventWeightProducer(ProducerBaseClass):
     def processEvent(self, data, params):
         """Calculate total visible energy from all primary tracks and showers."""
         self.setDefaultValues()
+        dataset_name = params.get('dataset_name', '')
+        if self.apply_to_datasets and dataset_name not in self.apply_to_datasets:
+            return {"weight":self.eventweight[0],"weight_is_good":self.goodweight[0]}
         ismc = params.get('ismc',False)
         if not ismc:
             return {"weight":self.eventweight[0],"weight_is_good":self.goodweight[0]}

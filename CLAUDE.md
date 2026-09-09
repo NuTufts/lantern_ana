@@ -6,6 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Lantern Analysis Framework (lantern_ana) is a Python-based system for analyzing data from liquid argon time projection chamber (LArTPC) neutrino experiments, specifically MicroBooNE data. The framework processes ROOT ntuple files from the gen2ntuple system to perform physics analyses.
 
+## Running Commands (IMPORTANT for Claude)
+
+Dependencies like ROOT, Lantern, and ubdl are only available inside the Apptainer container. Claude must use the wrapper script at `/exp/uboone/app/users/imani/container_exec.sh` for any Bash command that requires these dependencies (running Python scripts, importing ROOT, running analysis jobs, etc.).
+
+```bash
+# Template for Claude to use:
+/exp/uboone/app/users/imani/container_exec.sh "python3 myscript.py"
+/exp/uboone/app/users/imani/container_exec.sh "python3 -c 'import ROOT; print(ROOT.__version__)'"
+```
+
+Commands that do NOT need the container (file listing, git, editing text files) can run without the wrapper.
+
 ## Environment Setup
 
 This project requires the ubdl dependencies and runs inside containers. Key setup commands:
